@@ -119,8 +119,35 @@ through 2030; HV-substation lead times 3–5 yrs; 7 of 13 US grid regions below
 safety margins by 2030 (E. Schmidt: +29 GW by 2027, +67 GW more by 2030).
 Sources: Goldman Sachs, IEA, Belfer Center, WEF.
 
+## Value-chain player financials (added)
+
+- **Foundry — TSMC** (`foundry_players.csv`): revenue $75.9B (2022) → $69.3B
+  (2023 downturn) → $90.1B (2024) → $122B (2025); capex $30–40B, 2026E guide
+  $52–56B. CoWoS ≈ 7–9% of revenue. Source: TSMC results (SEC 6-K).
+- **Systems** (`systems_vendors.csv`): Dell ISG $43.6B (FY25, incl storage),
+  Supermicro ~$22B (+47%), HPE server ~$19B. ODMs (Foxconn/Quanta/Wistron)
+  dominate AI-server volume but under-disclose. Sources: Dell/SMCI/HPE results.
+- **Networking** (`networking_vendors.csv`): Arista $9.0B (AI/DC pure-play),
+  Ciena $4.77B (optical), Nokia €19.9B/~$21.5B total (NI +9%), Cisco $56.7B
+  total (Networking +12%). Cisco/Nokia totals are diversified — flagged.
+
+## Data-center construction crossover (`dc_construction.csv`)
+
+US Census: data-center construction ~$9B (2020) → ~$41B (2025, +344%); office
+~$72B → ~$49B (lowest since 2015). Monthly run-rate crossed Dec-2025 (DC ~$45B >
+office ~$44B). Mid-years interpolated between Census anchors. Sources: US Census,
+Wolf Street.
+
+## AI labs — revenue & capability (`ai_lab_revenue.csv`, `llm_benchmark.csv`)
+
+Annualized run-rate: Anthropic $47B (May-26, overtook OpenAI; $1B→$47B in ~18mo),
+OpenAI $25B (Feb-26), xAI $0.43B (Q3-25), Mistral $0.40B (Jan-26). Source: Epoch
+AI revenue dataset. Capability: GPQA-Diamond best-frontier ~39% (GPT-4, 2023) →
+94.3% (Gemini 3.1 Pro, Feb-26); MMLU saturated ~93%; PhD-expert baseline ~65%.
+Representative best-published scores; Source: Epoch AI Benchmarking Hub /
+leaderboards (approximate).
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
-- Systems & networking volumes (optics, switch ASICs) — the under-tracked step 3.
-- Per-lab compute commitments & burn (step 7) triangulated from backlog deals.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.
+- Per-lab compute *commitments* sizing beyond the headline deal table.

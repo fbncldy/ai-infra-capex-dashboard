@@ -1,0 +1,5 @@
+company,revenue_b,as_of,source_url,note
+Anthropic,47,2026-05,https://epoch.ai/data/ai_companies_revenue_reports.csv,Run-rate; overtook OpenAI; $1B (Dec-24) -> $9B (Dec-25) -> $47B (May-26)
+OpenAI,25,2026-02,https://epoch.ai/data/ai_companies_revenue_reports.csv,Annualized; ~$2B/month
+xAI,0.43,2025-Q3,https://epoch.ai/data/ai_companies_revenue_reports.csv,Annualized from $107M Q3-2025 revenue
+Mistral,0.40,2026-01,https://epoch.ai/data/ai_companies_revenue_reports.csv,Run-rate north of $400M

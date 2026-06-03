@@ -1,0 +1,6 @@
+date,model,gpqa_diamond,source_url,note
+2023-03,GPT-4,39,https://epoch.ai/benchmarks,Representative best-published frontier score at release
+2024-06,Claude 3.5 Sonnet,59,https://epoch.ai/benchmarks,Frontier mid-2024
+2024-09,OpenAI o1,78,https://epoch.ai/benchmarks,Reasoning models inflect the curve
+2025-06,Frontier (Gemini 2.5 / o3 class),86,https://epoch.ai/benchmarks,Approx best-published 2025
+2026-02,Gemini 3.1 Pro,94.3,https://benchmarkingagents.com/benchmarks-list/,Leaderboard Feb-2026
