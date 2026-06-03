@@ -207,21 +207,47 @@ with tab_overview:
     s4.metric("HBM TAM 2028E", "$100B", "~40% CAGR")
 
     st.markdown("#### Hyperscaler capex by company ($B, absolute)")
-    figo = px.bar(
-        view.sort_values("fiscal_year"),
-        x="fiscal_year", y="capex_usd_b", color="company", barmode="stack",
-        labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)",
-                "company": ""},
-        color_discrete_map={"Alphabet": BLUE, "Amazon": YELLOW,
-                            "Meta": GREEN, "Microsoft": RED},
-    )
-    figo.update_layout(height=420, hovermode="x unified", legend_title="")
+    color_map = {"Alphabet": BLUE, "Amazon": YELLOW, "Meta": GREEN,
+                 "Microsoft": RED}
+    comp_order = ["Alphabet", "Amazon", "Meta", "Microsoft"]
+    act = view.pivot_table(index="company", columns="fiscal_year",
+                           values="capex_usd_b", aggfunc="sum")
+    gmid = guidance.set_index("company")["capex_mid_b"]
+    hist_years = sorted(view["fiscal_year"].unique())
+    years = hist_years + [2026]
+    xcat = [str(y) for y in years]
+
+    figo = go.Figure()
+    for comp in comp_order:
+        yvals = [float(act.loc[comp, y]) if y in act.columns else 0.0
+                 for y in hist_years] + [float(gmid.get(comp, 0))]
+        figo.add_trace(go.Bar(
+            name=comp, x=xcat, y=yvals, marker_color=color_map[comp],
+            marker_pattern_shape=[""] * len(hist_years) + ["/"]))
+    figo.update_layout(barmode="stack", height=440, legend_title="",
+                       yaxis_title="Capex ($B)", xaxis_title="Fiscal year",
+                       hovermode="x unified")
+
+    totals = {y: float(sum(act.loc[c, y] for c in comp_order
+                           if y in act.columns)) for y in hist_years}
+    totals[2026] = float(gmid.reindex(comp_order).sum())
+    for y in years:
+        label = f"${totals[y]:,.0f}B" + ("E" if y == 2026 else "")
+        figo.add_annotation(x=str(y), y=totals[y], text=f"<b>{label}</b>",
+                            showarrow=False, yshift=12,
+                            font=dict(size=12, color="#202124"))
+    figo.update_yaxes(range=[0, max(totals.values()) * 1.12])
     st.plotly_chart(figo, width="stretch")
+    st.caption(
+        "Totals are shown above each bar. Bars 2018–2025 are reported cash PP&E "
+        "(actuals); the hatched **2026E** bar is the **guidance midpoint** on a "
+        "broader basis (total capex incl. finance leases) — shown for trajectory, "
+        "not a like-for-like extension of the actuals.")
     st.info(
         "**Reading the signal:** the FY24→FY25 step-change is the AI-capex "
         "inflection — the Big-4 jumped from "
-        f"${total_prev:,.0f}B to ${total_now:,.0f}B in one year."
-    )
+        f"${total_prev:,.0f}B to ${total_now:,.0f}B in one year, with guidance "
+        f"pointing to ~${totals[2026]:,.0f}B in 2026.")
 
     st.markdown("#### Value-chain map")
     st.caption("Each step, its key metric, and the bottleneck that gates it.")
