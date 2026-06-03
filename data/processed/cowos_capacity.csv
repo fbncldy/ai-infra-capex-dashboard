@@ -1,0 +1,5 @@
+year,cowos_kwpm,cowos_kwpm_low,cowos_kwpm_high,source,source_url,note
+2023,14,13,16,TrendForce,https://www.trendforce.com/news/2025/01/02/news-tsmc-set-to-expand-cowos-capacity-to-record-75000-wafers-in-2025-doubling-2024-output/,End-2023 baseline ~13-16 KWPM
+2024,35,32,40,TrendForce,https://www.trendforce.com/news/2024/10/21/news-cowos-capacity-doubles-for-two-years-still-insufficient-positive-outlook-for-suppliers/,~doubling YoY; CoWoS ~7-9% of TSMC revenue
+2025,78,75,80,TrendForce,https://www.trendforce.com/news/2025/01/02/news-tsmc-set-to-expand-cowos-capacity-to-record-75000-wafers-in-2025-doubling-2024-output/,Record; ~doubling 2024; demand still outpaces supply
+2026,120,90,150,TrendForce / various,https://markets.financialcontent.com/stocks/article/tokenring-2026-2-5-tsmc-to-quadruple-advanced-packaging-capacity-reaching-130000-cowos-wafers-monthly-by-late-2026,Wide range end-2026: 90 (conservative) / 120-130 (TSMC target) / 140-150 (bull). CoWoS-L/S reportedly fully booked

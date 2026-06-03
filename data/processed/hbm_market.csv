@@ -1,0 +1,6 @@
+year,hbm_revenue_b,skhynix_share,micron_share,samsung_share,source_type,source_url,note
+2023,5.5,,,,reported,https://siliconanalysts.com/market-data/hbm-market-share,Early ramp ~$4-5.5B
+2024,17,,,,reported,https://siliconanalysts.com/market-data/hbm-market-share,Rapid ramp on H100/H200 demand
+2025,35,57,21,22,reported,https://www.astutegroup.com/news/general/sk-hynix-holds-62-of-hbm-micron-overtakes-samsung-2026-battle-pivots-to-hbm4/,TAM ~$35B; Q3'25 share SK Hynix 57 / Micron 21 / Samsung 22; suppliers sold out
+2026,55,,,,estimate,https://introl.com/blog/ai-memory-supercycle-hbm-2026,"Sold out for 2026; Micron HBM run-rate ~$8B; interpolated toward 2028 TAM"
+2028,100,,,,projection,https://presenc.ai/research/hbm-market-share-samsung-skhynix-micron-2026,Projected TAM ~$100B (~40% CAGR from 2025)

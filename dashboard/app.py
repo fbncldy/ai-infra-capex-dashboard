@@ -50,10 +50,22 @@ def load_neoclouds() -> pd.DataFrame:
     return pd.read_csv(DATA / "neoclouds.csv")
 
 
+@st.cache_data
+def load_cowos() -> pd.DataFrame:
+    return pd.read_csv(DATA / "cowos_capacity.csv")
+
+
+@st.cache_data
+def load_hbm() -> pd.DataFrame:
+    return pd.read_csv(DATA / "hbm_market.csv")
+
+
 capex = load_capex()
 chain = load_value_chain()
 guidance = load_guidance()
 neo = load_neoclouds()
+cowos = load_cowos()
+hbm = load_hbm()
 
 COMPANIES = sorted(capex["company"].unique())
 YEARS = sorted(capex["fiscal_year"].unique())
@@ -115,9 +127,10 @@ st.caption(
     "chain. Anchor data extracted & cross-validated from Alphabet 10-K filings."
 )
 
-tab_overview, tab_capex, tab_neo, tab_chain, tab_sources = st.tabs(
+(tab_overview, tab_capex, tab_neo, tab_bottleneck,
+ tab_chain, tab_sources) = st.tabs(
     ["📊 Overview", "🏗️ Hyperscaler Deep-Dive", "🌩️ NeoClouds",
-     "🔗 Value Chain", "📚 Sources & Method"]
+     "⛓️ Upstream Bottleneck", "🔗 Value Chain", "📚 Sources & Method"]
 )
 
 # --------------------------------------------------------------------------- #
@@ -409,6 +422,111 @@ with tab_neo:
         "a correlated shock (e.g. an H-series price war as new accelerators ship) "
         "moves you down *and* right at once. This is the mechanism behind the "
         "GPU-backed-debt concern, made quantitative."
+    )
+
+# --------------------------------------------------------------------------- #
+# Upstream bottleneck — CoWoS & HBM
+# --------------------------------------------------------------------------- #
+with tab_bottleneck:
+    st.markdown("### The binding constraint: advanced packaging & memory")
+    st.caption(
+        "Hyperscaler budgets can double overnight; the physical supply of CoWoS "
+        "(TSMC advanced packaging) and HBM (stacked memory) cannot. This is where "
+        "demand meets a hard ceiling — so **allocation and price**, not capital, "
+        "clear the market."
+    )
+
+    cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
+    cowos26 = float(cowos.loc[cowos.year == 2026, "cowos_kwpm"].iloc[0])
+    cowos26_lo = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_low"].iloc[0])
+    cowos26_hi = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_high"].iloc[0])
+    hbm25 = float(hbm.loc[hbm.year == 2025, "hbm_revenue_b"].iloc[0])
+
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("CoWoS capacity 2025", f"{cowos25:.0f}k wpm", "~2× vs 2024")
+    k2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}–{cowos26_hi:.0f}k wpm",
+              "wide range")
+    k3.metric("HBM TAM 2025", f"${hbm25:.0f}B", "sold out")
+    k4.metric("HBM TAM 2028E", "$100B", "~40% CAGR")
+
+    cc1, cc2 = st.columns(2)
+    with cc1:
+        st.markdown("**TSMC CoWoS capacity (k wafers/month)** — ~10× in 3 yrs")
+        cf = cowos.copy()
+        err_hi = cf["cowos_kwpm_high"] - cf["cowos_kwpm"]
+        err_lo = cf["cowos_kwpm"] - cf["cowos_kwpm_low"]
+        figc = go.Figure(go.Bar(
+            x=cf["year"], y=cf["cowos_kwpm"], marker_color="#4285F4",
+            error_y=dict(type="data", symmetric=False,
+                         array=err_hi, arrayminus=err_lo),
+        ))
+        figc.update_layout(height=340, yaxis_title="k wafers/month",
+                           xaxis_title="Year")
+        st.plotly_chart(figc, width="stretch")
+    with cc2:
+        st.markdown("**HBM market ($B TAM) & 2025 supplier share**")
+        figh = px.bar(hbm, x="year", y="hbm_revenue_b",
+                      labels={"hbm_revenue_b": "$B TAM", "year": "Year"})
+        figh.update_traces(marker_color="#34A853")
+        figh.update_layout(height=240, showlegend=False)
+        st.plotly_chart(figh, width="stretch")
+        shares = {"SK Hynix": 57, "Micron": 21, "Samsung": 22}
+        figp = go.Figure(go.Pie(
+            labels=list(shares), values=list(shares.values()), hole=0.5,
+            marker_colors=["#4285F4", "#FBBC04", "#EA4335"]))
+        figp.update_layout(height=200, margin=dict(t=10, b=10),
+                           annotations=[dict(text="Q3'25", showarrow=False)])
+        st.plotly_chart(figp, width="stretch")
+
+    st.markdown("---")
+    st.markdown("### Supply ceiling vs capex-implied demand")
+    st.caption(
+        "Convert CoWoS wafer capacity into an accelerator-output ceiling, then "
+        "compare it to the unit demand implied by hyperscaler AI capex. The "
+        "conversion is **illustrative** — net of yield, ramp and shared (non-"
+        "hyperscaler) usage — so treat it as order-of-magnitude, not a forecast."
+    )
+    eff = st.slider(
+        "Effective accelerators per CoWoS wafer (net)", 4, 20, 7,
+        help="Theoretical max ~16 (B200, CoWoS-L) to ~25-29 (Hopper); net "
+             "effective is lower after yield, ramp and non-NVIDIA usage.")
+    ceil25 = cowos25 * 1000 * 12 * eff / 1e6      # millions of accelerators/yr
+    ceil26 = cowos26 * 1000 * 12 * eff / 1e6
+
+    # demand proxy from the capex model (all 4 hyperscalers, current assumptions)
+    dem = capex[capex["fiscal_year"] == 2025].copy()
+    dem["ai_share"] = dem["company"].map(ai_share).fillna(0.6)
+    demand25 = (dem["capex_usd_b"] * dem["ai_share"]).sum() * 1000 / gpu_price_k / 1000
+
+    b1, b2, b3 = st.columns(3)
+    b1.metric("CoWoS accelerator ceiling 2025", f"~{ceil25:.1f}M/yr")
+    b2.metric("CoWoS ceiling 2026E", f"~{ceil26:.1f}M/yr",
+              f"+{(ceil26/ceil25-1)*100:.0f}%")
+    b3.metric("Big-4 FY25 implied demand", f"~{demand25:.1f}M",
+              help="From AI capex / blended unit cost, current sidebar assumptions")
+
+    comp = pd.DataFrame({
+        "metric": ["CoWoS ceiling 2025", "Big-4 implied demand FY25",
+                   "CoWoS ceiling 2026E"],
+        "units_m": [ceil25, demand25, ceil26],
+        "kind": ["Supply", "Demand", "Supply"],
+    })
+    figd = px.bar(comp, x="metric", y="units_m", color="kind",
+                  color_discrete_map={"Supply": "#4285F4", "Demand": "#EA4335"},
+                  labels={"units_m": "Accelerators (M/yr)", "metric": ""})
+    figd.update_layout(height=340, legend_title="")
+    st.plotly_chart(figd, width="stretch")
+
+    st.info(
+        "**The strategic read:** four hyperscalers' AI capex alone implies unit "
+        "demand on the same order as the *entire* global advanced-packaging "
+        "ceiling — before NeoClouds, sovereign AI, or enterprise are counted. "
+        "That is the definition of a bottleneck. Two consequences a TI analyst "
+        "should flag: (1) **CoWoS/HBM capacity, not budgets, is the true governor "
+        "of who trains the largest models**; (2) Microsoft attributing ~\\$25B of "
+        "its 2026 step-up to memory cost is the bottleneck **leaking into price** "
+        "— rising capex that buys *less* incremental compute than the headline "
+        "implies. Google's TPU + in-house packaging is a structural hedge here."
     )
 
 # --------------------------------------------------------------------------- #

@@ -80,7 +80,27 @@ sector GPU-backed debt against fast-depreciating assets).
 Sources: company 8-Ks/press releases on EDGAR, BigGo (NBIS Q1'26 call), Contrary
 Research (Crusoe), CB Insights (Lambda).
 
+## Upstream bottleneck — `cowos_capacity.csv`, `hbm_market.csv`
+
+The supply ceiling that gates everything downstream.
+
+**CoWoS (TSMC advanced packaging, k wafers/month):** ~14 (end-2023) → ~35 (2024)
+→ ~78 (2025, record) → 90–150 (2026E, wide range; CoWoS-L/S fully booked).
+~10× in three years, demand still outpacing supply. Source: TrendForce.
+
+**HBM (TAM $B):** ~$5.5B (2023) → ~$17B (2024) → ~$35B (2025) → ~$100B (2028E,
+~40% CAGR). Q3'25 share: SK Hynix 57% / Micron 21% / Samsung 22%; suppliers sold
+out through 2026; Micron 2026 HBM run-rate ~$8B. Sources: TrendForce, Astute
+Group, Silicon Analysts.
+
+**Supply→demand model (illustrative):** CoWoS k-wpm × 12 × *effective
+accelerators/wafer* (default 7; theoretical max ~16 B200 / ~25-29 Hopper, net of
+yield/ramp/shared usage). 2025 ceiling ~6.6M/yr vs Big-4 capex-implied demand
+~5.7M (~87% of global ceiling **before** NeoClouds/sovereign/enterprise). Flagged
+order-of-magnitude, not a forecast. Ties back to Microsoft's ~$25B 2026
+memory-cost callout = the bottleneck leaking into price.
+
 ## To add next
-- Gigawatt-scale power & data-center commitments (cross-provider).
-- TSMC CoWoS capacity and HBM supply (the upstream bottlenecks).
-- Convert NeoCloud GPU-backed debt into a simple coverage/sustainability model.
+- Gigawatt-scale power & data-center commitments (cross-provider) — the *next*
+  binding constraint after packaging/memory.
+- HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
