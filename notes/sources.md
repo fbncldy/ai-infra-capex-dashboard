@@ -100,7 +100,27 @@ yield/ramp/shared usage). 2025 ceiling ~6.6M/yr vs Big-4 capex-implied demand
 order-of-magnitude, not a forecast. Ties back to Microsoft's ~$25B 2026
 memory-cost callout = the bottleneck leaking into price.
 
+## Power & data centers — `gigawatt_projects.csv`
+
+The constraint that bites *after* packaging/memory. You can buy chips in months;
+a high-voltage substation takes 3–5 years.
+
+**Flagship GW-scale projects (announced/planned capacity):** Stargate
+(OpenAI/Oracle/SoftBank) ~7 GW across 8 US sites, >$400B committed; Meta Hyperion
+(LA) 5 GW (2 GW by 2030 → 5 GW); xAI Colossus (Memphis) ~2 GW, ~555k GPUs; Meta
+Prometheus (OH) 1 GW online 2026; Anthropic–Amazon New Carlisle (IN) ~1 GW;
+Microsoft Fairwater ~1 GW. Named total ~17 GW. Figures are site totals at varying
+horizons, not installed base. Sources: NextBigFuture, Introl, Sherwood, Data
+Center Knowledge.
+
+**Macro context:** global DC capacity ~103 → ~200 GW by 2030 (~2×); Goldman —
+data-center power demand +165% by 2030 (vs 2023), ~$720B grid spend needed
+through 2030; HV-substation lead times 3–5 yrs; 7 of 13 US grid regions below
+safety margins by 2030 (E. Schmidt: +29 GW by 2027, +67 GW more by 2030).
+Sources: Goldman Sachs, IEA, Belfer Center, WEF.
+
 ## To add next
-- Gigawatt-scale power & data-center commitments (cross-provider) — the *next*
-  binding constraint after packaging/memory.
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
+- Systems & networking volumes (optics, switch ASICs) — the under-tracked step 3.
+- Per-lab compute commitments & burn (step 7) triangulated from backlog deals.
+- Behind-the-meter power deals (nuclear/SMR, gas) by operator.

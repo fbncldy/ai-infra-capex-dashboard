@@ -61,12 +61,18 @@ def load_hbm() -> pd.DataFrame:
     return pd.read_csv(DATA / "hbm_market.csv")
 
 
+@st.cache_data
+def load_gw_projects() -> pd.DataFrame:
+    return pd.read_csv(DATA / "gigawatt_projects.csv")
+
+
 capex = load_capex()
 chain = load_value_chain()
 guidance = load_guidance()
 neo = load_neoclouds()
 cowos = load_cowos()
 hbm = load_hbm()
+gw = load_gw_projects()
 
 YEARS = sorted(capex["fiscal_year"].unique())
 YR = max(YEARS)  # latest reported fiscal year (2025)
@@ -205,7 +211,8 @@ with tab_overview:
     s1.metric("CoWoS capacity 2025", f"{cowos25:.0f}k wpm", "~2× vs 2024")
     s2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}–{cowos26_hi:.0f}k wpm", "sold out")
     s3.metric("HBM TAM 2025", f"${hbm25:.0f}B", "sold out thru 2026")
-    s4.metric("HBM TAM 2028E", "$100B", "~40% CAGR")
+    s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
+              f"{len(gw)} flagship projects")
 
     st.markdown("#### Hyperscaler capex by company ($B, absolute)")
     color_map = {"Alphabet": BLUE, "Amazon": YELLOW, "Meta": GREEN,
@@ -399,30 +406,55 @@ with tab_power:
     st.markdown("### 4 · Power & Data Centers")
     st.caption(
         "Shells, cooling and — the real scarce input — electricity. Once "
-        "packaging eases, grid interconnection and power availability become the "
-        "next binding constraint on gigawatt-scale clusters."
+        "packaging eases, grid interconnection and power become the next binding "
+        "constraint. You can buy chips in months; you cannot buy a high-voltage "
+        "substation in under 3–5 years."
     )
     render_layer_card(4)
 
-    pw = neo.dropna(subset=["power_contracted_gw"])
-    if not pw.empty:
-        st.markdown("---")
-        st.markdown("#### Announced power — NeoCloud sample (GW)")
-        c1, c2 = st.columns([2, 3])
-        c1.metric("Sample contracted/active power",
-                  f"{pw['power_contracted_gw'].sum():.1f} GW",
-                  f"{len(pw)} NeoCloud providers")
-        figpw = px.bar(pw.sort_values("power_contracted_gw"),
-                       x="power_contracted_gw", y="company", orientation="h",
-                       labels={"power_contracted_gw": "GW", "company": ""})
-        figpw.update_traces(marker_color=YELLOW)
-        figpw.update_layout(height=240, margin=dict(t=10))
-        c2.plotly_chart(figpw, width="stretch")
+    st.markdown("---")
+    gw_named = gw["capacity_gw"].sum()
+    p1, p2, p3, p4 = st.columns(4)
+    p1.metric("Named GW-scale pipeline", f"{gw_named:.0f} GW",
+              f"{len(gw)} flagship projects")
+    p2.metric("Global DC capacity", "103 → 200 GW", "by 2030 (~2×)")
+    p3.metric("DC power demand", "+165%", "by 2030 (Goldman, vs '23)")
+    p4.metric("HV substation lead time", "3–5 yrs", "the hard constraint")
+
+    st.markdown("#### Flagship gigawatt-scale projects (announced capacity, GW)")
+    gwp = gw.sort_values("capacity_gw")
+    figg4 = px.bar(
+        gwp, x="capacity_gw", y="project", orientation="h", color="operator",
+        text="capacity_gw",
+        labels={"capacity_gw": "Capacity (GW)", "project": "", "operator": ""},
+        hover_data={"location": True, "status_2026": True, "capacity_gw": ":.1f"})
+    figg4.update_traces(texttemplate="%{text:.1f} GW", textposition="outside")
+    figg4.update_layout(height=360, legend_title="",
+                        xaxis_range=[0, gw["capacity_gw"].max() * 1.18])
+    st.plotly_chart(figg4, width="stretch")
+
+    st.markdown("**Project detail**")
+    st.dataframe(
+        gw[["project", "operator", "location", "capacity_gw", "status_2026",
+            "note"]].rename(columns={
+            "project": "Project", "operator": "Operator", "location": "Location",
+            "capacity_gw": "GW", "status_2026": "Status", "note": "Note"}),
+        width="stretch", hide_index=True)
+    st.caption(
+        "Capacity figures are **announced / planned site totals at varying "
+        "horizons** (e.g. Hyperion's 5 GW scales out to 2030) — not all online "
+        "today. Treat as the build pipeline, not installed base.")
+
     st.warning(
-        "**Data to add (the next layer):** gigawatt-scale project pipeline across "
-        "hyperscalers, $/MW build costs, PUE, and grid-interconnection queues. "
-        "Power is the constraint that bites *after* CoWoS/HBM."
-    )
+        "**The grid is the new bottleneck.** High-voltage substation lead times "
+        "run 3–5 years and 7 of 13 US grid regions are projected below safety "
+        "margins by 2030; Goldman estimates ~$720B of grid spend needed through "
+        "2030. Strategic reads for a TI analyst: (1) **power, not capital, gates "
+        "the 2027+ buildout** — interconnection queues and turbine/transformer "
+        "lead times set the schedule; (2) self-generation and behind-the-meter "
+        "deals (gas, nuclear/SMR, on-site) become a competitive differentiator; "
+        "(3) site selection shifts to where power is *available*, not where it is "
+        "cheap. This is the constraint that bites **after** CoWoS/HBM ease.")
 
 # --------------------------------------------------------------------------- #
 # 5 · Hyperscalers — capex deep-dive

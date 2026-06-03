@@ -1,0 +1,7 @@
+project,operator,location,capacity_gw,status_2026,source_url,note
+Stargate,OpenAI / Oracle / SoftBank,Abilene TX + 8 US sites,7.0,Ramping,https://www.nextbigfuture.com/2025/11/first-five-ai-data-center-with-over-one-gigawatt-of-power-arriving-in-2026-2027.html,~7GW planned across 8 sites; >$400B committed; Abilene online Sep-2025
+Hyperion,Meta,Richland Parish LA,5.0,Planned,https://sherwood.news/tech/clash-of-the-titans-here-are-the-biggest-ai-data-center-projects/,2GW by 2030 scaling to 5GW; footprint ~size of Manhattan
+Colossus,xAI,Memphis TN,2.0,Ramping,https://introl.com/blog/xai-colossus-2-gigawatt-expansion-555k-gpus-january-2026,~2GW site total (Dec-2025); ~555k GPUs; 1M-GPU target
+Prometheus,Meta,New Albany OH,1.0,Online 2026,https://www.datacenterknowledge.com/hyperscalers/hyperscalers-in-2026-what-s-next-for-the-world-s-largest-data-center-operators-,1GW supercluster online 2026
+New Carlisle,Anthropic / Amazon,New Carlisle IN,1.0,Ramping,https://www.nextbigfuture.com/2025/11/first-five-ai-data-center-with-over-one-gigawatt-of-power-arriving-in-2026-2027.html,~1GW online Jan-2026 (Anthropic anchor tenant)
+Fairwater,Microsoft,Fayetteville + US,1.0,Online 2026,https://www.nextbigfuture.com/2025/11/first-five-ai-data-center-with-over-one-gigawatt-of-power-arriving-in-2026-2027.html,~1GW class online ~Mar-2026; MS added ~2GW capacity in 2025
