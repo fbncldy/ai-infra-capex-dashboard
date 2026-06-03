@@ -1,0 +1,33 @@
+company,fiscal_year,capex_usd_m,fy_end_month,source_type,source_doc,source_page,note
+Alphabet,2018,25139,12,10-K (extracted),2020.pdf,59,Purchases of property and equipment; cross-validated across filings
+Alphabet,2019,23548,12,10-K (extracted),2020.pdf,59,Purchases of property and equipment; cross-validated across filings
+Alphabet,2020,22281,12,10-K (extracted),2020.pdf,59,Purchases of property and equipment; cross-validated across filings
+Alphabet,2021,24640,12,10-K (extracted),2021.pdf,54,Purchases of property and equipment; cross-validated across filings
+Alphabet,2022,31485,12,10-K (extracted),2022.pdf,52,Purchases of property and equipment; cross-validated across filings
+Alphabet,2023,32251,12,10-K (extracted),2023.pdf,56,Purchases of property and equipment; cross-validated across filings
+Alphabet,2024,52535,12,10-K (extracted),2024.pdf,57,Purchases of property and equipment; cross-validated across filings
+Alphabet,2025,91447,12,10-K (extracted),2025.pdf,53,Purchases of property and equipment; cross-validated across filings
+Microsoft,2018,11632,6,10-K (EDGAR XBRL),0001564590-18-019062,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2019,13925,6,10-K (EDGAR XBRL),0001564590-19-027952,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2020,15441,6,10-K (EDGAR XBRL),0001564590-20-034944,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2021,20622,6,10-K (EDGAR XBRL),0001564590-21-039151,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2022,23886,6,10-K (EDGAR XBRL),0001564590-22-026876,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2023,28107,6,10-K (EDGAR XBRL),0000950170-23-035122,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2024,44477,6,10-K (EDGAR XBRL),0000950170-24-087843,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2025,64551,6,10-K (EDGAR XBRL),0000950170-25-100235,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Amazon,2018,13427,12,10-K (EDGAR XBRL),0001018724-19-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2019,16861,12,10-K (EDGAR XBRL),0001018724-20-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2020,40140,12,10-K (EDGAR XBRL),0001018724-21-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2021,61053,12,10-K (EDGAR XBRL),0001018724-22-000005,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2022,63645,12,10-K (EDGAR XBRL),0001018724-23-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2023,52729,12,10-K (EDGAR XBRL),0001018724-24-000008,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2024,82999,12,10-K (EDGAR XBRL),0001018724-25-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Amazon,2025,131819,12,10-K (EDGAR XBRL),0001018724-26-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
+Meta,2018,13915,12,10-K (EDGAR XBRL),0001326801-19-000009,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2019,15102,12,10-K (EDGAR XBRL),0001326801-20-000013,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2020,15115,12,10-K (EDGAR XBRL),0001326801-21-000014,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2021,18567,12,10-K (EDGAR XBRL),0001326801-22-000018,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2022,31431,12,10-K (EDGAR XBRL),0001326801-23-000013,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2023,27266,12,10-K (EDGAR XBRL),0001326801-24-000012,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2024,37256,12,10-K (EDGAR XBRL),0001326801-25-000017,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)
+Meta,2025,69691,12,10-K (EDGAR XBRL),0001628280-26-003942,,Purchases of PP&E; as-originally-reported (minor later reclassifications exist)

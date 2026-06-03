@@ -1,0 +1,9 @@
+layer,layer_order,segment,key_players,role_in_stack,key_metric,bottleneck,source_type
+Silicon & IP,1,GPU/accelerator design,"NVIDIA, AMD, Google (TPU), Amazon (Trainium/Inferentia), Broadcom, Marvell",Designs the compute engines,Datacenter revenue / accelerator units shipped,CoWoS advanced packaging & HBM supply,public (verify)
+Silicon & IP,1,Memory (HBM),"SK Hynix, Samsung, Micron",Supplies high-bandwidth memory stacked on accelerators,HBM bit shipments,HBM3E/HBM4 capacity sold out,public (verify)
+Foundry & Packaging,2,Leading-edge fabrication,"TSMC, Samsung Foundry, Intel Foundry",Manufactures the chips at 3nm/5nm,CoWoS monthly wafer capacity,Advanced-node & packaging capacity,public (verify)
+Systems & Networking,3,Servers & interconnect,"NVIDIA (NVLink), Arista, Cisco, Dell, Supermicro, Broadcom",Builds racks/clusters & high-speed fabric,Rack/system shipments,Optics & switch ASIC supply,public (verify)
+Power & Data Centers,4,Facilities & energy,"Equinix, Digital Realty, hyperscaler self-build, utilities",Provides shells power cooling,Contracted MW / GW pipeline,Grid interconnection & power availability,public (verify)
+Cloud / Hyperscalers,5,IaaS & managed AI,"Google Cloud, Microsoft Azure, AWS, Oracle (OCI)",Rents compute at scale,Capex (USD B) & cloud revenue,Capex intensity vs free cash flow,mixed
+NeoClouds,6,GPU-as-a-service,"CoreWeave, Nebius, Crusoe, Lambda, Together",Specialized GPU rental & financing,Contracted backlog / GPU count,Debt service vs GPU depreciation,public (verify)
+AI Labs (demand),7,Model developers,"OpenAI, Anthropic, Google DeepMind, xAI, Meta AI, Mistral",Consumes compute to train/serve models,Compute commitments & burn rate,Access to capital & power,public (verify)

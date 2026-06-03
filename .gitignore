@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Large source PDFs (public filings — not redistributed in repo)
+data/raw/alphabet/
+
+# Runtime / local
+notes/streamlit.log
+.streamlit/secrets.toml

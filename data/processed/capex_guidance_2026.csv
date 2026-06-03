@@ -1,0 +1,5 @@
+company,year,capex_low_b,capex_mid_b,capex_high_b,definition,source,source_url,note
+Alphabet,2026,180,185,190,Total capex,Q4'25 earnings / press,https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion,Raised from $175-185B
+Microsoft,2026,190,190,190,Total capex incl. finance leases (CY2026),Q2 FY26 earnings / press,https://www.cnbc.com/2026/02/06/google-microsoft-meta-amazon-ai-cash.html,Calendar-year basis; ~$25B attributed to higher memory/component costs
+Amazon,2026,200,200,200,Total capex (all-Amazon),Q4'25 earnings / press,https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion,About $200B; includes fulfilment/logistics not only AWS
+Meta,2026,125,135,145,Total capex incl. principal payments on finance leases,Q4'25 8-K,https://www.sec.gov/Archives/edgar/data/0001326801/000162828026003832/meta-12312025xexhibit991.htm,Raised from $115-135B
