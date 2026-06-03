@@ -127,45 +127,44 @@ with tab_assume:
         "not company-disclosed."
     )
 
-    st.markdown("#### AI-attributable share of capex")
+    st.markdown("#### Capex basis — total, not an AI carve-out")
     st.caption(
-        "Headline capex is not all AI. Set the AI-attributable fraction per "
-        "company to model AI-specific infrastructure spend."
-    )
-    a1, a2, a3, a4 = st.columns(4)
-    ai_share = {
-        "Alphabet": a1.slider("Alphabet", 0, 100, 70) / 100,
-        "Microsoft": a2.slider("Microsoft", 0, 100, 75) / 100,
-        "Amazon": a3.slider("Amazon", 0, 100, 45) / 100,
-        "Meta": a4.slider("Meta", 0, 100, 80) / 100,
-    }
-    st.caption(
-        "Amazon defaults lowest — its capex includes fulfilment/logistics, not "
-        "only AWS. Meta highest — near-pure AI/datacentre build."
+        "The dashboard reports **total reported capex**, unadjusted. Companies "
+        "don't disclose an AI-vs-non-AI split, and inventing a per-company "
+        "'AI share' would bake an unfounded assumption into the headline. The "
+        "post-2023 surge is overwhelmingly AI / AI-adjacent infrastructure — we "
+        "flag that rather than pretend to quantify it. No capex multiplier is "
+        "applied anywhere in the charts or KPIs."
     )
 
-    st.markdown("#### Unit economics")
-    u1, u2 = st.columns(2)
+    st.markdown("#### Unit economics — Foundry supply↔demand bridge only")
+    st.caption(
+        "These three levers exist solely to turn capex dollars into an "
+        "accelerator-unit estimate for the **Foundry & Packaging** supply-vs-"
+        "demand comparison. They do **not** touch the reported capex series."
+    )
+    u1, u2, u3 = st.columns(3)
     gpu_price_k = u1.number_input(
         "Blended accelerator system cost ($k / unit)", 10, 80, 40, step=5,
         help="All-in cost per accelerator incl. networking, power provisioning, "
-             "DC fit-out. Translates AI capex into implied unit volume.")
-    eff_per_wafer = u2.slider(
+             "DC fit-out.")
+    accel_share = u2.slider(
+        "Accelerator share of capex (%)", 0, 100, 50,
+        help="The single lever bridging capex $ to units: the fraction of total "
+             "capex that buys accelerators + immediate fit-out (vs land, "
+             "buildings, networking, non-AI). Used ONLY for the demand proxy.") / 100
+    eff_per_wafer = u3.slider(
         "Effective accelerators per CoWoS wafer (net)", 4, 20, 7,
         help="Theoretical max ~16 (B200, CoWoS-L) to ~25-29 (Hopper); net "
              "effective is lower after yield, ramp and non-NVIDIA usage. Drives "
-             "the Foundry & Packaging supply ceiling.")
+             "the supply ceiling.")
     st.info(
-        "These levers feed the **Hyperscalers** (AI-attributable capex, implied "
-        "units) and **Foundry & Packaging** (supply ceiling vs demand) tabs."
+        "The capex series itself is shown as **total capex, unadjusted**. Only "
+        "the Foundry & Packaging demand proxy uses the levers above."
     )
 
-# Derived capex view (all companies, all years — no filtering)
+# Capex view (all companies, all years) — total capex, no AI adjustment
 view = capex.copy()
-view["ai_share"] = view["company"].map(ai_share).fillna(0.6)
-view["ai_capex_usd_b"] = view["capex_usd_b"] * view["ai_share"]
-view["implied_units_k"] = view["ai_capex_usd_b"] * 1000 / gpu_price_k
-
 latest = view[view["fiscal_year"] == YR]
 prev = view[view["fiscal_year"] == (YR - 1)]
 
@@ -182,7 +181,9 @@ with tab_overview:
 
     total_now = latest["capex_usd_b"].sum()
     total_prev = prev["capex_usd_b"].sum()
-    ai_now = latest["ai_capex_usd_b"].sum()
+    first_yr = min(YEARS)
+    total_first = view[view["fiscal_year"] == first_yr]["capex_usd_b"].sum()
+    cagr = (total_now / total_first) ** (1 / (YR - first_yr)) - 1
     yoy = (total_now / total_prev - 1) * 100 if total_prev else 0
     guide26 = guidance["capex_mid_b"].sum()
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
@@ -192,11 +193,11 @@ with tab_overview:
 
     st.markdown("##### Spend & demand (downstream)")
     d1, d2, d3, d4 = st.columns(4)
-    d1.metric(f"Big-4 capex FY{YR}", f"${total_now:,.0f}B", f"{yoy:+.0f}% YoY")
+    d1.metric(f"Big-4 total capex FY{YR}", f"${total_now:,.0f}B", f"{yoy:+.0f}% YoY")
     d2.metric("Big-4 2026E guidance", f"${guide26:,.0f}B",
               f"+{(guide26/total_now-1)*100:.0f}% vs FY25")
-    d3.metric(f"AI-attributable FY{YR}", f"${ai_now:,.0f}B",
-              f"{ai_now/total_now*100:.0f}% of capex")
+    d3.metric(f"Capex CAGR FY{first_yr}–{YR}", f"{cagr*100:.0f}%/yr",
+              "AI-era acceleration")
     d4.metric("NeoCloud backlog (CoreWeave)", "$66.8B", "~$100B by Q1'26")
 
     st.markdown("##### Supply & constraint (upstream)")
@@ -239,10 +240,12 @@ with tab_overview:
     figo.update_yaxes(range=[0, max(totals.values()) * 1.12])
     st.plotly_chart(figo, width="stretch")
     st.caption(
-        "Totals are shown above each bar. Bars 2018–2025 are reported cash PP&E "
-        "(actuals); the hatched **2026E** bar is the **guidance midpoint** on a "
-        "broader basis (total capex incl. finance leases) — shown for trajectory, "
-        "not a like-for-like extension of the actuals.")
+        "Figures are **total reported capex — not an AI-only carve-out** "
+        "(companies don't disclose the split; the post-2023 surge is "
+        "overwhelmingly AI / AI-adjacent). Totals shown above each bar. Bars "
+        "2018–2025 are reported cash PP&E; the hatched **2026E** bar is the "
+        "**guidance midpoint** on a broader basis (total capex incl. finance "
+        "leases) — shown for trajectory, not a like-for-like extension.")
     st.info(
         "**Reading the signal:** the FY24→FY25 step-change is the AI-capex "
         "inflection — the Big-4 jumped from "
@@ -332,21 +335,24 @@ with tab_foundry:
 
     st.markdown("#### Supply ceiling vs capex-implied demand")
     st.caption(
-        "Convert CoWoS capacity into an accelerator-output ceiling (using the "
-        "*effective accelerators per wafer* lever in Assumptions), then compare "
-        "to the unit demand implied by hyperscaler AI capex. **Illustrative** — "
-        "net of yield, ramp and shared usage; order-of-magnitude, not a forecast."
-    )
+        "Convert CoWoS capacity into an accelerator-output ceiling (via the "
+        "*effective accelerators per wafer* lever), then compare to the unit "
+        "demand implied by hyperscaler capex. Demand applies the single "
+        "*accelerator share of capex* lever to **total** capex — the one "
+        "assumption in this bridge. **Illustrative**, order-of-magnitude.")
     ceil25 = cowos25 * 1000 * 12 * eff_per_wafer / 1e6
     ceil26 = cowos26 * 1000 * 12 * eff_per_wafer / 1e6
-    demand25 = latest["implied_units_k"].sum() / 1000  # millions
+    cap25_total = latest["capex_usd_b"].sum()
+    demand25 = cap25_total * accel_share / gpu_price_k  # millions of units
 
     b1, b2, b3 = st.columns(3)
     b1.metric("CoWoS accel. ceiling 2025", f"~{ceil25:.1f}M/yr")
     b2.metric("CoWoS ceiling 2026E", f"~{ceil26:.1f}M/yr",
               f"+{(ceil26/ceil25-1)*100:.0f}%")
     b3.metric("Big-4 FY25 implied demand", f"~{demand25:.1f}M",
-              f"{demand25/ceil25*100:.0f}% of ceiling")
+              f"{demand25/ceil25*100:.0f}% of ceiling",
+              help=f"Total FY25 capex ${cap25_total:,.0f}B × "
+                   f"{accel_share*100:.0f}% accelerator share ÷ ${gpu_price_k}k/unit")
 
     comp = pd.DataFrame({
         "metric": ["CoWoS ceiling 2025", "Big-4 implied demand FY25",
@@ -360,7 +366,7 @@ with tab_foundry:
     figd.update_layout(height=320, legend_title="")
     st.plotly_chart(figd, width="stretch")
     st.info(
-        "**The strategic read:** four hyperscalers' AI capex alone implies unit "
+        "**The strategic read:** four hyperscalers' capex alone implies unit "
         f"demand (~{demand25:.1f}M) on the order of the *entire* global packaging "
         f"ceiling (~{ceil25:.1f}M) — before NeoClouds, sovereign AI or enterprise. "
         "Two flags: (1) **CoWoS/HBM capacity, not budgets, governs who trains the "
@@ -430,41 +436,39 @@ with tab_hyper:
     render_layer_card(5)
     st.markdown("---")
 
+    st.caption("All figures are **total reported capex** — no AI-share applied.")
+    g = view.sort_values(["company", "fiscal_year"]).copy()
+    g["yoy_%"] = g.groupby("company")["capex_usd_b"].pct_change() * 100
+
     colA, colB = st.columns(2)
     with colA:
         st.markdown("**Reported capex trajectory ($B)**")
         fig2 = px.line(
-            view.sort_values("fiscal_year"),
-            x="fiscal_year", y="capex_usd_b", color="company", markers=True,
+            g, x="fiscal_year", y="capex_usd_b", color="company", markers=True,
             labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)"})
         fig2.update_layout(height=360, hovermode="x unified", legend_title="")
         st.plotly_chart(fig2, width="stretch")
     with colB:
-        st.markdown("**AI-attributable capex ($B)** — after share assumptions")
+        st.markdown("**YoY capex growth (%)** — the acceleration")
         fig3 = px.bar(
-            view.sort_values("fiscal_year"),
-            x="fiscal_year", y="ai_capex_usd_b", color="company", barmode="group",
-            labels={"fiscal_year": "Fiscal year", "ai_capex_usd_b": "AI capex ($B)"})
+            g[g["fiscal_year"] >= 2021], x="fiscal_year", y="yoy_%",
+            color="company", barmode="group",
+            labels={"fiscal_year": "Fiscal year", "yoy_%": "YoY growth (%)"})
         fig3.update_layout(height=360, hovermode="x unified", legend_title="")
         st.plotly_chart(fig3, width="stretch")
 
-    st.markdown("**Capex intensity & YoY growth**")
-    g = view.sort_values(["company", "fiscal_year"]).copy()
-    g["yoy_%"] = g.groupby("company")["capex_usd_b"].pct_change() * 100
+    st.markdown("**Capex & YoY growth by company**")
     st.dataframe(
-        g[["company", "fiscal_year", "capex_usd_b", "ai_share", "ai_capex_usd_b",
-           "implied_units_k", "yoy_%", "source_type"]].rename(columns={
+        g[["company", "fiscal_year", "capex_usd_b", "yoy_%", "source_type"]]
+        .rename(columns={
             "company": "Company", "fiscal_year": "FY", "capex_usd_b": "Capex $B",
-            "ai_share": "AI share", "ai_capex_usd_b": "AI capex $B",
-            "implied_units_k": "Units (k)", "yoy_%": "YoY %",
-            "source_type": "Source",
-        }).style.format({
-            "Capex $B": "{:.1f}", "AI share": "{:.0%}", "AI capex $B": "{:.1f}",
-            "Units (k)": "{:.0f}", "YoY %": "{:+.0f}"}),
+            "yoy_%": "YoY %", "source_type": "Source"}).style.format({
+            "Capex $B": "{:.1f}", "YoY %": "{:+.0f}"}),
         width="stretch", hide_index=True)
     st.caption(
         "⚠️ Microsoft's FY ends June 30 (not calendar-aligned). Amazon capex "
-        "includes fulfilment/logistics, not only AWS — hence its lower AI-share.")
+        "includes fulfilment/logistics, not only AWS — material when comparing "
+        "the totals across companies.")
 
     st.markdown("---")
     st.markdown("#### 2026 forward guidance — the parabolic year")
@@ -674,10 +678,11 @@ with tab_sources:
             "source_page": "Page"}),
         width="stretch", hide_index=True, height=320)
     st.markdown(
-        "**Assumptions** live in the 🎛️ Assumptions tab (AI-attributable share, "
-        "blended unit cost, accelerators-per-wafer). They are exposed as controls "
-        "so a reviewer can stress-test the conclusions rather than take them on "
-        "faith.")
+        "**Capex is reported as total capex — no AI-attributable multiplier** "
+        "(no defensible per-company split exists). The only model levers (blended "
+        "unit cost, accelerator share of capex, accelerators-per-wafer) live in "
+        "the 🎛️ Assumptions tab and feed *only* the Foundry supply-vs-demand "
+        "bridge, exposed so a reviewer can stress-test it.")
     st.caption(
         "Hyperscaler capex is fully primary-sourced. Next to harden: gigawatt-"
         "scale power pipeline, systems/networking volumes, and per-lab compute "
