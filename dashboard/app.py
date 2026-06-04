@@ -84,6 +84,11 @@ networking = load_csv("networking_vendors.csv")
 dc_con = load_csv("dc_construction.csv")
 labrev = load_csv("ai_lab_revenue.csv")
 bench = load_csv("llm_benchmark.csv")
+silicon_rev = load_csv("silicon_revenue.csv")
+chatgpt = load_csv("chatgpt_users.csv")
+bench_lab = load_csv("llm_benchmark_by_lab.csv")
+telco_capex = load_csv("telecom_capex.csv")
+telco_players = load_csv("telecom_players.csv")
 
 YEARS = sorted(capex["fiscal_year"].unique())
 YR = max(YEARS)  # latest reported fiscal year (2025)
@@ -119,16 +124,17 @@ st.caption(
 )
 
 (tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
- tab_dc, tab_hyper, tab_neo, tab_labs, tab_assume) = st.tabs([
+ tab_dc, tab_hyper, tab_neo, tab_labs, tab_telco, tab_assume) = st.tabs([
     "📊 Overview",
     "⚙️ 1·Silicon & IP",
     "🏭 2·Foundry & Packaging",
-    "🖥️ 3·Systems",
+    "🖥️ 3·Servers",
     "🔌 4·Networking",
     "⚡ 5·Data Centers",
     "☁️ 6·Hyperscalers",
     "🌩️ 7·NeoClouds",
     "🧠 8·AI Labs",
+    "📡 9·Telecoms",
     "🎛️ Assumptions",
 ])
 
@@ -144,7 +150,7 @@ with tab_assume:
         "not company-disclosed."
     )
 
-    st.markdown("#### Capex basis — total, not an AI carve-out")
+    st.markdown("#### Capex basis")
     st.caption(
         "The dashboard reports **total reported capex**, unadjusted. Companies "
         "don't disclose an AI-vs-non-AI split, and inventing a per-company "
@@ -154,7 +160,7 @@ with tab_assume:
         "applied anywhere in the charts or KPIs."
     )
 
-    st.markdown("#### Unit economics — Foundry supply↔demand bridge only")
+    st.markdown("#### Unit economics")
     st.caption(
         "These three levers exist solely to turn capex dollars into an "
         "accelerator-unit estimate for the **Foundry & Packaging** supply-vs-"
@@ -206,7 +212,8 @@ with tab_overview:
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
     cowos26_lo = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_low"].iloc[0])
     cowos26_hi = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_high"].iloc[0])
-    hbm25 = float(hbm.loc[hbm.year == 2025, "hbm_revenue_b"].iloc[0])
+    tsmc25 = float(foundry.loc[(foundry.company == "TSMC") &
+                               (foundry.year == 2025), "revenue_b"].iloc[0])
 
     st.markdown("##### Spend & demand (downstream)")
     d1, d2, d3, d4 = st.columns(4)
@@ -221,7 +228,7 @@ with tab_overview:
     s1, s2, s3, s4 = st.columns(4)
     s1.metric("CoWoS capacity 2025", f"{cowos25:.0f}k wpm", "~2× vs 2024")
     s2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}–{cowos26_hi:.0f}k wpm", "sold out")
-    s3.metric("HBM TAM 2025", f"${hbm25:.0f}B", "sold out thru 2026")
+    s3.metric("TSMC revenue 2025", f"${tsmc25:.0f}B", "~70% foundry share")
     s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
               f"{len(gw)} flagship projects")
 
@@ -285,50 +292,68 @@ with tab_overview:
 # 1 · Silicon & IP  (accelerator design + HBM memory)
 # --------------------------------------------------------------------------- #
 with tab_silicon:
-    st.markdown("### 1 · Silicon & IP — accelerators and memory")
+    st.markdown("### 1 · Silicon & IP")
     st.caption(
         "The compute engines (GPUs / TPUs / ASICs) and the high-bandwidth memory "
-        "stacked beside them. HBM is the supply-constrained input that gates "
-        "every advanced accelerator."
-    )
+        "stacked beside them.")
     render_layer_card(1)
 
     st.markdown("---")
-    st.markdown("#### High-bandwidth memory (HBM) — the gating input")
-    h1, h2 = st.columns([3, 2])
-    with h1:
-        figh = px.bar(hbm, x="year", y="hbm_revenue_b",
-                      labels={"hbm_revenue_b": "$B TAM", "year": "Year"})
-        figh.update_traces(marker_color=GREEN)
-        figh.update_layout(height=320, showlegend=False,
-                           title="HBM market TAM ($B)")
-        st.plotly_chart(figh, width="stretch")
-    with h2:
-        shares = {"SK Hynix": 57, "Micron": 21, "Samsung": 22}
-        figp = go.Figure(go.Pie(
-            labels=list(shares), values=list(shares.values()), hole=0.5,
-            marker_colors=[BLUE, YELLOW, RED]))
-        figp.update_layout(height=320, title="HBM share (Q3'25)",
-                           margin=dict(t=40, b=10))
-        st.plotly_chart(figp, width="stretch")
-    st.info(
-        "**Signal:** HBM TAM ~$35B (2025) → ~$100B (2028E), and suppliers are "
-        "**sold out through 2026**. SK Hynix leads (~57%), Micron has overtaken "
-        "Samsung. HBM bit-supply — not logic — is the first hard ceiling on "
-        "accelerator output. The HBM4 transition (2026+) is the next inflection."
-    )
+    st.markdown("#### Revenue by key player ($B)")
+    figsi = px.line(
+        silicon_rev, x="fy", y="revenue_b", color="company", markers=True,
+        labels={"fy": "Fiscal year", "revenue_b": "Revenue ($B)", "company": ""},
+        color_discrete_map={"NVIDIA": GREEN, "AMD": RED, "Broadcom": BLUE,
+                            "Micron": YELLOW})
+    figsi.update_layout(height=400, hovermode="x unified", legend_title="")
+    st.plotly_chart(figsi, width="stretch")
+    st.caption(
+        "Total company revenue. NVIDIA / Broadcom / Micron fiscal years are "
+        "offset from calendar. NVIDIA's data-center segment alone was ~$115B in "
+        "FY2025. Memory: HBM is the supply-constrained input (SK Hynix ~57% "
+        "share, sold out through 2026); Micron shown as the US-listed memory "
+        "proxy. Sources: company filings.")
 
 # --------------------------------------------------------------------------- #
 # 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
 # --------------------------------------------------------------------------- #
 with tab_foundry:
-    st.markdown("### 2 · Foundry & Packaging — TSMC CoWoS")
+    st.markdown("### 2 · Foundry & Packaging")
     st.caption(
-        "Advanced packaging (CoWoS) co-locates logic and HBM. It is the single "
-        "most-cited physical bottleneck in the AI supply chain — and where "
-        "hyperscaler demand meets a hard ceiling."
+        "Where chips are manufactured and packaged. Advanced packaging (CoWoS) "
+        "co-locates logic and HBM and is the single most-cited physical "
+        "bottleneck in the AI supply chain."
     )
     render_layer_card(2)
+
+    st.markdown("---")
+    st.markdown("#### Revenue & capex by key player ($B)")
+    st.caption(
+        "Pure-play foundries. TSMC has ~70% market share; GlobalFoundries and UMC "
+        "are specialty / mature-node players. Samsung Foundry (#2) and Intel "
+        "Foundry are loss-making segments inside larger firms, omitted here.")
+    fc1, fc2 = st.columns(2)
+    fcolors = {"TSMC": BLUE, "GlobalFoundries": GREEN, "UMC": YELLOW}
+    with fc1:
+        figfr = px.line(foundry, x="year", y="revenue_b", color="company",
+                        markers=True, color_discrete_map=fcolors,
+                        labels={"year": "Year", "revenue_b": "Revenue ($B)",
+                                "company": ""})
+        figfr.update_layout(height=340, hovermode="x unified", legend_title="",
+                            title="Revenue")
+        st.plotly_chart(figfr, width="stretch")
+    with fc2:
+        figfc = px.line(foundry, x="year", y="capex_b", color="company",
+                        markers=True, color_discrete_map=fcolors,
+                        labels={"year": "Year", "capex_b": "Capex ($B)",
+                                "company": ""})
+        figfc.update_layout(height=340, hovermode="x unified", legend_title="",
+                            title="Capex")
+        st.plotly_chart(figfc, width="stretch")
+    st.caption(
+        "Sources: TSMC / GlobalFoundries / UMC results (SEC filings). TSMC 2026E "
+        "capex guidance $52–56B; CoWoS ≈ 7–9% of TSMC revenue. OSAT packaging "
+        "partners: ASE, Amkor.")
 
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
     cowos26 = float(cowos.loc[cowos.year == 2026, "cowos_kwpm"].iloc[0])
@@ -350,22 +375,6 @@ with tab_foundry:
                      arrayminus=cf["cowos_kwpm"] - cf["cowos_kwpm_low"])))
     figc.update_layout(height=320, yaxis_title="k wafers/month", xaxis_title="Year")
     st.plotly_chart(figc, width="stretch")
-
-    st.markdown("#### Key player — TSMC revenue & capex ($B)")
-    st.caption(
-        "The foundry that makes (almost) every leading-edge AI accelerator. "
-        "Revenue dipped in the 2023 downturn, then inflected on AI/HPC; capex is "
-        "now ramping to chase packaging demand (CoWoS ≈ 7–9% of revenue).")
-    figts = go.Figure()
-    figts.add_trace(go.Bar(x=foundry["year"], y=foundry["revenue_b"],
-                           name="Revenue", marker_color=BLUE))
-    figts.add_trace(go.Bar(x=foundry["year"], y=foundry["capex_b"],
-                           name="Capex", marker_color=YELLOW))
-    figts.update_layout(barmode="group", height=300, legend_title="",
-                        yaxis_title="$B", xaxis_title="Year")
-    st.plotly_chart(figts, width="stretch")
-    st.caption("Source: TSMC results (SEC 6-K). 2026E capex guidance $52–56B. "
-               "OSAT packaging partners: ASE, Amkor.")
 
     st.markdown("#### Supply ceiling vs capex-implied demand")
     st.caption(
@@ -413,70 +422,54 @@ with tab_foundry:
 # 3 · Systems
 # --------------------------------------------------------------------------- #
 with tab_systems:
-    st.markdown("### 3 · Systems — servers & racks")
+    st.markdown("### 3 · Servers")
     st.caption(
         "The OEMs/ODMs that assemble accelerators, memory and networking into "
-        "deployable racks. Where GPU silicon turns into shippable AI systems.")
+        "deployable racks.")
     render_layer_card(3)
 
     st.markdown("---")
-    st.markdown("#### Key players — server/systems revenue ($B)")
-    figsy = px.bar(systems.sort_values("revenue_b"), x="revenue_b", y="company",
-                   orientation="h", text="revenue_b", color="company",
-                   color_discrete_map={"Dell ISG": BLUE, "Supermicro": GREEN,
-                                       "HPE Server": YELLOW},
-                   labels={"revenue_b": "Revenue ($B)", "company": ""})
-    figsy.update_traces(texttemplate="$%{text:.1f}B", textposition="outside")
-    figsy.update_layout(height=280, showlegend=False,
-                        xaxis_range=[0, systems["revenue_b"].max() * 1.2])
+    st.markdown("#### Server revenue by vendor ($B)")
+    figsy = px.line(
+        systems, x="year", y="revenue_b", color="company", markers=True,
+        color_discrete_map={"Dell ISG": BLUE, "Supermicro": GREEN,
+                            "HPE Server": YELLOW},
+        labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
+                "company": ""})
+    figsy.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
-    st.dataframe(
-        systems.rename(columns={
-            "company": "Company", "segment": "Segment", "revenue_b": "Revenue $B",
-            "period": "Period", "note": "Note"})[
-            ["Company", "Segment", "Revenue $B", "Period", "Note"]],
-        width="stretch", hide_index=True)
     st.caption(
-        "Public pure-plays shown. The largest AI-server volume actually flows "
-        "through Taiwanese **ODMs (Foxconn/Hon Hai, Quanta, Wistron)** — lower "
-        "margin, under-disclosed. Sources: Dell/Supermicro/HPE results.")
+        "Fiscal years differ (Dell ~Jan, Supermicro ~Jun, HPE ~Oct). Dell ISG "
+        "includes storage; Supermicro 2026 is the company revenue target "
+        "(guidance); HPE server segment partly estimated. The largest AI-server "
+        "*volume* flows through Taiwanese ODMs (Foxconn/Hon Hai, Quanta, Wistron) "
+        "— lower-margin and under-disclosed. Sources: Dell/Supermicro/HPE filings.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Networking
 # --------------------------------------------------------------------------- #
 with tab_network:
-    st.markdown("### 4 · Networking — interconnect & fabric")
+    st.markdown("### 4 · Networking")
     st.caption(
         "Back-end GPU fabric (NVLink, InfiniBand/Ethernet) and front-end / "
-        "data-centre interconnect. As clusters cross 100k+ GPUs, the fabric — "
-        "not the chip — increasingly sets training efficiency.")
+        "data-centre interconnect.")
     render_layer_card(4)
 
     st.markdown("---")
-    st.markdown("#### Key players — revenue ($B)")
-    netc = {"AI/DC pure-play": GREEN, "Optical pure-play": BLUE,
-            "Diversified (total)": GREY}
-    fign4 = px.bar(networking.sort_values("revenue_b"), x="revenue_b",
-                   y="company", orientation="h", text="revenue_b",
-                   color="category", color_discrete_map=netc,
-                   labels={"revenue_b": "Revenue ($B)", "company": "",
-                           "category": ""})
-    fign4.update_traces(texttemplate="$%{text:.1f}B", textposition="outside")
-    fign4.update_layout(height=300, legend_title="",
-                        xaxis_range=[0, networking["revenue_b"].max() * 1.2])
+    st.markdown("#### Revenue by vendor ($B)")
+    fign4 = px.line(
+        networking, x="year", y="revenue_b", color="company", markers=True,
+        color_discrete_map={"Arista": GREEN, "Ciena": BLUE, "Nokia NI": YELLOW},
+        labels={"year": "Year", "revenue_b": "Revenue ($B)", "company": ""})
+    fign4.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(fign4, width="stretch")
-    st.dataframe(
-        networking.rename(columns={
-            "company": "Company", "category": "Category", "revenue_b": "Revenue $B",
-            "period": "Period", "note": "Note"})[
-            ["Company", "Category", "Revenue $B", "Period", "Note"]],
-        width="stretch", hide_index=True)
-    st.warning(
-        "**Read the mix carefully:** Arista is the AI/datacentre networking "
-        "pure-play; Ciena is optical interconnect. Cisco and Nokia totals are "
-        "**diversified** (security, mobile, etc.) — their *networking segments* "
-        "grew ~9–12%, but headline revenue overstates AI exposure. Switch silicon "
-        "(Broadcom) sits in Silicon & IP. Sources: company results / SEC filings.")
+    st.caption(
+        "Segment-appropriate figures: Arista and Ciena are pure-plays (total "
+        "revenue); Nokia is the **Network Infrastructure segment only** — "
+        "excludes mobile networks (EUR→USD approx). Cisco's Networking segment "
+        "(~$28–30B) is larger but sits inside a diversified firm (security, "
+        "collaboration), so it is omitted to keep the comparison clean. Switch "
+        "silicon (Broadcom) sits in Silicon & IP. Sources: company filings.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Power & Data Centers
@@ -492,7 +485,7 @@ with tab_dc:
     render_layer_card(5)
 
     st.markdown("---")
-    st.markdown("#### The construction crossover — data centers vs offices (US, $B)")
+    st.markdown("#### Data center vs office construction (US, $B/year)")
     st.caption(
         "A clean macro signal of the buildout: US data-center construction has "
         "overtaken office construction — unthinkable just a few years ago.")
@@ -561,7 +554,7 @@ with tab_dc:
 # 5 · Hyperscalers — capex deep-dive
 # --------------------------------------------------------------------------- #
 with tab_hyper:
-    st.markdown("### 6 · Hyperscalers — capex deep-dive")
+    st.markdown("### 6 · Hyperscalers")
     st.caption(
         "Google Cloud, Azure, AWS, Oracle. The demand engine of the value chain: "
         "their capex is the pull on every upstream layer."
@@ -604,7 +597,7 @@ with tab_hyper:
         "the totals across companies.")
 
     st.markdown("---")
-    st.markdown("#### 2026 forward guidance — the parabolic year")
+    st.markdown("#### 2026 forward guidance")
     st.caption(
         "Guidance is reported on a **broader basis (total capex, incl. finance "
         "leases)** than the cash-PP&E actuals above — shown as a separate series, "
@@ -649,7 +642,7 @@ with tab_hyper:
 # 6 · NeoClouds
 # --------------------------------------------------------------------------- #
 with tab_neo:
-    st.markdown("### 7 · NeoClouds — the GPU-as-a-service layer")
+    st.markdown("### 7 · NeoClouds")
     st.caption(
         "Specialised GPU-rental providers between silicon and AI labs. The "
         "strategic question isn't revenue — it's **financing durability**: much "
@@ -761,7 +754,7 @@ with tab_neo:
 # 8 · AI Labs (demand)
 # --------------------------------------------------------------------------- #
 with tab_labs:
-    st.markdown("### 8 · AI Labs — the demand source")
+    st.markdown("### 8 · AI Labs")
     st.caption(
         "Model developers consume the compute the whole chain exists to supply. "
         "Their revenue and compute commitments are the ultimate demand signal — "
@@ -787,24 +780,35 @@ with tab_labs:
             "Feb-26, xAI Q3-25, Mistral Jan-26). Anthropic has overtaken OpenAI; "
             "Anthropic went $1B→$47B in ~18 months. Source: Epoch AI revenue data.")
     with c2:
-        st.markdown("#### Frontier capability — GPQA-Diamond best score (%)")
-        figb = go.Figure()
-        figb.add_trace(go.Scatter(
-            x=bench["date"], y=bench["gpqa_diamond"], mode="lines+markers",
-            line=dict(color=BLUE, width=3), name="Best frontier model",
-            customdata=bench["model"],
-            hovertemplate="%{customdata}: %{y:.1f}%<extra></extra>"))
-        figb.add_hline(y=65, line_dash="dash", line_color=RED,
-                       annotation_text="PhD-expert baseline ~65%",
-                       annotation_position="bottom right")
-        figb.update_layout(height=320, yaxis_title="GPQA-Diamond (%)",
-                           xaxis_title="", yaxis_range=[0, 100])
+        st.markdown("#### Frontier capability by lab (GPQA-Diamond, %)")
+        figb = px.line(
+            bench_lab, x="date", y="score", color="lab", markers=True,
+            color_discrete_map={"OpenAI": "#10A37F", "Anthropic": "#D2691E",
+                                "Google": BLUE, "Meta": "#7B68EE",
+                                "DeepSeek (China)": RED},
+            labels={"date": "", "score": "GPQA-Diamond (%)", "lab": ""},
+            hover_data=["model"])
+        figb.add_hline(y=65, line_dash="dash", line_color=GREY,
+                       annotation_text="PhD-expert ~65%")
+        figb.update_layout(height=320, legend_title="", yaxis_range=[0, 100],
+                           hovermode="x unified")
         st.plotly_chart(figb, width="stretch")
         st.caption(
-            "Representative best-published frontier scores on a hard benchmark "
-            "(GPQA-Diamond). MMLU is already saturated (~93%). Models crossed the "
-            "human-expert line in ~2024 and are converging in the 90s. Source: "
-            "Epoch AI Benchmarking Hub / leaderboards (approximate).")
+            "Representative best-published score per lab at major model releases "
+            "(GPQA-Diamond; MMLU already saturated ~93%). Chinese labs "
+            "(DeepSeek/Qwen) have closed most of the gap. Approximate — see "
+            "notes/sources.md. Source: Epoch AI / leaderboards.")
+
+    st.markdown("#### ChatGPT weekly active users (millions)")
+    figw = px.area(chatgpt, x="date", y="wau_m",
+                   labels={"date": "", "wau_m": "Weekly active users (M)"})
+    figw.update_traces(line_color="#10A37F",
+                       fillcolor="rgba(16,163,127,0.2)")
+    figw.update_layout(height=280)
+    st.plotly_chart(figw, width="stretch")
+    st.caption(
+        "OpenAI disclosures: 100M (Aug-23) → 900M (Feb-26) weekly active users — "
+        "among the fastest consumer-technology adoption curves on record.")
 
     st.info(
         "**The strategic read:** revenue is enormous and concentrating (Anthropic "
@@ -830,3 +834,69 @@ with tab_labs:
     st.caption(
         "Full data provenance for every figure in the dashboard is logged in "
         "`notes/sources.md` (URLs + SEC accession numbers).")
+
+# --------------------------------------------------------------------------- #
+# 9 · Telecoms (context)
+# --------------------------------------------------------------------------- #
+with tab_telco:
+    st.markdown("### 9 · Telecoms")
+    st.caption(
+        "The previous era's infrastructure-capex leaders, shown for context. "
+        "Telecom capex has stayed roughly flat (~$300B globally) while "
+        "hyperscaler capex has surged past it.")
+
+    hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
+    guide_total = float(guidance["capex_mid_b"].sum())
+    rows = []
+    for y in range(2020, 2025):
+        rows.append({"year": y, "capex_b": float(
+            telco_capex.loc[telco_capex.year == y, "telecom_capex_b"].iloc[0]),
+            "series": "Global telecom capex"})
+    for y in range(2020, 2026):
+        if y in hyp_year.index:
+            rows.append({"year": y, "capex_b": float(hyp_year.loc[y]),
+                         "series": "Big-4 hyperscaler capex"})
+    rows.append({"year": 2026, "capex_b": guide_total,
+                 "series": "Big-4 hyperscaler capex"})
+    cmpdf = pd.DataFrame(rows)
+
+    k1, k2, k3 = st.columns(3)
+    k1.metric("Global telecom capex 2024", "~$295B", "lowest since 2011")
+    k2.metric("Big-4 hyperscaler capex 2025", f"${hyp_year.loc[2025]:.0f}B",
+              "overtook telecom")
+    k3.metric("Big-4 2026E", f"${guide_total:.0f}B",
+              f"~{guide_total/295:.1f}× global telecom")
+
+    st.markdown("#### Capex — hyperscalers vs telecoms ($B)")
+    figt = px.line(cmpdf, x="year", y="capex_b", color="series", markers=True,
+                   color_discrete_map={"Global telecom capex": GREY,
+                                       "Big-4 hyperscaler capex": BLUE},
+                   labels={"year": "Year", "capex_b": "Capex ($B)", "series": ""})
+    figt.update_layout(height=360, hovermode="x unified", legend_title="")
+    st.plotly_chart(figt, width="stretch")
+    st.caption(
+        "Telecom = global industry capex (MTN Consulting); hyperscaler = Big-4 "
+        "(Alphabet/Amazon/Meta/Microsoft), 2026 = guidance midpoint. AI "
+        "infrastructure capex has overtaken the entire global telecom industry's.")
+
+    st.markdown("#### Major telcos — revenue & capex (latest year, $B)")
+    figtp = px.scatter(
+        telco_players, x="revenue_b", y="capex_b", color="region",
+        text="company", size="capex_b", size_max=28,
+        color_discrete_map={"US": BLUE, "Europe": GREEN},
+        labels={"revenue_b": "Revenue ($B)", "capex_b": "Capex ($B)",
+                "region": ""})
+    figtp.update_traces(textposition="top center")
+    figtp.update_layout(height=400, legend_title="")
+    st.plotly_chart(figtp, width="stretch")
+    st.dataframe(
+        telco_players[["company", "region", "revenue_b", "capex_b", "year",
+                       "note"]].rename(columns={
+            "company": "Company", "region": "Region", "revenue_b": "Revenue $B",
+            "capex_b": "Capex $B", "year": "Year", "note": "Note"}),
+        width="stretch", hide_index=True)
+    st.caption(
+        "Latest available year (mostly 2024); some figures approximate. Deutsche "
+        "Telekom revenue/capex include T-Mobile US (overlaps the US row). Major "
+        "US + European operators, not exhaustive. Sources: company filings / "
+        "MTN Consulting.")

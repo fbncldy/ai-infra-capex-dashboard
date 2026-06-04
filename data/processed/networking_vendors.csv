@@ -1,5 +1,18 @@
-company,category,revenue_b,period,source_url,note
-Arista,AI/DC pure-play,9.0,2025,https://companiesmarketcap.com/arista-networks/revenue/,AI back-end & cloud datacentre networking; +29% YoY
-Ciena,Optical pure-play,4.77,FY2025,https://www.sec.gov/Archives/edgar/data/0000936395/000162828025056425/ex9912025q4earningspressre.htm,Optical/DCI; AI-driven interconnect demand
-Nokia,Diversified (total),21.5,2025,https://www.nokia.com/newsroom/nokia-corporation-financial-report-for-q4-2025-and-full-year-2025/,EUR 19.9B total; Network Infrastructure segment +9%; incl mobile
-Cisco,Diversified (total),56.7,FY2025,https://investor.cisco.com/news/news-details/2025/CISCO-REPORTS-FOURTH-QUARTER-AND-FISCAL-YEAR-2025-EARNINGS/default.aspx,Total revenue; Networking segment +12%; incl security/collab
+company,year,revenue_b,source_type,note
+Arista,2020,2.32,reported,Total revenue (AI/datacentre networking pure-play)
+Arista,2021,2.95,reported,
+Arista,2022,4.38,reported,
+Arista,2023,5.86,reported,
+Arista,2024,7.0,reported,
+Arista,2025,9.0,reported,
+Ciena,2020,3.53,reported,Total revenue (optical/DCI); FY ends ~Oct
+Ciena,2021,3.62,reported,
+Ciena,2022,3.63,reported,
+Ciena,2023,4.39,reported,
+Ciena,2024,4.01,reported,
+Ciena,2025,4.77,reported,
+Nokia NI,2021,8.3,reported,Network Infrastructure segment ONLY (excl mobile networks); EUR->USD approx
+Nokia NI,2022,9.8,reported,
+Nokia NI,2023,9.0,reported,
+Nokia NI,2024,8.1,estimate,
+Nokia NI,2025,8.9,estimate,Segment +9% in 2025

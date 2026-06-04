@@ -1,5 +1,18 @@
-company,year,revenue_b,capex_b,source_url,note
-TSMC,2022,75.9,36.3,https://investor.tsmc.com,Pre-AI peak then 2023 chip downturn
-TSMC,2023,69.3,30.4,https://www.sec.gov/Archives/edgar/data/0001046179/000104617925000004/a4q24e_withguidancexfinal.htm,Revenue dip in the cyclical downturn
-TSMC,2024,90.1,29.8,https://www.sec.gov/Archives/edgar/data/0001046179/000104617925000004/a4q24e_withguidancexfinal.htm,AI/HPC demand inflection
-TSMC,2025,122.0,40.0,https://www.sec.gov/Archives/edgar/data/0001046179/000104617925000116/a3q25e_withguidancexfinal.htm,Record revenue; capex ramping (2026E guide $52-56B)
+company,year,revenue_b,capex_b,source_type,note
+TSMC,2020,45.5,17.2,reported,Pure-play foundry; ~70% market share
+TSMC,2021,56.8,30.0,reported,
+TSMC,2022,75.9,36.3,reported,
+TSMC,2023,69.3,30.4,reported,Cyclical downturn
+TSMC,2024,90.1,29.8,reported,AI/HPC inflection
+TSMC,2025,122.0,40.0,reported,2026E capex guide $52-56B
+GlobalFoundries,2021,6.6,1.8,reported,IPO 2021; specialty/mature nodes
+GlobalFoundries,2022,8.1,3.0,reported,
+GlobalFoundries,2023,7.4,2.3,reported,
+GlobalFoundries,2024,6.75,0.7,reported,
+GlobalFoundries,2025,6.79,1.0,reported,Investing $16B to expand NY/VT
+UMC,2020,6.0,1.8,reported,Specialty/mature foundry
+UMC,2021,7.7,1.8,reported,
+UMC,2022,9.1,3.0,reported,
+UMC,2023,7.7,3.0,reported,
+UMC,2024,7.6,3.3,reported,
+UMC,2025,7.7,3.0,estimate,Approx

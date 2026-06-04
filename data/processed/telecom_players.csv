@@ -1,0 +1,11 @@
+company,region,revenue_b,capex_b,year,source_type,note
+AT&T,US,122.3,22.0,2024,reported,Capital investment incl vendor financing
+Verizon,US,134.8,17.1,2024,reported,
+T-Mobile US,US,81.4,8.8,2024,reported,
+Comcast,US,123.7,12.0,2024,estimate,Connectivity + NBCUniversal
+Charter,US,55.1,11.3,2024,reported,Cable
+Deutsche Telekom,Europe,131.0,20.0,2024,reported,Includes T-Mobile US (overlaps US row)
+Vodafone,Europe,40.0,8.0,2024,estimate,
+Orange,Europe,43.0,7.4,2024,reported,
+Telefonica,Europe,42.0,7.0,2024,estimate,
+BT Group,Europe,25.0,6.0,2024,estimate,

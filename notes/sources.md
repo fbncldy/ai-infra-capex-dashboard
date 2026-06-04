@@ -147,7 +147,30 @@ AI revenue dataset. Capability: GPQA-Diamond best-frontier ~39% (GPT-4, 2023) �
 Representative best-published scores; Source: Epoch AI Benchmarking Hub /
 leaderboards (approximate).
 
+## Expanded historical datasets (2020→today)
+
+- **Silicon** (`silicon_revenue.csv`): NVIDIA / AMD / Broadcom / Micron total
+  revenue by fiscal year (reported; FY offsets noted). NVIDIA DC segment ~$115B
+  FY25. Replaced the earlier HBM TAM chart per request (revenues, not TAM).
+- **Foundry** (`foundry_players.csv`): TSMC / GlobalFoundries / UMC revenue +
+  capex 2020-25 (separate charts). TSMC ~70% share; Samsung/Intel foundry omitted
+  (loss-making segments). Source: company filings (SEC).
+- **Servers** (`systems_vendors.csv`): Dell ISG / Supermicro / HPE server revenue
+  by fiscal year; Supermicro 2026 = company target (guidance); HPE partly est.
+  ODMs (Foxconn/Quanta/Wistron) noted, not charted.
+- **Networking** (`networking_vendors.csv`): Arista, Ciena (pure-plays) + Nokia
+  **Network Infrastructure segment only** (excl mobile). Cisco Networking
+  (~$28-30B) noted but omitted to keep comparison clean.
+- **AI demand:** `chatgpt_users.csv` (WAU 100M Aug-23 → 900M Feb-26, OpenAI
+  disclosures); `llm_benchmark_by_lab.csv` (best GPQA-Diamond by lab — OpenAI/
+  Anthropic/Google/Meta/DeepSeek — representative best-published, approximate).
+- **Telecoms** (`telecom_capex.csv`, `telecom_players.csv`): global telecom capex
+  ~$300B flat / $295B 2024 lowest since 2011 (MTN Consulting) vs Big-4
+  hyperscaler capex overtaking it; major US/EU operator revenue+capex (latest yr,
+  some approx; DT overlaps T-Mobile US). Sources: company filings, MTN Consulting.
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.
-- Per-lab compute *commitments* sizing beyond the headline deal table.
+- Firm up telecom per-company 2020-2024 series (currently latest-year snapshot).
+- Replace representative per-lab benchmark scores with sourced leaderboard pulls.
