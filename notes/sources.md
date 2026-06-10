@@ -198,6 +198,26 @@ leaderboards (approximate).
 - **CI**: GitHub Action (.github/workflows/ci.yml) runs tests/test_app.py
   (Streamlit AppTest smoke test) on every push.
 
+## Additions of 2026-06-04 (second round)
+
+- **Capex funding** (`hyperscaler_ocf.csv`): annual operating cash flow for the
+  Big-5 from EDGAR XBRL (NetCashProvidedByUsedInOperatingActivities), built by
+  `model/build_capex_dataset.py`. FY2025 capex/OCF: Oracle 102%, Amazon 94%,
+  Meta 60%, Alphabet 56%, Microsoft 47%. Bond context: hyperscalers issued
+  $121B of bonds in 2025 vs ~$28B five-year average; Meta $30B (largest
+  corporate since 2023); Alphabet 100-year bond; sub-5% average rates. Sources:
+  Janus Henderson, Wolf Street (2026-02-07), Yahoo Finance.
+- **Exec summary rewritten** to the funding-constraint framing. Checked claims:
+  IEA World Energy Investment 2025 (upstream oil & gas ~$570B, total fossil
+  ~$1.1T); ChatGPT conversion ~5-6% (OpenAI: ~50M paying subscribers Apr 2026 vs
+  900M WAU); capex/revenue ~30-75% across the five.
+- **System Integrators tab** (`system_integrators.csv`,
+  `accenture_genai_bookings.csv`): Accenture $44.3B (FY20) to $69.7B (FY25,
+  reported); TCS $22.2B to $30.2B; Infosys $13.6B to $19.3B (both FY ends
+  March, reported); Capgemini in USD-converted EUR (estimate-flagged).
+  Accenture GenAI new bookings: ~$3B FY24, $5.9B FY25 (quarterly $1.2B to
+  $1.8B). Sources: company results, Accenture 8-K (EDGAR).
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.

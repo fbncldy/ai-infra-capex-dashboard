@@ -75,6 +75,16 @@ QUARTERLY_FILES = {
 
 QOUT = ROOT / "data" / "processed" / "hyperscaler_capex_quarterly.csv"
 
+# Operating cash flow (annual), for the capex-funding view.
+OCF_FILES = {
+    "Alphabet": "alphabet_ocf.json",
+    "Microsoft": "microsoft_ocf.json",
+    "Amazon": "amazon_ocf.json",
+    "Meta": "meta_ocf.json",
+    "Oracle": "oracle_ocf.json",
+}
+OCFOUT = ROOT / "data" / "processed" / "hyperscaler_ocf.csv"
+
 
 def edgar_annual(path: Path):
     """Return {end_year: (val_usd_m, accession)} using as-originally-reported."""
@@ -186,6 +196,24 @@ def main():
         w.writeheader()
         w.writerows(qrows)
     print(f"Wrote {len(qrows)} quarterly rows to {QOUT.relative_to(ROOT)}")
+
+    orows = []
+    for company, fname in OCF_FILES.items():
+        data = edgar_annual(EDGAR / fname)
+        for y in sorted(data):
+            if y < 2018:
+                continue
+            val, accn = data[y]
+            orows.append(dict(
+                company=company, fiscal_year=y, ocf_usd_m=val,
+                source_type="10-K (EDGAR XBRL)", source_doc=accn,
+            ))
+    ocols = ["company", "fiscal_year", "ocf_usd_m", "source_type", "source_doc"]
+    with OCFOUT.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=ocols)
+        w.writeheader()
+        w.writerows(orows)
+    print(f"Wrote {len(orows)} OCF rows to {OCFOUT.relative_to(ROOT)}")
 
     for c in ["Alphabet", "Microsoft", "Amazon", "Meta", "Oracle"]:
         cr = [r for r in rows if r["company"] == c]

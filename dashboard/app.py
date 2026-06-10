@@ -87,6 +87,9 @@ telco_players = load_csv("telecom_players.csv")
 capex_q = load_csv("hyperscaler_capex_quarterly.csv")
 accel_rev = load_csv("accelerator_dc_revenue.csv")
 telco_us = load_csv("telecom_us_series.csv")
+ocf = load_csv("hyperscaler_ocf.csv")
+si = load_csv("system_integrators.csv")
+genai_bookings = load_csv("accenture_genai_bookings.csv")
 
 DATA_UPDATED = "June 4, 2026"
 
@@ -123,7 +126,7 @@ st.caption(
 )
 
 (tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
- tab_dc, tab_hyper, tab_neo, tab_labs, tab_telco) = st.tabs([
+ tab_dc, tab_hyper, tab_neo, tab_labs, tab_si, tab_telco) = st.tabs([
     "📊 Overview",
     "⚙️ 1·Silicon & IP",
     "🏭 2·Foundry & Packaging",
@@ -133,7 +136,8 @@ st.caption(
     "☁️ 6·Hyperscalers",
     "🌩️ 7·NeoClouds",
     "🧠 8·AI Labs",
-    "📡 9·Telecoms",
+    "🧩 9·System Integrators",
+    "📡 10·Telecoms",
 ])
 
 # Capex view (all companies, all years), total capex
@@ -167,24 +171,35 @@ with tab_overview:
 
     st.markdown("#### Executive summary")
     st.markdown(
-        f"- The five largest cloud builders (Alphabet, Amazon, Meta, Microsoft, "
-        f"Oracle) spent **${total_now:,.0f}B** on capex in FY2025, up "
-        f"{yoy:.0f}% on FY2024. Their 2026 guidance sums to about "
-        f"**${guide26:,.0f}B** at the midpoints, more than double the FY2025 "
-        f"level on a broader definition.\n"
-        f"- Supply remains the constraint. TSMC's CoWoS packaging capacity "
+        f"- **Hyperscalers can no longer fund AI infrastructure from free cash "
+        f"flow alone.** Big-5 capex (Microsoft, Alphabet, Amazon, Meta, Oracle) "
+        f"reached **${total_now:,.0f}B** in FY2025 ({yoy:+.0f}%) and is guided "
+        f"to about **${guide26:,.0f}B** for 2026, larger than global upstream "
+        f"oil and gas investment (~$570B, IEA) and approaching total fossil-fuel "
+        f"investment (~$1.1T). Capex now runs at roughly 30 to 75% of revenue "
+        f"for previously asset-light businesses, and the gap is increasingly "
+        f"debt-financed: hyperscalers issued $121B of bonds in 2025, four times "
+        f"the five-year average, including Meta's $30B, the largest corporate "
+        f"bond since 2023.\n"
+        f"- **Supply remains the constraint.** TSMC's CoWoS packaging capacity "
         f"roughly doubled in 2025 to about {cowos25:.0f}k wafers per month and "
         f"is fully booked; HBM suppliers are sold out through 2026. Microsoft "
         f"attributed about $25B of its 2026 guidance increase to memory and "
-        f"component cost inflation rather than added capacity.\n"
-        f"- Power is the next gate. About {gw['capacity_gw'].sum():.0f} GW of "
-        f"named gigawatt-scale projects are in the pipeline, while high-voltage "
-        f"substation lead times run 3 to 5 years.\n"
-        f"- Demand is keeping pace. ChatGPT reached 900M weekly active users in "
-        f"Feb 2026; Anthropic and OpenAI report run-rate revenue of $47B and "
-        f"$25B; CoreWeave's contracted backlog reached about $100B in Q1 2026.\n"
-        f"- For scale: hyperscaler capex now exceeds the entire global telecom "
-        f"industry's capex (about $295B in 2024)."
+        f"component cost inflation rather than added capacity. CoreWeave's "
+        f"contracted backlog reached about $100B in Q1 2026.\n"
+        f"- **Power is the next gate.** About {gw['capacity_gw'].sum():.0f} GW "
+        f"of named gigawatt-scale projects are in the pipeline, while "
+        f"high-voltage substation lead times run 3 to 5 years.\n"
+        f"- **Demand is keeping pace, but value capture is an open question.** "
+        f"ChatGPT reached 900M weekly active users in Feb 2026; Anthropic and "
+        f"OpenAI report run-rate revenue of $47B and $25B. Only about 5 to 6% "
+        f"of ChatGPT users pay, and frontier capability has converged across "
+        f"labs with no clear network effects, which raises the question of "
+        f"whether value migrates to infrastructure below and applications "
+        f"above the model layer.\n"
+        f"- **System integrators are quiet winners of the deployment phase.** "
+        f"Accenture booked $5.9B of GenAI work in FY2025, up from about $3B in "
+        f"FY2024, because deploying AI into enterprises remains services-heavy."
     )
     st.caption(f"Data last updated {DATA_UPDATED}. Sources are cited per chart "
                "and logged in notes/sources.md in the repository.")
@@ -533,6 +548,38 @@ with tab_hyper:
         f"annual figures. Plotted by actual quarter-end date. Data as of "
         f"{DATA_UPDATED}.")
 
+    st.markdown("---")
+    st.markdown("#### How the capex is funded: capex vs operating cash flow")
+    st.caption(
+        "Capex as a share of operating cash flow, both from 10-K filings. Above "
+        "100%, a company is spending more on capex than its operations "
+        "generate and must fund the difference externally.")
+    fund = capex.merge(
+        ocf, on=["company", "fiscal_year"], suffixes=("", "_ocf"))
+    fund = fund[fund["fiscal_year"] >= 2020].copy()
+    fund["capex_pct_ocf"] = fund["capex_usd_m"] / fund["ocf_usd_m"] * 100
+    figf = px.line(
+        fund.sort_values("fiscal_year"), x="fiscal_year", y="capex_pct_ocf",
+        color="company", markers=True, color_discrete_map=COMPANY_COLORS,
+        labels={"fiscal_year": "Fiscal year",
+                "capex_pct_ocf": "Capex / operating cash flow (%)"})
+    figf.add_hline(y=100, line_dash="dash", line_color=GREY,
+                   annotation_text="capex = operating cash flow")
+    figf.update_layout(height=380, hovermode="x unified", legend_title="")
+    st.plotly_chart(figf, width="stretch")
+    fy25 = fund[fund["fiscal_year"] == 2025].sort_values(
+        "capex_pct_ocf", ascending=False)
+    ratio_line = ", ".join(
+        f"{r.company} {r.capex_pct_ocf:.0f}%" for r in fy25.itertuples())
+    st.caption(
+        f"FY2025: {ratio_line}. Oracle already spends more than its operations "
+        "generate and Amazon is close. The funding gap has moved to the bond "
+        "market: hyperscalers issued $121B of bonds in 2025, four times the "
+        "five-year average of about $28B, including Meta's $30B (the largest "
+        "corporate bond since 2023), an Alphabet 100-year bond, and repeated "
+        "Oracle issuance, at sub-5% average rates. Sources: 10-K filings (EDGAR "
+        f"XBRL), Janus Henderson, Wolf Street. Data as of {DATA_UPDATED}.")
+
     st.markdown("**Capex & YoY growth by company**")
     st.dataframe(
         g[["company", "fiscal_year", "capex_usd_b", "yoy_%", "source_type"]]
@@ -749,10 +796,53 @@ with tab_labs:
         "`notes/sources.md` (URLs + SEC accession numbers).")
 
 # --------------------------------------------------------------------------- #
-# 9 · Telecoms (context)
+# 9 · System Integrators
+# --------------------------------------------------------------------------- #
+with tab_si:
+    st.markdown("### 9 · System Integrators")
+    st.caption(
+        "The services firms that deploy AI into enterprises. Model capability "
+        "is converging, but getting it into production workflows remains "
+        "services-heavy, which makes integrators a measurable read on actual "
+        "enterprise adoption.")
+
+    st.markdown("---")
+    st.markdown("#### Revenue by key player ($B)")
+    sicolors = {"Accenture": "#A100FF", "TCS": BLUE, "Infosys": GREEN,
+                "Capgemini": YELLOW}
+    figsi2 = px.line(
+        si, x="year", y="revenue_b", color="company", markers=True,
+        color_discrete_map=sicolors,
+        labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
+                "company": ""})
+    figsi2.update_layout(height=380, hovermode="x unified", legend_title="")
+    st.plotly_chart(figsi2, width="stretch")
+    st.caption(
+        "Fiscal years differ (Accenture ends August, TCS and Infosys end March, "
+        "Capgemini is calendar-year). Capgemini reports in EUR; USD conversion "
+        "is approximate and flagged in the data. Deloitte and IBM Consulting "
+        "are comparable players but are private or embedded in a larger group. "
+        "Sources: company results.")
+
+    st.markdown("#### Accenture GenAI new bookings ($B)")
+    figgb = px.bar(
+        genai_bookings, x="period", y="bookings_b",
+        labels={"period": "", "bookings_b": "New bookings ($B)"})
+    figgb.update_traces(marker_color="#A100FF")
+    figgb.update_layout(height=300)
+    st.plotly_chart(figgb, width="stretch")
+    st.caption(
+        "GenAI new bookings as disclosed by Accenture: about $3B in FY2024, "
+        "then $5.9B in FY2025 with a rising quarterly run-rate ($1.2B to $1.8B "
+        "through the year). The clearest public number on enterprise AI "
+        f"deployment demand. Source: Accenture 8-K filings. Data as of "
+        f"{DATA_UPDATED}.")
+
+# --------------------------------------------------------------------------- #
+# 10 · Telecoms (context)
 # --------------------------------------------------------------------------- #
 with tab_telco:
-    st.markdown("### 9 · Telecoms")
+    st.markdown("### 10 · Telecoms")
     st.caption(
         "Shown for context. Global telecom capex has stayed roughly flat at about "
         "$300B while hyperscaler capex has grown past it.")

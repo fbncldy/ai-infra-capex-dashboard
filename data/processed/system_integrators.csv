@@ -1,0 +1,23 @@
+company,year,revenue_b,source_type,note
+Accenture,2020,44.3,reported,FY ends August
+Accenture,2021,50.5,reported,
+Accenture,2022,61.6,reported,
+Accenture,2023,64.1,reported,
+Accenture,2024,64.9,reported,
+Accenture,2025,69.7,reported,GenAI new bookings $5.9B in FY25
+TCS,2021,22.2,reported,FY ends March; labeled by FY end year
+TCS,2022,25.7,reported,
+TCS,2023,27.9,reported,
+TCS,2024,29.1,reported,
+TCS,2025,30.2,reported,Crossed $30B milestone
+Infosys,2021,13.6,reported,FY ends March
+Infosys,2022,16.3,reported,
+Infosys,2023,18.2,reported,
+Infosys,2024,18.6,reported,
+Infosys,2025,19.3,reported,
+Capgemini,2020,18.2,estimate,Calendar year; EUR reported converted to USD approx
+Capgemini,2021,21.5,estimate,EUR 18.2B
+Capgemini,2022,23.1,estimate,EUR 22.0B
+Capgemini,2023,24.4,estimate,EUR 22.5B
+Capgemini,2024,23.9,estimate,EUR 22.1B
+Capgemini,2025,25.4,estimate,EUR 22.5B; USD figure from converted series
