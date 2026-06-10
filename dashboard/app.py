@@ -175,8 +175,9 @@ with tab_overview:
         f"flow alone.** Big-5 capex (Microsoft, Alphabet, Amazon, Meta, Oracle) "
         f"reached **\\${total_now:,.0f}B** in FY2025 ({yoy:+.0f}%) and is guided "
         f"to about **\\${guide26:,.0f}B** for 2026, larger than global upstream "
-        f"oil and gas investment (~\\$570B, IEA) and approaching total fossil-fuel "
-        f"investment (~\\$1.1T). Capex now runs at roughly 30 to 75% of revenue "
+        f"oil and gas investment (about \\$570B, IEA) and approaching total "
+        f"fossil-fuel investment (about \\$1.1T). Capex now runs at roughly 30 "
+        f"to 75% of revenue "
         f"for previously asset-light businesses, and the gap is increasingly "
         f"debt-financed: hyperscalers issued \\$121B of bonds in 2025, four times "
         f"the five-year average, including Meta's \\$30B, the largest corporate "
@@ -297,10 +298,10 @@ with tab_silicon:
     st.plotly_chart(figsi, width="stretch")
     st.caption(
         "Total company revenue. NVIDIA / Broadcom / Micron fiscal years are "
-        "offset from calendar. NVIDIA's data-center segment alone was ~\\$115B in "
-        "FY2025. Memory: HBM is the supply-constrained input (SK Hynix ~57% "
-        "share, sold out through 2026); Micron shown as the US-listed memory "
-        "proxy. Sources: company filings.")
+        "offset from calendar. NVIDIA's data-center segment alone was about "
+        "\\$115B in FY2025. Memory: HBM is the supply-constrained input (SK "
+        "Hynix about 57% share, sold out through 2026); Micron shown as the "
+        "US-listed memory proxy. Sources: company filings.")
 
 # --------------------------------------------------------------------------- #
 # 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
@@ -317,7 +318,8 @@ with tab_foundry:
     st.markdown("---")
     st.markdown("#### Revenue & capex by key player (\\$B)")
     st.caption(
-        "Pure-play foundries. TSMC has ~70% market share; GlobalFoundries and UMC "
+        "Pure-play foundries. TSMC has about 70% market share; GlobalFoundries "
+        "and UMC "
         "are specialty / mature-node players. Samsung Foundry (#2) and Intel "
         "Foundry are loss-making segments inside larger firms, omitted here.")
     fc1, fc2 = st.columns(2)
@@ -389,7 +391,8 @@ with tab_systems:
     figsy.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
     st.caption(
-        "Fiscal years differ (Dell ~Jan, Supermicro ~Jun, HPE ~Oct). Dell ISG "
+        "Fiscal years differ (Dell ends in January, Supermicro in June, HPE in "
+        "October). Dell ISG "
         "includes storage; Supermicro 2026 is the company revenue target "
         "(guidance); the HPE server segment is partly estimated. Most AI-server "
         "volume flows through Taiwanese ODMs (Foxconn/Hon Hai, Quanta, Wistron), "
