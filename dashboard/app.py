@@ -91,6 +91,8 @@ ocf = load_csv("hyperscaler_ocf.csv")
 si = load_csv("system_integrators.csv")
 genai_bookings = load_csv("accenture_genai_bookings.csv")
 semis = load_csv("semis_billings.csv")
+net_full = load_csv("network_players_full.csv")
+mobile_net = load_csv("mobile_networks.csv")
 mobile_traffic = load_csv("mobile_traffic.csv")
 telco_stocks = load_csv("telco_stocks.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -278,20 +280,20 @@ with tab_overview:
 with tab_silicon:
     st.markdown("### 1 · Silicon & IP")
     st.markdown(
-        "**Semiconductors are a \\$792B industry (2025) that has historically "
-        "moved in 3 to 4 year cycles; AI demand drove a 26% jump in 2025 and a "
-        "forecast first one-trillion-dollar year in 2026.** The accelerator "
-        "layer is dominated by NVIDIA, whose data-center segment alone "
-        "generated about \\$115B in FY2025, with AMD a distant second and the "
-        "hyperscalers building in-house alternatives (Google TPU, Amazon "
-        "Trainium) together with Broadcom and Marvell. Every advanced "
-        "accelerator also needs high-bandwidth memory stacked beside it, "
-        "supplied by SK Hynix (about 57% share), Micron and Samsung, and HBM is "
-        "sold out through 2026. That makes silicon the first gate on AI "
-        "capacity: shipping more accelerators requires more HBM and more "
-        "advanced packaging, not just more fab starts. For the AI buildout the "
-        "open question is whether 2025-26 is the steepest cycle yet in a "
-        "famously cyclical industry, or a structural break in demand.")
+        "- **Semiconductors are a \\$792B industry (2025) that has "
+        "historically moved in 3 to 4 year cycles.** AI demand drove a 26% "
+        "jump in 2025 and a forecast first one-trillion-dollar year in 2026; "
+        "the open question is whether this is the steepest cycle yet or a "
+        "structural break.\n"
+        "- **NVIDIA dominates the accelerator layer**, with about \\$115B of "
+        "data-center revenue in FY2025; AMD is a distant second, and the "
+        "hyperscalers are building in-house alternatives (Google TPU, Amazon "
+        "Trainium) with Broadcom and Marvell.\n"
+        "- **High-bandwidth memory is the supply-constrained input:** SK Hynix "
+        "(about 57% share), Micron and Samsung are sold out through 2026.\n"
+        "- **Silicon is the first gate on AI capacity:** shipping more "
+        "accelerators requires more HBM and more advanced packaging, not just "
+        "more fab starts.")
 
     st.markdown("---")
     st.markdown("#### Global semiconductor sales since 1990 (\\$B)")
@@ -334,18 +336,19 @@ with tab_silicon:
 with tab_foundry:
     st.markdown("### 2 · Foundry & Packaging")
     st.markdown(
-        "**Leading-edge manufacturing is effectively a one-company market: TSMC "
-        "holds about 70% of foundry revenue and makes nearly every AI "
-        "accelerator.** Samsung Electronics and Intel are the only credible "
-        "challengers at the leading edge; both are spending tens of billions a "
-        "year on fabs with limited share gains so far, and both cut capex in "
-        "2025 while TSMC raised it. The chokepoint is not wafer starts but "
-        "CoWoS advanced packaging, the step that mounts logic dies and HBM "
-        "stacks on one interposer: capacity has grown roughly 10x since 2023 "
-        "and is still fully booked, with OSAT partners (ASE, Amkor) absorbing "
-        "overflow. Whoever controls packaging allocation effectively decides "
-        "which AI chips ship, which is why this single process step carries "
-        "strategic weight far beyond its 7 to 9% share of TSMC revenue.")
+        "- **Leading-edge manufacturing is effectively a one-company market:** "
+        "TSMC holds about 70% of foundry revenue and makes nearly every AI "
+        "accelerator.\n"
+        "- **Samsung Electronics and Intel are the only credible challengers** "
+        "and both are spending tens of billions a year on fabs with limited "
+        "share gains; both cut capex in 2025 while TSMC raised it.\n"
+        "- **The chokepoint is CoWoS advanced packaging**, the step that "
+        "mounts logic dies and HBM on one interposer: capacity grew roughly "
+        "10x since 2023 and is still fully booked, with OSAT partners (ASE, "
+        "Amkor) absorbing overflow.\n"
+        "- **Whoever controls packaging allocation decides which AI chips "
+        "ship**, which gives this single process step strategic weight far "
+        "beyond its 7 to 9% share of TSMC revenue.")
 
     st.markdown("---")
     st.markdown("#### Revenue & capex by key player (\\$B)")
@@ -409,17 +412,18 @@ with tab_foundry:
 with tab_systems:
     st.markdown("### 3 · Servers")
     st.markdown(
-        "**Server makers turn GPUs into deployable systems and were among the "
-        "first beneficiaries of the AI buildout, with revenue inflecting from "
-        "2023.** The listed players are Dell (ISG), Supermicro and HPE, but the "
+        "- **Server makers turn GPUs into deployable systems and were among "
+        "the first beneficiaries of the AI buildout**, with revenue inflecting "
+        "from 2023.\n"
+        "- **The listed players are Dell (ISG), Supermicro and HPE**, but the "
         "largest AI-server volumes flow through Taiwanese ODMs (Foxconn, "
         "Quanta, Wistron) building directly for hyperscalers, a lower-margin "
-        "and far less disclosed channel. Value in this layer depends on GPU "
-        "allocation rather than design: vendors who secured NVIDIA supply "
-        "early, like Supermicro, grew from \\$3B revenue to a \\$33B target in "
-        "six years. The flip side is volatility and thin margins, because the "
-        "scarce input (the accelerator) is priced by NVIDIA, not by the system "
-        "builder.")
+        "and far less disclosed channel.\n"
+        "- **Value depends on GPU allocation rather than design:** vendors who "
+        "secured NVIDIA supply early, like Supermicro, grew from \\$3B revenue "
+        "to a \\$33B target in six years.\n"
+        "- **Margins stay thin and volatile** because the scarce input, the "
+        "accelerator, is priced by NVIDIA rather than the system builder.")
 
     st.markdown("---")
     st.markdown("#### Server revenue by vendor (\\$B)")
@@ -445,34 +449,83 @@ with tab_systems:
 with tab_network:
     st.markdown("### 4 · Networking")
     st.markdown(
-        "**As clusters pass 100k GPUs the network, not the chip, increasingly "
-        "sets training efficiency, shifting value to back-end fabrics and "
-        "optics.** The back-end fabric connecting GPUs (NVLink, InfiniBand and "
-        "increasingly Ethernet) is where the battle sits: NVIDIA bundles its "
-        "own interconnect, Arista is the clearest listed pure-play beneficiary "
-        "with revenue roughly quadrupling since 2020, and Broadcom supplies "
-        "the switch silicon (covered under Silicon & IP). Optical interconnect "
-        "between data centers (Ciena) grows more slowly but becomes critical "
-        "as training spreads across sites. Most networking revenue still sits "
-        "inside diversified firms (Cisco, Nokia), so the AI signal is best "
-        "read from the pure-plays and from optics and switch-ASIC supply, "
-        "which are the layer's main bottlenecks.")
+        "- **As clusters pass 100k GPUs the network, not the chip, "
+        "increasingly sets training efficiency, shifting value to back-end "
+        "fabrics and optics.** NVIDIA bundles its own interconnect (NVLink, "
+        "InfiniBand), Arista is the clearest listed pure-play beneficiary with "
+        "revenue roughly quadrupling since 2020, and Broadcom supplies the "
+        "switch silicon (covered under Silicon & IP).\n"
+        "- **The industry is splitting into a data-center camp and a mobile "
+        "camp with opposite trajectories.** Data-center networking grows with "
+        "AI capex, while mobile-network equipment (Ericsson, Nokia Mobile "
+        "Networks, Huawei) shrinks or stagnates as 5G buildouts mature.\n"
+        "- **Nokia's \\$2.3B acquisition of Infinera (completed February "
+        "2025) is the clearest strategic signal:** a mobile-era vendor buying "
+        "optical networking scale specifically to chase AI data-center "
+        "interconnect, repositioning away from its shrinking mobile core.\n"
+        "- **Optics and switch-ASIC supply are the layer's bottlenecks** as "
+        "training spreads across sites and rack power density rises.")
 
     st.markdown("---")
-    st.markdown("#### Revenue by vendor (\\$B)")
+    st.markdown("#### Key players: total revenue and capex (\\$B)")
+    npcolors = {"Arista": GREEN, "Ciena": BLUE, "Nokia": YELLOW,
+                "Ericsson": "#0082F0"}
+    np1, np2 = st.columns(2)
+    with np1:
+        fignr = px.bar(net_full, x="year", y="revenue_b", color="company",
+                       barmode="group", color_discrete_map=npcolors,
+                       labels={"year": "Year", "revenue_b": "Revenue ($B)",
+                               "company": ""})
+        fignr.update_layout(height=340, hovermode="x unified",
+                            legend_title="", title="Revenue")
+        st.plotly_chart(fignr, width="stretch")
+    with np2:
+        fignc = px.bar(net_full, x="year", y="capex_b", color="company",
+                       barmode="group", color_discrete_map=npcolors,
+                       labels={"year": "Year", "capex_b": "Capex ($B)",
+                               "company": ""})
+        fignc.update_layout(height=340, hovermode="x unified",
+                            legend_title="", title="Capex")
+        st.plotly_chart(fignc, width="stretch")
+    st.caption(
+        "Total company figures. Nokia and Ericsson in USD-converted EUR/SEK "
+        "(approximate). Equipment vendors are asset-light: all four run capex "
+        "in the low hundreds of millions, about 1 to 3% of revenue (capex "
+        "values approximate). The growth divergence is the story: Arista has "
+        "roughly quadrupled since 2020 while Nokia and Ericsson have shrunk.")
+
+    st.markdown("#### Network infrastructure and data-center networking (\\$B)")
     fign4 = px.bar(
         networking, x="year", y="revenue_b", color="company", barmode="group",
         color_discrete_map={"Arista": GREEN, "Ciena": BLUE, "Nokia NI": YELLOW},
         labels={"year": "Year", "revenue_b": "Revenue ($B)", "company": ""})
-    fign4.update_layout(height=380, hovermode="x unified", legend_title="")
+    fign4.update_layout(height=340, hovermode="x unified", legend_title="")
     st.plotly_chart(fign4, width="stretch")
     st.caption(
-        "Segment-appropriate figures. Arista and Ciena are pure-plays (total "
-        "revenue). Nokia is the Network Infrastructure segment only, which "
-        "excludes mobile networks (EUR to USD approx). Cisco's Networking segment "
-        "(about \\$28-30B) is larger but sits inside a diversified firm, so it is "
-        "left out to keep the comparison clean. Switch silicon (Broadcom) sits in "
-        "Silicon & IP. Sources: company filings.")
+        "The AI-exposed side. Arista and Ciena are pure-plays (total revenue); "
+        "Nokia is the Network Infrastructure segment only (fixed, IP and "
+        "optical networks, excludes mobile; grew 9% in 2025 and now includes "
+        "Infinera). Cisco's Networking segment (about \\$28-30B) sits inside a "
+        "diversified firm and is left out to keep the comparison clean. "
+        "Sources: company filings.")
+
+    st.markdown("#### Mobile networks (\\$B)")
+    figmn = px.bar(
+        mobile_net, x="year", y="revenue_b", color="vendor", barmode="group",
+        color_discrete_map={"Ericsson Networks": "#0082F0",
+                            "Nokia Mobile Networks": YELLOW,
+                            "Huawei ICT infrastructure": RED},
+        labels={"year": "Year", "revenue_b": "Revenue ($B)", "vendor": ""})
+    figmn.update_layout(height=340, hovermode="x unified", legend_title="")
+    st.plotly_chart(figmn, width="stretch")
+    st.caption(
+        "The mobile side, for contrast: flat to declining since the 5G "
+        "buildout peaked. Ericsson Networks and Nokia Mobile Networks are "
+        "segment figures (currency-converted, approximate); Nokia Mobile "
+        "Networks fell sharply after losing the AT&T contract in 2024. Huawei "
+        "is the ICT infrastructure division (carrier-led; segment definitions "
+        "changed over time, approximate). Samsung Networks and ZTE are the "
+        f"other notable vendors, not charted. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Power & Data Centers
@@ -480,19 +533,19 @@ with tab_network:
 with tab_dc:
     st.markdown("### 5 · Data Centers")
     st.markdown(
-        "**US data center construction passed office construction in 2025, the "
-        "clearest physical-economy signal of the AI buildout.** The facilities "
-        "themselves come from hyperscaler self-build plus colocation providers "
-        "(Equinix, Digital Realty) and, increasingly, dedicated AI campuses: "
-        "the named gigawatt-scale pipeline (Stargate, Hyperion, Colossus and "
-        "others) totals about 17 GW of announced capacity. The binding "
-        "constraint is shifting from buildings to electricity: high-voltage "
-        "substations take 3 to 5 years, 7 of 13 US grid regions are projected "
-        "below safety margins by 2030, and Goldman estimates about \\$720B of "
-        "grid investment is needed this decade. Power availability, not land "
-        "or capital, increasingly decides where and when capacity gets built, "
-        "which is why behind-the-meter generation and nuclear deals are "
-        "becoming a competitive differentiator.")
+        "- **US data center construction passed office construction in 2025**, "
+        "the clearest physical-economy signal of the AI buildout.\n"
+        "- **Capacity comes from hyperscaler self-build, colocation providers "
+        "(Equinix, Digital Realty) and dedicated AI campuses:** the named "
+        "gigawatt-scale pipeline (Stargate, Hyperion, Colossus and others) "
+        "totals about 17 GW of announced capacity.\n"
+        "- **The binding constraint is shifting from buildings to "
+        "electricity:** high-voltage substations take 3 to 5 years, 7 of 13 US "
+        "grid regions are projected below safety margins by 2030, and Goldman "
+        "estimates about \\$720B of grid investment is needed this decade.\n"
+        "- **Power availability, not land or capital, increasingly decides "
+        "where and when capacity gets built**, making behind-the-meter "
+        "generation and nuclear deals a competitive differentiator.")
 
     st.markdown("---")
     st.markdown("#### Data center vs office construction (US, \\$B/year)")
@@ -565,18 +618,19 @@ with tab_dc:
 with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
-        "**Five companies are spending at a scale with few precedents: about "
-        "\\$379B of capex in FY2025 and roughly \\$760B guided for 2026, more "
-        "than global upstream oil and gas investment.** Microsoft, Alphabet, "
-        "Amazon, Meta and Oracle are the demand pull behind every upstream "
-        "layer: their orders set accelerator volumes, packaging allocation and "
-        "the gigawatt pipeline. The funding mix is the new story: capex has "
-        "outgrown operating cash flow at Oracle (102% in FY2025) and nearly so "
-        "at Amazon (94%), and the group issued \\$121B of bonds in 2025, four "
-        "times the five-year average. Capex intensity has reached 30 to 75% of "
-        "revenue for businesses that were asset-light a decade ago, which makes "
-        "the durability of cloud and AI revenue growth the central question for "
-        "the whole chain.")
+        "- **Five companies are spending at a scale with few precedents:** "
+        "about \\$379B of capex in FY2025 and roughly \\$760B guided for 2026, "
+        "more than global upstream oil and gas investment.\n"
+        "- **Microsoft, Alphabet, Amazon, Meta and Oracle are the demand pull "
+        "behind every upstream layer:** their orders set accelerator volumes, "
+        "packaging allocation and the gigawatt pipeline.\n"
+        "- **The funding mix is the new story:** capex has outgrown operating "
+        "cash flow at Oracle (102% in FY2025) and nearly so at Amazon (94%), "
+        "and the group issued \\$121B of bonds in 2025, four times the "
+        "five-year average.\n"
+        "- **Capex intensity has reached 30 to 75% of revenue** for businesses "
+        "that were asset-light a decade ago, making the durability of cloud "
+        "and AI revenue growth the central question for the whole chain.")
     st.markdown("---")
 
     st.caption("All figures are total reported capex. No AI-share is applied.")
@@ -738,17 +792,19 @@ with tab_hyper:
 with tab_neo:
     st.markdown("### 7 · NeoClouds")
     st.markdown(
-        "**GPU rental specialists went from niche to roughly \\$100B of "
-        "contracted backlog in about two years, financed largely with "
-        "GPU-backed debt.** CoreWeave and Nebius are the listed names; Crusoe "
-        "and Lambda remain private and disclose little. Their backlogs are "
-        "concentrated on a few anchor tenants (the OpenAI deal added \\$11.2B "
-        "to CoreWeave's backlog, Meta committed \\$27B to Nebius), which is "
-        "both the strength of the model and its single-point risk. The sector "
-        "carries over \\$20B of debt secured against GPUs that depreciate over "
-        "4 to 6 years, so durability depends on rental pricing holding up "
-        "through successive accelerator generations. NeoClouds are effectively "
-        "a leveraged bet on sustained AI compute scarcity.")
+        "- **GPU rental specialists went from niche to roughly \\$100B of "
+        "contracted backlog in about two years**, financed largely with "
+        "GPU-backed debt; CoreWeave and Nebius are listed, Crusoe and Lambda "
+        "private.\n"
+        "- **Backlogs are concentrated on a few anchor tenants** (the OpenAI "
+        "deal added \\$11.2B to CoreWeave's backlog, Meta committed \\$27B to "
+        "Nebius), which is both the model's strength and its single-point "
+        "risk.\n"
+        "- **The sector carries over \\$20B of debt secured against GPUs that "
+        "depreciate over 4 to 6 years**, so durability depends on rental "
+        "pricing holding up through successive accelerator generations.\n"
+        "- **NeoClouds are effectively a leveraged bet on sustained AI compute "
+        "scarcity.**")
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
@@ -793,20 +849,18 @@ with tab_neo:
 with tab_labs:
     st.markdown("### 8 · AI Labs")
     st.markdown(
-        "**Lab revenue is large and concentrating, with Anthropic and OpenAI "
-        "run-rates above \\$70B combined, but usage is broad rather than deep: "
-        "only about 5 to 6% of ChatGPT users pay and under 10% of US adults "
-        "use generative AI daily.** The labs (OpenAI, Anthropic, Google "
-        "DeepMind, Meta, xAI, and Chinese labs led by DeepSeek) consume the "
-        "compute the rest of the chain supplies, and their multi-year compute "
-        "commitments are the contracts that underwrite NeoCloud backlogs and "
-        "hyperscaler buildouts. Frontier capability has converged: benchmark "
-        "leaders now cluster in the low 90s on GPQA-Diamond, with Chinese "
-        "models close behind, and no clear network effects have emerged at the "
-        "model layer. Where the value settles, in models, in applications "
-        "above them, or in the infrastructure below, is the open question; "
-        "enterprise spend patterns and startup formation (both charted below) "
-        "suggest the application layer is where the bet is being placed.")
+        "- **Lab revenue is large and concentrating:** Anthropic and OpenAI "
+        "run-rates total above \\$70B, and their multi-year compute "
+        "commitments underwrite NeoCloud backlogs and hyperscaler buildouts.\n"
+        "- **Usage is broad but shallow:** 900M people use ChatGPT weekly, yet "
+        "only about 5 to 6% pay and under 10% of US adults use generative AI "
+        "daily.\n"
+        "- **Frontier capability has converged**, with benchmark leaders "
+        "clustered in the low 90s on GPQA-Diamond, Chinese models close "
+        "behind, and no clear network effects at the model layer.\n"
+        "- **Where the value settles is the open question:** enterprise spend "
+        "patterns and startup formation (both charted below) suggest the bet "
+        "is being placed on the application layer.")
 
     st.markdown("---")
     c1, c2 = st.columns(2)
@@ -938,17 +992,18 @@ with tab_labs:
 with tab_si:
     st.markdown("### 9 · System Integrators")
     st.markdown(
-        "**Deploying AI into enterprises is services-heavy work, which makes "
-        "integrators one of the most measurable reads on real adoption.** "
-        "Accenture, TCS, Infosys and Capgemini sell the integration work that "
-        "turns models into production systems, and enterprises often pay them "
-        "before they pay model vendors at scale. Accenture's GenAI bookings "
-        "compounded from \\$0.3B in FY2023 to \\$5.9B in FY2025, with "
-        "cumulative bookings passing \\$9B, the steepest new-offering ramp in "
-        "the firm's disclosures. The integrators' growth is also a check on "
-        "the hype: their overall revenue grows single digits, meaning GenAI "
-        "work is so far additive rather than transformative to the services "
-        "industry itself.")
+        "- **Deploying AI into enterprises is services-heavy work**, which "
+        "makes integrators one of the most measurable reads on real "
+        "adoption.\n"
+        "- **Accenture, TCS, Infosys and Capgemini sell the integration work "
+        "that turns models into production systems**, and enterprises often "
+        "pay them before they pay model vendors at scale.\n"
+        "- **Accenture's GenAI bookings compounded from \\$0.3B (FY2023) to "
+        "\\$5.9B (FY2025)**, with cumulative bookings past \\$9B, the steepest "
+        "new-offering ramp in the firm's disclosures.\n"
+        "- **The integrators are also a check on the hype:** overall revenue "
+        "grows single digits, so GenAI work is so far additive rather than "
+        "transformative to the services industry itself.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -994,18 +1049,18 @@ with tab_si:
 with tab_telco:
     st.markdown("### 10 · Telecoms")
     st.markdown(
-        "**Telecoms built the last infrastructure wave: mobile traffic grew "
-        "roughly 30x since 2015 while sector capex stayed flat near \\$300B "
-        "and share prices went sideways.** Operators spent heavily on 4G and "
-        "5G, delivered an explosion in usage, and captured almost none of the "
-        "value, which flowed instead to the platforms running on top of their "
-        "networks. AT&T and Verizon trade below their 2015 share prices a "
-        "decade later, and global telecom capex in 2024 was the lowest since "
-        "2011 even as traffic kept compounding. This is the cautionary "
-        "precedent for AI infrastructure: enormous capex and real usage growth "
-        "do not guarantee returns if the layer above commoditizes you. The "
-        "comparison with hyperscaler capex below shows how much larger, and "
-        "faster, the current buildout is.")
+        "- **Telecoms built the last infrastructure wave:** mobile traffic "
+        "grew roughly 30x since 2015 while sector capex stayed flat near "
+        "\\$300B and share prices went sideways.\n"
+        "- **Operators delivered the usage explosion but captured almost none "
+        "of the value**, which flowed to the platforms running on top of "
+        "their networks; AT&T and Verizon trade below their 2015 share prices "
+        "a decade later.\n"
+        "- **Global telecom capex in 2024 was the lowest since 2011** even as "
+        "traffic kept compounding.\n"
+        "- **This is the cautionary precedent for AI infrastructure:** "
+        "enormous capex and real usage growth do not guarantee returns if the "
+        "layer above commoditizes you.")
 
     st.markdown("---")
     tt1, tt2 = st.columns(2)

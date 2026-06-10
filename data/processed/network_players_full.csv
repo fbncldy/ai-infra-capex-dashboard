@@ -1,0 +1,25 @@
+company,year,revenue_b,capex_b,source_type,note
+Arista,2020,2.32,0.1,reported,Revenue reported; capex approximate (asset-light)
+Arista,2021,2.95,0.1,reported,
+Arista,2022,4.38,0.1,reported,
+Arista,2023,5.86,0.1,reported,
+Arista,2024,7.0,0.2,reported,
+Arista,2025,9.0,0.3,reported,
+Ciena,2020,3.53,0.1,reported,FY ends ~Oct; capex approximate
+Ciena,2021,3.62,0.1,reported,
+Ciena,2022,3.63,0.1,reported,
+Ciena,2023,4.39,0.1,reported,
+Ciena,2024,4.01,0.1,reported,
+Ciena,2025,4.77,0.1,reported,
+Nokia,2020,25.0,0.7,estimate,Total company; EUR converted to USD approx
+Nokia,2021,26.3,0.6,estimate,
+Nokia,2022,26.2,0.6,estimate,
+Nokia,2023,24.1,0.7,estimate,
+Nokia,2024,20.8,0.6,estimate,
+Nokia,2025,21.5,0.6,estimate,EUR 19.9B net sales
+Ericsson,2020,25.3,0.4,estimate,Total company; SEK converted to USD approx
+Ericsson,2021,27.1,0.4,estimate,
+Ericsson,2022,26.9,0.4,estimate,
+Ericsson,2023,24.8,0.4,estimate,
+Ericsson,2024,23.4,0.3,estimate,SEK 247.9B
+Ericsson,2025,24.2,0.3,reported,USD figure per stockanalysis
