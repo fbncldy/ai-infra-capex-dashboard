@@ -115,16 +115,6 @@ COMPANY_COLORS = {
 }
 
 
-def render_layer_card(order: int):
-    """Render the structured value-chain card(s) for a given layer."""
-    for _, r in chain[chain["layer_order"] == order].iterrows():
-        st.markdown(f"**{r['segment']}**")
-        st.markdown(f"- **Key players:** {r['key_players']}")
-        st.markdown(f"- **Role in stack:** {r['role_in_stack']}")
-        st.markdown(f"- **Metric to track:** {r['key_metric']}")
-        st.markdown(f"- **Bottleneck:** :red[{r['bottleneck']}]")
-
-
 st.title("AI Infrastructure Capex")
 st.caption(
     "How AI compute is financed, built, and priced across the value chain, from "
@@ -290,11 +280,18 @@ with tab_silicon:
     st.markdown(
         "**Semiconductors are a \\$792B industry (2025) that has historically "
         "moved in 3 to 4 year cycles; AI demand drove a 26% jump in 2025 and a "
-        "forecast first one-trillion-dollar year in 2026.** NVIDIA dominates the "
-        "accelerator layer with about \\$115B of data-center revenue, and HBM "
-        "memory is sold out through 2026, making silicon the first gate on AI "
-        "capacity.")
-    render_layer_card(1)
+        "forecast first one-trillion-dollar year in 2026.** The accelerator "
+        "layer is dominated by NVIDIA, whose data-center segment alone "
+        "generated about \\$115B in FY2025, with AMD a distant second and the "
+        "hyperscalers building in-house alternatives (Google TPU, Amazon "
+        "Trainium) together with Broadcom and Marvell. Every advanced "
+        "accelerator also needs high-bandwidth memory stacked beside it, "
+        "supplied by SK Hynix (about 57% share), Micron and Samsung, and HBM is "
+        "sold out through 2026. That makes silicon the first gate on AI "
+        "capacity: shipping more accelerators requires more HBM and more "
+        "advanced packaging, not just more fab starts. For the AI buildout the "
+        "open question is whether 2025-26 is the steepest cycle yet in a "
+        "famously cyclical industry, or a structural break in demand.")
 
     st.markdown("---")
     st.markdown("#### Global semiconductor sales since 1990 (\\$B)")
@@ -339,11 +336,16 @@ with tab_foundry:
     st.markdown(
         "**Leading-edge manufacturing is effectively a one-company market: TSMC "
         "holds about 70% of foundry revenue and makes nearly every AI "
-        "accelerator.** Samsung and Intel are spending tens of billions to "
-        "compete at the leading edge with limited success so far, and CoWoS "
-        "advanced packaging remains the single tightest physical constraint in "
-        "the AI supply chain.")
-    render_layer_card(2)
+        "accelerator.** Samsung Electronics and Intel are the only credible "
+        "challengers at the leading edge; both are spending tens of billions a "
+        "year on fabs with limited share gains so far, and both cut capex in "
+        "2025 while TSMC raised it. The chokepoint is not wafer starts but "
+        "CoWoS advanced packaging, the step that mounts logic dies and HBM "
+        "stacks on one interposer: capacity has grown roughly 10x since 2023 "
+        "and is still fully booked, with OSAT partners (ASE, Amkor) absorbing "
+        "overflow. Whoever controls packaging allocation effectively decides "
+        "which AI chips ship, which is why this single process step carries "
+        "strategic weight far beyond its 7 to 9% share of TSMC revenue.")
 
     st.markdown("---")
     st.markdown("#### Revenue & capex by key player (\\$B)")
@@ -409,10 +411,15 @@ with tab_systems:
     st.markdown(
         "**Server makers turn GPUs into deployable systems and were among the "
         "first beneficiaries of the AI buildout, with revenue inflecting from "
-        "2023.** Margins are thin and the largest volumes flow through "
-        "Taiwanese ODMs; Supermicro's run from \\$3B to a \\$33B revenue target "
-        "in six years shows both the upside and the volatility of this layer.")
-    render_layer_card(3)
+        "2023.** The listed players are Dell (ISG), Supermicro and HPE, but the "
+        "largest AI-server volumes flow through Taiwanese ODMs (Foxconn, "
+        "Quanta, Wistron) building directly for hyperscalers, a lower-margin "
+        "and far less disclosed channel. Value in this layer depends on GPU "
+        "allocation rather than design: vendors who secured NVIDIA supply "
+        "early, like Supermicro, grew from \\$3B revenue to a \\$33B target in "
+        "six years. The flip side is volatility and thin margins, because the "
+        "scarce input (the accelerator) is priced by NVIDIA, not by the system "
+        "builder.")
 
     st.markdown("---")
     st.markdown("#### Server revenue by vendor (\\$B)")
@@ -440,10 +447,16 @@ with tab_network:
     st.markdown(
         "**As clusters pass 100k GPUs the network, not the chip, increasingly "
         "sets training efficiency, shifting value to back-end fabrics and "
-        "optics.** Arista is the clearest listed pure-play beneficiary, roughly "
-        "quadrupling revenue since 2020; most networking revenue still sits "
-        "inside diversified firms like Cisco and Nokia.")
-    render_layer_card(4)
+        "optics.** The back-end fabric connecting GPUs (NVLink, InfiniBand and "
+        "increasingly Ethernet) is where the battle sits: NVIDIA bundles its "
+        "own interconnect, Arista is the clearest listed pure-play beneficiary "
+        "with revenue roughly quadrupling since 2020, and Broadcom supplies "
+        "the switch silicon (covered under Silicon & IP). Optical interconnect "
+        "between data centers (Ciena) grows more slowly but becomes critical "
+        "as training spreads across sites. Most networking revenue still sits "
+        "inside diversified firms (Cisco, Nokia), so the AI signal is best "
+        "read from the pure-plays and from optics and switch-ASIC supply, "
+        "which are the layer's main bottlenecks.")
 
     st.markdown("---")
     st.markdown("#### Revenue by vendor (\\$B)")
@@ -468,11 +481,18 @@ with tab_dc:
     st.markdown("### 5 · Data Centers")
     st.markdown(
         "**US data center construction passed office construction in 2025, the "
-        "clearest physical-economy signal of the AI buildout.** The binding "
-        "constraint is shifting from buildings to electricity: named gigawatt "
-        "projects total about 17 GW while high-voltage substations take 3 to 5 "
-        "years, so power availability increasingly drives siting and timing.")
-    render_layer_card(5)
+        "clearest physical-economy signal of the AI buildout.** The facilities "
+        "themselves come from hyperscaler self-build plus colocation providers "
+        "(Equinix, Digital Realty) and, increasingly, dedicated AI campuses: "
+        "the named gigawatt-scale pipeline (Stargate, Hyperion, Colossus and "
+        "others) totals about 17 GW of announced capacity. The binding "
+        "constraint is shifting from buildings to electricity: high-voltage "
+        "substations take 3 to 5 years, 7 of 13 US grid regions are projected "
+        "below safety margins by 2030, and Goldman estimates about \\$720B of "
+        "grid investment is needed this decade. Power availability, not land "
+        "or capital, increasingly decides where and when capacity gets built, "
+        "which is why behind-the-meter generation and nuclear deals are "
+        "becoming a competitive differentiator.")
 
     st.markdown("---")
     st.markdown("#### Data center vs office construction (US, \\$B/year)")
@@ -546,11 +566,17 @@ with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
         "**Five companies are spending at a scale with few precedents: about "
-        "\\$379B of capex in FY2025 and roughly \\$760B guided for 2026.** "
-        "Capex has outgrown operating cash flow at Oracle and nearly so at "
-        "Amazon, pushing funding into the bond market. This spend is the demand "
-        "pull behind every upstream layer of the chain.")
-    render_layer_card(6)
+        "\\$379B of capex in FY2025 and roughly \\$760B guided for 2026, more "
+        "than global upstream oil and gas investment.** Microsoft, Alphabet, "
+        "Amazon, Meta and Oracle are the demand pull behind every upstream "
+        "layer: their orders set accelerator volumes, packaging allocation and "
+        "the gigawatt pipeline. The funding mix is the new story: capex has "
+        "outgrown operating cash flow at Oracle (102% in FY2025) and nearly so "
+        "at Amazon (94%), and the group issued \\$121B of bonds in 2025, four "
+        "times the five-year average. Capex intensity has reached 30 to 75% of "
+        "revenue for businesses that were asset-light a decade ago, which makes "
+        "the durability of cloud and AI revenue growth the central question for "
+        "the whole chain.")
     st.markdown("---")
 
     st.caption("All figures are total reported capex. No AI-share is applied.")
@@ -629,18 +655,10 @@ with tab_hyper:
         "Oracle issuance, at sub-5% average rates. Sources: 10-K filings (EDGAR "
         f"XBRL), Janus Henderson, Wolf Street. Data as of {DATA_UPDATED}.")
 
-    st.markdown("**Capex & YoY growth by company**")
-    st.dataframe(
-        g[["company", "fiscal_year", "capex_usd_b", "yoy_%", "source_type"]]
-        .rename(columns={
-            "company": "Company", "fiscal_year": "FY", "capex_usd_b": "Capex $B",
-            "yoy_%": "YoY %", "source_type": "Source"}).style.format({
-            "Capex $B": "{:.1f}", "YoY %": "{:+.0f}"}),
-        width="stretch", hide_index=True)
     st.caption(
-        "Microsoft's fiscal year ends June 30 (not calendar-aligned). Amazon "
-        "capex includes fulfilment and logistics, not only AWS, which matters "
-        "when comparing totals across companies.")
+        "Microsoft's fiscal year ends June 30 and Oracle's May 31 (not "
+        "calendar-aligned). Amazon capex includes fulfilment and logistics, "
+        "not only AWS, which matters when comparing totals across companies.")
 
     st.markdown("---")
     st.markdown("#### 2026 forward guidance")
@@ -722,10 +740,15 @@ with tab_neo:
     st.markdown(
         "**GPU rental specialists went from niche to roughly \\$100B of "
         "contracted backlog in about two years, financed largely with "
-        "GPU-backed debt.** Backlogs are concentrated on a few anchor tenants "
-        "such as OpenAI and Meta, so durability depends on rental pricing "
-        "holding up over a 4 to 6 year asset life.")
-    render_layer_card(7)
+        "GPU-backed debt.** CoreWeave and Nebius are the listed names; Crusoe "
+        "and Lambda remain private and disclose little. Their backlogs are "
+        "concentrated on a few anchor tenants (the OpenAI deal added \\$11.2B "
+        "to CoreWeave's backlog, Meta committed \\$27B to Nebius), which is "
+        "both the strength of the model and its single-point risk. The sector "
+        "carries over \\$20B of debt secured against GPUs that depreciate over "
+        "4 to 6 years, so durability depends on rental pricing holding up "
+        "through successive accelerator generations. NeoClouds are effectively "
+        "a leveraged bet on sustained AI compute scarcity.")
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
@@ -772,11 +795,18 @@ with tab_labs:
     st.markdown(
         "**Lab revenue is large and concentrating, with Anthropic and OpenAI "
         "run-rates above \\$70B combined, but usage is broad rather than deep: "
-        "only about 5 to 6% of ChatGPT users pay and under 10% of US adults use "
-        "generative AI daily.** With frontier capability converging across "
-        "labs, whether value accrues to models, applications or the "
-        "infrastructure below them is the open question.")
-    render_layer_card(8)
+        "only about 5 to 6% of ChatGPT users pay and under 10% of US adults "
+        "use generative AI daily.** The labs (OpenAI, Anthropic, Google "
+        "DeepMind, Meta, xAI, and Chinese labs led by DeepSeek) consume the "
+        "compute the rest of the chain supplies, and their multi-year compute "
+        "commitments are the contracts that underwrite NeoCloud backlogs and "
+        "hyperscaler buildouts. Frontier capability has converged: benchmark "
+        "leaders now cluster in the low 90s on GPQA-Diamond, with Chinese "
+        "models close behind, and no clear network effects have emerged at the "
+        "model layer. Where the value settles, in models, in applications "
+        "above them, or in the infrastructure below, is the open question; "
+        "enterprise spend patterns and startup formation (both charted below) "
+        "suggest the application layer is where the bet is being placed.")
 
     st.markdown("---")
     c1, c2 = st.columns(2)
@@ -866,6 +896,24 @@ with tab_labs:
             "Source: Menlo Ventures, State of Generative AI in the Enterprise "
             "2025.")
 
+    st.markdown("#### Y Combinator: AI share of startup batches (%)")
+    figyc = go.Figure()
+    figyc.add_trace(go.Bar(x=yc_share["year"], y=yc_share["ai_share_pct"],
+                           name="AI startups", marker_color=RED))
+    figyc.add_trace(go.Bar(x=yc_share["year"],
+                           y=100 - yc_share["ai_share_pct"],
+                           name="Other startups", marker_color="#dadce0"))
+    figyc.update_layout(barmode="stack", height=320, legend_title="",
+                        yaxis_title="% of batch",
+                        yaxis_range=[0, 100])
+    st.plotly_chart(figyc, width="stretch")
+    st.caption(
+        "Share of Y Combinator batch companies tagged as AI. Roughly 5 to 15% "
+        "of batches from 2015 to 2022, then 44% (2023), about 70% (2024) and "
+        "about 80% (2025). Startup formation has concentrated almost entirely "
+        "on AI. Compiled from YC directory analyses and press reports; "
+        f"2015-2022 values are approximate. Data as of {DATA_UPDATED}.")
+
     st.caption(
         "Revenue is concentrating in Anthropic and OpenAI, while frontier "
         "benchmark scores are converging in the 90s. Lab revenue and multi-year "
@@ -892,10 +940,15 @@ with tab_si:
     st.markdown(
         "**Deploying AI into enterprises is services-heavy work, which makes "
         "integrators one of the most measurable reads on real adoption.** "
-        "Accenture's GenAI bookings compounded from \\$0.3B in FY2023 to "
-        "\\$5.9B in FY2025, and startup formation tells the same story: AI went "
-        "from a niche Y Combinator category to the large majority of recent "
-        "batches.")
+        "Accenture, TCS, Infosys and Capgemini sell the integration work that "
+        "turns models into production systems, and enterprises often pay them "
+        "before they pay model vendors at scale. Accenture's GenAI bookings "
+        "compounded from \\$0.3B in FY2023 to \\$5.9B in FY2025, with "
+        "cumulative bookings passing \\$9B, the steepest new-offering ramp in "
+        "the firm's disclosures. The integrators' growth is also a check on "
+        "the hype: their overall revenue grows single digits, meaning GenAI "
+        "work is so far additive rather than transformative to the services "
+        "industry itself.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -933,25 +986,7 @@ with tab_si:
         "GenAI new bookings as disclosed in Accenture's quarterly results: "
         "\\$0.3B in the first two quarters of disclosure (FY2023), \\$3.0B in "
         "FY2024, \\$5.9B in FY2025. Cumulative bookings since 2023 passed "
-        "\\$9B. Source: Accenture 8-K filings.")
-
-    st.markdown("#### Y Combinator: AI share of startup batches (%)")
-    figyc = go.Figure()
-    figyc.add_trace(go.Bar(x=yc_share["year"], y=yc_share["ai_share_pct"],
-                           name="AI startups", marker_color=RED))
-    figyc.add_trace(go.Bar(x=yc_share["year"],
-                           y=100 - yc_share["ai_share_pct"],
-                           name="Other startups", marker_color="#dadce0"))
-    figyc.update_layout(barmode="stack", height=320, legend_title="",
-                        yaxis_title="% of batch",
-                        yaxis_range=[0, 100])
-    st.plotly_chart(figyc, width="stretch")
-    st.caption(
-        "Share of Y Combinator batch companies tagged as AI. Roughly 5 to 15% "
-        "of batches from 2015 to 2022, then 44% (2023), about 70% (2024) and "
-        "about 80% (2025). Startup formation has concentrated almost entirely "
-        "on AI. Compiled from YC directory analyses and press reports; "
-        f"2015-2022 values are approximate. Data as of {DATA_UPDATED}.")
+        f"\\$9B. Source: Accenture 8-K filings. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 10 · Telecoms (context)
@@ -960,10 +995,17 @@ with tab_telco:
     st.markdown("### 10 · Telecoms")
     st.markdown(
         "**Telecoms built the last infrastructure wave: mobile traffic grew "
-        "roughly 30x since 2015 while sector capex stayed flat near \\$300B and "
-        "share prices went sideways.** That gap between usage growth and value "
-        "capture is the cautionary case for AI infrastructure: heavy capex does "
-        "not guarantee returns.")
+        "roughly 30x since 2015 while sector capex stayed flat near \\$300B "
+        "and share prices went sideways.** Operators spent heavily on 4G and "
+        "5G, delivered an explosion in usage, and captured almost none of the "
+        "value, which flowed instead to the platforms running on top of their "
+        "networks. AT&T and Verizon trade below their 2015 share prices a "
+        "decade later, and global telecom capex in 2024 was the lowest since "
+        "2011 even as traffic kept compounding. This is the cautionary "
+        "precedent for AI infrastructure: enormous capex and real usage growth "
+        "do not guarantee returns if the layer above commoditizes you. The "
+        "comparison with hyperscaler capex below shows how much larger, and "
+        "faster, the current buildout is.")
 
     st.markdown("---")
     tt1, tt2 = st.columns(2)
