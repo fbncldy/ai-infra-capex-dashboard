@@ -56,7 +56,24 @@ EDGAR_COS = {
         "note": "Purchases of PP&E; as-originally-reported (minor later "
                 "reclassifications exist)",
     },
+    "Oracle": {
+        "file": "oracle_capex.json",
+        "fy_end_month": 5,
+        "note": "Capital expenditures (cash); FY ends May 31 - not "
+                "calendar-aligned",
+    },
 }
+
+# Quarterly series uses EDGAR XBRL for all five (Alphabet included).
+QUARTERLY_FILES = {
+    "Alphabet": "alphabet_capex.json",
+    "Microsoft": "microsoft_capex.json",
+    "Amazon": "amazon_capex.json",
+    "Meta": "meta_capex.json",
+    "Oracle": "oracle_capex.json",
+}
+
+QOUT = ROOT / "data" / "processed" / "hyperscaler_capex_quarterly.csv"
 
 
 def edgar_annual(path: Path):
@@ -77,6 +94,49 @@ def edgar_annual(path: Path):
         original = r.get("fy") == y          # filing's own fiscal year
         if y not in out or original:
             out[y] = (round(r["val"] / 1e6), r["accn"])
+    return out
+
+
+def edgar_quarterly(path: Path, since_year: int = 2020):
+    """Derive discrete quarterly capex from cumulative (YTD) cash-flow values.
+
+    10-Q cash-flow figures are year-to-date, so quarters are obtained by
+    differencing consecutive YTD periods that share a fiscal-year start;
+    the first period of each fiscal year is taken as-is.
+    """
+    d = json.loads(path.read_text())
+    periods = {}
+    for r in d["units"]["USD"]:
+        if r.get("form") not in ("10-Q", "10-K"):
+            continue
+        try:
+            s = date.fromisoformat(r["start"])
+            e = date.fromisoformat(r["end"])
+        except (KeyError, ValueError):
+            continue
+        days = (e - s).days
+        if not (80 <= days <= 380):
+            continue
+        # keep the latest-filed value per (start, end)
+        periods[(s, e)] = r["val"]
+
+    by_start = {}
+    for (s, e), val in periods.items():
+        by_start.setdefault(s, []).append((e, val))
+
+    quarters = []
+    for s, ends in by_start.items():
+        ends.sort()
+        prev_val = 0.0
+        for e, val in ends:
+            q_val = val - prev_val
+            prev_val = val
+            quarters.append((e, q_val))
+
+    out = {}
+    for e, q_val in quarters:
+        if e.year >= since_year and q_val > 0:
+            out[e] = round(q_val / 1e6)
     return out
 
 
@@ -111,7 +171,23 @@ def main():
         w.writeheader()
         w.writerows(rows)
     print(f"Wrote {len(rows)} rows to {OUT.relative_to(ROOT)}")
-    for c in ["Alphabet", "Microsoft", "Amazon", "Meta"]:
+
+    qrows = []
+    for company, fname in QUARTERLY_FILES.items():
+        q = edgar_quarterly(EDGAR / fname)
+        for end in sorted(q):
+            qrows.append(dict(
+                company=company, period_end=end.isoformat(),
+                capex_usd_m=q[end], source_type="10-Q/10-K (EDGAR XBRL)",
+            ))
+    qcols = ["company", "period_end", "capex_usd_m", "source_type"]
+    with QOUT.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=qcols)
+        w.writeheader()
+        w.writerows(qrows)
+    print(f"Wrote {len(qrows)} quarterly rows to {QOUT.relative_to(ROOT)}")
+
+    for c in ["Alphabet", "Microsoft", "Amazon", "Meta", "Oracle"]:
         cr = [r for r in rows if r["company"] == c]
         latest = max(cr, key=lambda r: r["fiscal_year"])
         print(f"  {c}: {len(cr)} yrs, latest FY{latest['fiscal_year']} "

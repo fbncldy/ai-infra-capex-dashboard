@@ -1,0 +1,11 @@
+company,calendar_year,dc_revenue_b,fiscal_label,source_type,note
+NVIDIA,2020,6.7,FY2021,reported,Data Center segment; FY ends late Jan so FY2021 maps to CY2020
+NVIDIA,2021,10.6,FY2022,reported,
+NVIDIA,2022,15.0,FY2023,reported,
+NVIDIA,2023,47.5,FY2024,reported,
+NVIDIA,2024,115.2,FY2025,reported,
+NVIDIA,2025,194.0,FY2026,reported,Q1 39.1 + Q2 41.1 + Q3 51.2 + Q4 62.3
+AMD,2022,6.0,CY2022,reported,Data Center segment first reported in 2022 segment recast
+AMD,2023,6.5,CY2023,reported,
+AMD,2024,12.6,CY2024,reported,
+AMD,2025,16.6,CY2025,reported,

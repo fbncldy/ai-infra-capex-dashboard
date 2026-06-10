@@ -169,8 +169,36 @@ leaderboards (approximate).
   hyperscaler capex overtaking it; major US/EU operator revenue+capex (latest yr,
   some approx; DT overlaps T-Mobile US). Sources: company filings, MTN Consulting.
 
+## Additions of 2026-06-04
+
+- **Oracle** added to the hyperscaler set (now Big-5): annual capex from EDGAR
+  XBRL (CIK 0001341439, FY ends May 31; FY2025 $21.2B), 2026 guidance ~$50B
+  (raised by $15B during FY26; RPO $553B). Big-5 FY25 $379B (+69% vs FY24
+  $224B); 2026E guidance midpoints sum to ~$760B.
+- **Quarterly capex** (`hyperscaler_capex_quarterly.csv`): derived from 10-Q/10-K
+  XBRL year-to-date cash-flow values by differencing within each fiscal year;
+  validated to sum exactly to reported annuals (Alphabet and Meta 2025 checked).
+  Alphabet quarterly also from EDGAR XBRL (annual stays PDF-extracted).
+- **Accelerator vendor revenue** (`accelerator_dc_revenue.csv`): NVIDIA
+  data-center segment by FY mapped to calendar year (FY2026 $194B -> CY2025);
+  AMD data-center segment from 2022 (first reported). Source: company filings.
+- **US telecom series** (`telecom_us_series.csv`): AT&T / Verizon / T-Mobile US
+  revenue + capex 2020-2024, reported figures (AT&T pre-2022 includes
+  WarnerMedia). EU operators remain a 2024 snapshot; their group reports use
+  differing capex definitions (cash capex vs eCapex) so a clean series needs
+  the annual reports directly.
+- **Benchmarks hardened** (`llm_benchmark_by_lab.csv`): scores now from model /
+  system cards where published (GPT-4 35.7 GPQA paper; Claude 3.5 Sonnet 59.4;
+  o1 78.0; Claude Opus 4 79.6; Gemini 2.5 Pro 84.0; Llama 3.1 405B 50.7;
+  Llama 4 Maverick 69.8; DeepSeek V3 59.1 / R1 71.5). Two estimate rows remain,
+  flagged (Gemini 1.0, 2026 Chinese frontier).
+- **Construction hardened** (`dc_construction.csv`): DC 2023 ($20B) and 2024
+  ($31B) now derived from Census-reported growth rates (Wolf Street); 2021-22
+  and office mid-years remain interpolated, flagged.
+- **CI**: GitHub Action (.github/workflows/ci.yml) runs tests/test_app.py
+  (Streamlit AppTest smoke test) on every push.
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.
-- Firm up telecom per-company 2020-2024 series (currently latest-year snapshot).
-- Replace representative per-lab benchmark scores with sourced leaderboard pulls.
+- EU telecom 2020-2024 series from annual reports (definitions differ by firm).

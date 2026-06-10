@@ -1,0 +1,16 @@
+company,year,revenue_b,capex_b,source_type,note
+AT&T,2020,171.8,15.7,reported,Includes WarnerMedia (spun off Apr 2022)
+AT&T,2021,168.9,15.5,reported,Includes WarnerMedia
+AT&T,2022,120.7,19.6,reported,Post-spinoff continuing operations
+AT&T,2023,122.4,17.9,reported,
+AT&T,2024,122.3,20.3,reported,Capital expenditures; capital investment incl vendor financing ~22.1
+Verizon,2020,128.3,18.2,reported,
+Verizon,2021,133.6,20.3,reported,
+Verizon,2022,136.8,23.1,reported,C-Band buildout peak
+Verizon,2023,134.0,18.8,reported,
+Verizon,2024,134.8,17.1,reported,
+T-Mobile US,2020,68.4,11.0,reported,Sprint merger closed Apr 2020
+T-Mobile US,2021,80.1,12.3,reported,Sprint network integration
+T-Mobile US,2022,79.6,14.0,reported,Integration capex peak
+T-Mobile US,2023,78.6,9.8,reported,
+T-Mobile US,2024,81.4,8.8,reported,

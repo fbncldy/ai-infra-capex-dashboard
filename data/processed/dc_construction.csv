@@ -1,7 +1,7 @@
 year,datacenter_b,office_b,source_type,note
-2020,9.2,72,anchor,Census: DC +344% from 2020 to 2025; office at 2020 peak
-2021,12,68,interpolated,Approx; anchored to Census endpoints
-2022,16,62,interpolated,Approx; office CRE entered downturn
-2023,20,58,interpolated,Approx
-2024,31,53,anchor,DC ~$31B (DC then +32% into 2025)
-2025,41,49,anchor,"Census: DC $41B vs office $49B annual; monthly run-rate crossed Dec-2025 (DC ~$45B > office ~$44B)"
+2020,9,72,reported,Census via Wolf Street; office at its 2020 peak
+2021,12,66,interpolated,Office interpolated between Census anchors
+2022,16,60,interpolated,
+2023,20,55,reported,DC derived from Census-reported growth (+100% over two years to 2025)
+2024,31,52,reported,DC derived from Census-reported +32% into 2025; office interpolated
+2025,41,49,reported,"Census: DC $41B vs office $49B (lowest since 2015); monthly run-rate crossed Dec-2025"

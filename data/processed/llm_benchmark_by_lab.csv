@@ -1,15 +1,16 @@
-lab,date,score,model,source_type
-OpenAI,2023-03,39,GPT-4,representative
-OpenAI,2024-09,78,o1,representative
-OpenAI,2025-08,88,GPT-5,representative
-Anthropic,2024-06,59,Claude 3.5 Sonnet,representative
-Anthropic,2025-05,84,Claude Opus 4,representative
-Anthropic,2026-02,91,Claude Opus 4.6,representative
-Google,2023-12,40,Gemini 1.0,representative
-Google,2025-03,84,Gemini 2.5 Pro,representative
-Google,2026-02,94,Gemini 3.1 Pro,representative
-Meta,2024-04,51,Llama 3,representative
-Meta,2025-04,67,Llama 4,representative
-DeepSeek (China),2024-12,59,DeepSeek V3,representative
-DeepSeek (China),2025-01,71,DeepSeek R1,representative
-DeepSeek (China),2026-01,88,DeepSeek/Qwen,representative
+lab,date,score,model,source_type,note
+OpenAI,2023-03,35.7,GPT-4,model card / GPQA paper,GPQA paper (Rein et al. 2023) baseline
+OpenAI,2024-05,53.6,GPT-4o,model card,
+OpenAI,2024-12,78.0,o1,model card,Reasoning model step change
+OpenAI,2025-08,88.0,GPT-5,model card,Approximate; varies by reasoning setting
+Anthropic,2024-06,59.4,Claude 3.5 Sonnet,model card,
+Anthropic,2025-05,79.6,Claude Opus 4,model card,With extended thinking
+Anthropic,2026-02,91.3,Claude Opus 4.6,leaderboard,
+Google,2023-12,40.0,Gemini 1.0 Ultra,estimate,GPQA not in launch card; approximate
+Google,2025-03,84.0,Gemini 2.5 Pro,model card,
+Google,2026-02,94.3,Gemini 3.1 Pro,leaderboard,
+Meta,2024-07,50.7,Llama 3.1 405B,model card,
+Meta,2025-04,69.8,Llama 4 Maverick,model card,
+DeepSeek (China),2024-12,59.1,DeepSeek V3,model card,
+DeepSeek (China),2025-01,71.5,DeepSeek R1,model card,
+DeepSeek (China),2026-01,88.0,DeepSeek / Qwen frontier,estimate,Best published Chinese-lab score; approximate
