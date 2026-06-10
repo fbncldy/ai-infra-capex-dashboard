@@ -173,32 +173,32 @@ with tab_overview:
     st.markdown(
         f"- **Hyperscalers can no longer fund AI infrastructure from free cash "
         f"flow alone.** Big-5 capex (Microsoft, Alphabet, Amazon, Meta, Oracle) "
-        f"reached **${total_now:,.0f}B** in FY2025 ({yoy:+.0f}%) and is guided "
-        f"to about **${guide26:,.0f}B** for 2026, larger than global upstream "
-        f"oil and gas investment (~$570B, IEA) and approaching total fossil-fuel "
-        f"investment (~$1.1T). Capex now runs at roughly 30 to 75% of revenue "
+        f"reached **\\${total_now:,.0f}B** in FY2025 ({yoy:+.0f}%) and is guided "
+        f"to about **\\${guide26:,.0f}B** for 2026, larger than global upstream "
+        f"oil and gas investment (~\\$570B, IEA) and approaching total fossil-fuel "
+        f"investment (~\\$1.1T). Capex now runs at roughly 30 to 75% of revenue "
         f"for previously asset-light businesses, and the gap is increasingly "
-        f"debt-financed: hyperscalers issued $121B of bonds in 2025, four times "
-        f"the five-year average, including Meta's $30B, the largest corporate "
+        f"debt-financed: hyperscalers issued \\$121B of bonds in 2025, four times "
+        f"the five-year average, including Meta's \\$30B, the largest corporate "
         f"bond since 2023.\n"
         f"- **Supply remains the constraint.** TSMC's CoWoS packaging capacity "
         f"roughly doubled in 2025 to about {cowos25:.0f}k wafers per month and "
         f"is fully booked; HBM suppliers are sold out through 2026. Microsoft "
-        f"attributed about $25B of its 2026 guidance increase to memory and "
+        f"attributed about \\$25B of its 2026 guidance increase to memory and "
         f"component cost inflation rather than added capacity. CoreWeave's "
-        f"contracted backlog reached about $100B in Q1 2026.\n"
+        f"contracted backlog reached about \\$100B in Q1 2026.\n"
         f"- **Power is the next gate.** About {gw['capacity_gw'].sum():.0f} GW "
         f"of named gigawatt-scale projects are in the pipeline, while "
         f"high-voltage substation lead times run 3 to 5 years.\n"
         f"- **Demand is keeping pace, but value capture is an open question.** "
         f"ChatGPT reached 900M weekly active users in Feb 2026; Anthropic and "
-        f"OpenAI report run-rate revenue of $47B and $25B. Only about 5 to 6% "
+        f"OpenAI report run-rate revenue of \\$47B and \\$25B. Only about 5 to 6% "
         f"of ChatGPT users pay, and frontier capability has converged across "
         f"labs with no clear network effects, which raises the question of "
         f"whether value migrates to infrastructure below and applications "
         f"above the model layer.\n"
         f"- **System integrators are quiet winners of the deployment phase.** "
-        f"Accenture booked $5.9B of GenAI work in FY2025, up from about $3B in "
+        f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B in "
         f"FY2024, because deploying AI into enterprises remains services-heavy."
     )
     st.caption(f"Data last updated {DATA_UPDATED}. Sources are cited per chart "
@@ -222,7 +222,7 @@ with tab_overview:
     s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
               f"{len(gw)} flagship projects")
 
-    st.markdown("#### Hyperscaler capex by company ($B, absolute)")
+    st.markdown("#### Hyperscaler capex by company (\\$B, absolute)")
     color_map = COMPANY_COLORS
     comp_order = ["Alphabet", "Amazon", "Meta", "Microsoft", "Oracle"]
     act = view.pivot_table(index="company", columns="fiscal_year",
@@ -261,8 +261,8 @@ with tab_overview:
         "including finance leases). Microsoft's fiscal year ends in June and "
         "Oracle's in May, so their years are not calendar-aligned.")
     st.caption(
-        f"FY24 to FY25, the five companies went from ${total_prev:,.0f}B to "
-        f"${total_now:,.0f}B. Guidance points to about ${totals[2026]:,.0f}B in "
+        f"FY24 to FY25, the five companies went from \\${total_prev:,.0f}B to "
+        f"\\${total_now:,.0f}B. Guidance points to about \\${totals[2026]:,.0f}B in "
         "2026.")
 
     st.markdown("#### Value-chain map")
@@ -287,9 +287,9 @@ with tab_silicon:
     render_layer_card(1)
 
     st.markdown("---")
-    st.markdown("#### Revenue by key player ($B)")
-    figsi = px.line(
-        silicon_rev, x="fy", y="revenue_b", color="company", markers=True,
+    st.markdown("#### Revenue by key player (\\$B)")
+    figsi = px.bar(
+        silicon_rev, x="fy", y="revenue_b", color="company", barmode="group",
         labels={"fy": "Fiscal year", "revenue_b": "Revenue ($B)", "company": ""},
         color_discrete_map={"NVIDIA": GREEN, "AMD": RED, "Broadcom": BLUE,
                             "Micron": YELLOW})
@@ -297,7 +297,7 @@ with tab_silicon:
     st.plotly_chart(figsi, width="stretch")
     st.caption(
         "Total company revenue. NVIDIA / Broadcom / Micron fiscal years are "
-        "offset from calendar. NVIDIA's data-center segment alone was ~$115B in "
+        "offset from calendar. NVIDIA's data-center segment alone was ~\\$115B in "
         "FY2025. Memory: HBM is the supply-constrained input (SK Hynix ~57% "
         "share, sold out through 2026); Micron shown as the US-listed memory "
         "proxy. Sources: company filings.")
@@ -315,7 +315,7 @@ with tab_foundry:
     render_layer_card(2)
 
     st.markdown("---")
-    st.markdown("#### Revenue & capex by key player ($B)")
+    st.markdown("#### Revenue & capex by key player (\\$B)")
     st.caption(
         "Pure-play foundries. TSMC has ~70% market share; GlobalFoundries and UMC "
         "are specialty / mature-node players. Samsung Foundry (#2) and Intel "
@@ -323,24 +323,24 @@ with tab_foundry:
     fc1, fc2 = st.columns(2)
     fcolors = {"TSMC": BLUE, "GlobalFoundries": GREEN, "UMC": YELLOW}
     with fc1:
-        figfr = px.line(foundry, x="year", y="revenue_b", color="company",
-                        markers=True, color_discrete_map=fcolors,
-                        labels={"year": "Year", "revenue_b": "Revenue ($B)",
-                                "company": ""})
+        figfr = px.bar(foundry, x="year", y="revenue_b", color="company",
+                       barmode="group", color_discrete_map=fcolors,
+                       labels={"year": "Year", "revenue_b": "Revenue ($B)",
+                               "company": ""})
         figfr.update_layout(height=340, hovermode="x unified", legend_title="",
                             title="Revenue")
         st.plotly_chart(figfr, width="stretch")
     with fc2:
-        figfc = px.line(foundry, x="year", y="capex_b", color="company",
-                        markers=True, color_discrete_map=fcolors,
-                        labels={"year": "Year", "capex_b": "Capex ($B)",
-                                "company": ""})
+        figfc = px.bar(foundry, x="year", y="capex_b", color="company",
+                       barmode="group", color_discrete_map=fcolors,
+                       labels={"year": "Year", "capex_b": "Capex ($B)",
+                               "company": ""})
         figfc.update_layout(height=340, hovermode="x unified", legend_title="",
                             title="Capex")
         st.plotly_chart(figfc, width="stretch")
     st.caption(
         "Sources: TSMC / GlobalFoundries / UMC results (SEC filings). TSMC 2026E "
-        "capex guidance $52-56B; CoWoS is about 7-9% of TSMC revenue. OSAT "
+        "capex guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue. OSAT "
         "partners: ASE, Amkor.")
 
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
@@ -379,9 +379,9 @@ with tab_systems:
     render_layer_card(3)
 
     st.markdown("---")
-    st.markdown("#### Server revenue by vendor ($B)")
-    figsy = px.line(
-        systems, x="year", y="revenue_b", color="company", markers=True,
+    st.markdown("#### Server revenue by vendor (\\$B)")
+    figsy = px.bar(
+        systems, x="year", y="revenue_b", color="company", barmode="group",
         color_discrete_map={"Dell ISG": BLUE, "Supermicro": GREEN,
                             "HPE Server": YELLOW},
         labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
@@ -406,9 +406,9 @@ with tab_network:
     render_layer_card(4)
 
     st.markdown("---")
-    st.markdown("#### Revenue by vendor ($B)")
-    fign4 = px.line(
-        networking, x="year", y="revenue_b", color="company", markers=True,
+    st.markdown("#### Revenue by vendor (\\$B)")
+    fign4 = px.bar(
+        networking, x="year", y="revenue_b", color="company", barmode="group",
         color_discrete_map={"Arista": GREEN, "Ciena": BLUE, "Nokia NI": YELLOW},
         labels={"year": "Year", "revenue_b": "Revenue ($B)", "company": ""})
     fign4.update_layout(height=380, hovermode="x unified", legend_title="")
@@ -417,7 +417,7 @@ with tab_network:
         "Segment-appropriate figures. Arista and Ciena are pure-plays (total "
         "revenue). Nokia is the Network Infrastructure segment only, which "
         "excludes mobile networks (EUR to USD approx). Cisco's Networking segment "
-        "(about $28-30B) is larger but sits inside a diversified firm, so it is "
+        "(about \\$28-30B) is larger but sits inside a diversified firm, so it is "
         "left out to keep the comparison clean. Switch silicon (Broadcom) sits in "
         "Silicon & IP. Sources: company filings.")
 
@@ -434,7 +434,7 @@ with tab_dc:
     render_layer_card(5)
 
     st.markdown("---")
-    st.markdown("#### Data center vs office construction (US, $B/year)")
+    st.markdown("#### Data center vs office construction (US, \\$B/year)")
     st.caption("US data center construction has overtaken office construction.")
     figdc = go.Figure()
     figdc.add_trace(go.Scatter(
@@ -447,10 +447,10 @@ with tab_dc:
                         xaxis_title="Year", hovermode="x unified")
     st.plotly_chart(figdc, width="stretch")
     st.caption(
-        "US Census construction spending. Data center spend went from about $9B "
-        "(2020) to about $41B (2025, up 344%); office fell from about $72B to "
-        "about $49B (lowest since 2015). On a monthly run-rate the two crossed in "
-        "Dec 2025 (data centers about $45B vs offices about $44B). Data center "
+        "US Census construction spending. Data center spend went from about \\$9B "
+        "(2020) to about \\$41B (2025, up 344%); office fell from about \\$72B to "
+        "about \\$49B (lowest since 2015). On a monthly run-rate the two crossed in "
+        "Dec 2025 (data centers about \\$45B vs offices about \\$44B). Data center "
         "values for 2023 and 2024 are derived from Census-reported growth rates; "
         "2021-22 and the office mid-years are interpolated, flagged in the data "
         f"file. Data as of {DATA_UPDATED}.")
@@ -492,7 +492,7 @@ with tab_dc:
     st.caption(
         "Grid context: high-voltage substation lead times run 3 to 5 years, 7 of "
         "13 US grid regions are projected below safety margins by 2030, and "
-        "Goldman estimates about $720B of grid spend needed through 2030. Power, "
+        "Goldman estimates about \\$720B of grid spend needed through 2030. Power, "
         "not capital, is the likely gate on the 2027+ buildout. Sources: Goldman "
         "Sachs, IEA, NextBigFuture, Introl, Sherwood, Data Center Knowledge.")
 
@@ -514,10 +514,10 @@ with tab_hyper:
 
     colA, colB = st.columns(2)
     with colA:
-        st.markdown("**Reported annual capex ($B)**")
-        fig2 = px.line(
-            g, x="fiscal_year", y="capex_usd_b", color="company", markers=True,
-            color_discrete_map=COMPANY_COLORS,
+        st.markdown("**Reported annual capex (\\$B)**")
+        fig2 = px.bar(
+            g, x="fiscal_year", y="capex_usd_b", color="company",
+            barmode="group", color_discrete_map=COMPANY_COLORS,
             labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)"})
         fig2.update_layout(height=360, hovermode="x unified", legend_title="")
         st.plotly_chart(fig2, width="stretch")
@@ -531,21 +531,25 @@ with tab_hyper:
         fig3.update_layout(height=360, hovermode="x unified", legend_title="")
         st.plotly_chart(fig3, width="stretch")
 
-    st.markdown("**Quarterly capex ($B)**")
+    st.markdown("**Quarterly capex (\\$B)**")
     qv = capex_q.copy()
     qv["period_end"] = pd.to_datetime(qv["period_end"])
     qv["capex_b"] = qv["capex_usd_m"] / 1000.0
-    figq = px.line(
-        qv.sort_values("period_end"), x="period_end", y="capex_b",
-        color="company", markers=True, color_discrete_map=COMPANY_COLORS,
-        labels={"period_end": "Quarter end", "capex_b": "Capex ($B)"})
+    qv["quarter"] = (qv["period_end"].dt.year.astype(str) + " Q" +
+                     qv["period_end"].dt.quarter.astype(str))
+    figq = px.bar(
+        qv.sort_values("period_end"), x="quarter", y="capex_b",
+        color="company", barmode="group", color_discrete_map=COMPANY_COLORS,
+        labels={"quarter": "Calendar quarter of period end",
+                "capex_b": "Capex ($B)"})
     figq.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figq, width="stretch")
     st.caption(
         "Quarterly cash purchases of PP&E from 10-Q and 10-K filings (SEC EDGAR "
         "XBRL). Cash-flow figures in 10-Qs are year-to-date, so quarters are "
         "derived by differencing; derived quarters sum exactly to the reported "
-        f"annual figures. Plotted by actual quarter-end date. Data as of "
+        "annual figures. Grouped by the calendar quarter in which each fiscal "
+        "quarter ends (Microsoft and Oracle quarters are offset). Data as of "
         f"{DATA_UPDATED}.")
 
     st.markdown("---")
@@ -574,8 +578,8 @@ with tab_hyper:
     st.caption(
         f"FY2025: {ratio_line}. Oracle already spends more than its operations "
         "generate and Amazon is close. The funding gap has moved to the bond "
-        "market: hyperscalers issued $121B of bonds in 2025, four times the "
-        "five-year average of about $28B, including Meta's $30B (the largest "
+        "market: hyperscalers issued \\$121B of bonds in 2025, four times the "
+        "five-year average of about \\$28B, including Meta's \\$30B (the largest "
         "corporate bond since 2023), an Alphabet 100-year bond, and repeated "
         "Oracle issuance, at sub-5% average rates. Sources: 10-K filings (EDGAR "
         f"XBRL), Janus Henderson, Wolf Street. Data as of {DATA_UPDATED}.")
@@ -631,13 +635,13 @@ with tab_hyper:
         width="stretch", hide_index=True)
     st.caption(
         "Part of the jump is definitional (guidance includes finance leases). "
-        "Microsoft also flagged about $25B of its 2026 step-up as memory and "
+        "Microsoft also flagged about \\$25B of its 2026 step-up as memory and "
         "component cost inflation rather than added capacity, so higher capex "
         "does not map one-to-one to more compute. Oracle guidance covers its "
         "fiscal year ending May 2026.")
 
     st.markdown("---")
-    st.markdown("#### Hyperscaler capex vs accelerator vendor revenue ($B)")
+    st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
     st.caption(
         "Two reported series: combined Big-5 capex against NVIDIA and AMD "
         "data-center segment revenue. Shows how much of the capex lands at the "
@@ -657,7 +661,7 @@ with tab_hyper:
                        hovermode="x unified")
     st.plotly_chart(figr, width="stretch")
     st.caption(
-        "NVIDIA's fiscal year ends in late January, so its FY2026 ($194B "
+        "NVIDIA's fiscal year ends in late January, so its FY2026 (\\$194B "
         "data-center revenue) is mapped to calendar 2025. AMD's data-center "
         "segment starts in 2022, when it was first reported. Hyperscaler capex "
         "also funds land, buildings, power and networking, and accelerator "
@@ -681,7 +685,7 @@ with tab_neo:
     c2.metric("Nebius 2026E capex", "$20-25B")
     c3.metric("Sector GPU-backed debt", ">$20B")
 
-    st.markdown("**Contracted backlog vs 2025 revenue ($B)**")
+    st.markdown("**Contracted backlog vs 2025 revenue (\\$B)**")
     fign = go.Figure()
     fign.add_trace(go.Bar(x=neo["company"], y=neo["revenue_2025_b"],
                           name="2025 revenue", marker_color=GREEN))
@@ -692,7 +696,7 @@ with tab_neo:
     st.plotly_chart(fign, width="stretch")
     st.caption(
         "CoreWeave's backlog is far larger than its current revenue, and "
-        "concentrated (the OpenAI deal added $11.2B). Blanks are not disclosed; "
+        "concentrated (the OpenAI deal added \\$11.2B). Blanks are not disclosed; "
         "Crusoe and Lambda are private and report little.")
 
     st.markdown("**Provider snapshot**")
@@ -707,7 +711,7 @@ with tab_neo:
             "key_financing_signal": "Financing signal"}),
         width="stretch", hide_index=True)
     st.caption(
-        "NeoClouds carry over $20B in GPU-backed debt. GPUs depreciate on a 4 to "
+        "NeoClouds carry over \\$20B in GPU-backed debt. GPUs depreciate on a 4 to "
         "6 year schedule, and rental pricing can move faster. Customer "
         "concentration on a few anchor tenants is the main risk. Sources: company "
         "filings and press.")
@@ -726,7 +730,7 @@ with tab_labs:
     st.markdown("---")
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("#### Frontier-lab revenue (annualized run-rate, $B)")
+        st.markdown("#### Frontier-lab revenue (annualized run-rate, \\$B)")
         figlr = px.bar(
             labrev.sort_values("revenue_b"), x="revenue_b", y="company",
             orientation="h", text="revenue_b", color="company",
@@ -740,7 +744,7 @@ with tab_labs:
         st.caption(
             "Annualized run-rates at various dates (Anthropic May-26, OpenAI "
             "Feb-26, xAI Q3-25, Mistral Jan-26). Anthropic has overtaken OpenAI, "
-            "going from $1B to $47B in about 18 months. Source: Epoch AI.")
+            "going from \\$1B to \\$47B in about 18 months. Source: Epoch AI.")
     with c2:
         st.markdown("#### Frontier capability by lab (GPQA-Diamond, %)")
         figb = px.line(
@@ -807,11 +811,11 @@ with tab_si:
         "enterprise adoption.")
 
     st.markdown("---")
-    st.markdown("#### Revenue by key player ($B)")
+    st.markdown("#### Revenue by key player (\\$B)")
     sicolors = {"Accenture": "#A100FF", "TCS": BLUE, "Infosys": GREEN,
                 "Capgemini": YELLOW}
-    figsi2 = px.line(
-        si, x="year", y="revenue_b", color="company", markers=True,
+    figsi2 = px.bar(
+        si, x="year", y="revenue_b", color="company", barmode="group",
         color_discrete_map=sicolors,
         labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
                 "company": ""})
@@ -824,7 +828,7 @@ with tab_si:
         "are comparable players but are private or embedded in a larger group. "
         "Sources: company results.")
 
-    st.markdown("#### Accenture GenAI new bookings ($B)")
+    st.markdown("#### Accenture GenAI new bookings (\\$B)")
     figgb = px.bar(
         genai_bookings, x="period", y="bookings_b",
         labels={"period": "", "bookings_b": "New bookings ($B)"})
@@ -832,8 +836,8 @@ with tab_si:
     figgb.update_layout(height=300)
     st.plotly_chart(figgb, width="stretch")
     st.caption(
-        "GenAI new bookings as disclosed by Accenture: about $3B in FY2024, "
-        "then $5.9B in FY2025 with a rising quarterly run-rate ($1.2B to $1.8B "
+        "GenAI new bookings as disclosed by Accenture: about \\$3B in FY2024, "
+        "then \\$5.9B in FY2025 with a rising quarterly run-rate (\\$1.2B to \\$1.8B "
         "through the year). The clearest public number on enterprise AI "
         f"deployment demand. Source: Accenture 8-K filings. Data as of "
         f"{DATA_UPDATED}.")
@@ -845,7 +849,7 @@ with tab_telco:
     st.markdown("### 10 · Telecoms")
     st.caption(
         "Shown for context. Global telecom capex has stayed roughly flat at about "
-        "$300B while hyperscaler capex has grown past it.")
+        "\\$300B while hyperscaler capex has grown past it.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())
@@ -869,7 +873,7 @@ with tab_telco:
     k3.metric("Big-5 2026E", f"${guide_total:.0f}B",
               f"~{guide_total/295:.1f}x global telecom")
 
-    st.markdown("#### Capex: hyperscalers vs telecoms ($B)")
+    st.markdown("#### Capex: hyperscalers vs telecoms (\\$B)")
     figt = px.line(cmpdf, x="year", y="capex_b", color="series", markers=True,
                    color_discrete_map={"Global telecom capex": GREY,
                                        "Big-5 hyperscaler capex": BLUE},
@@ -882,22 +886,22 @@ with tab_telco:
         "midpoint. Hyperscaler capex has passed the whole global telecom "
         "industry's.")
 
-    st.markdown("#### US carriers: capex and revenue since 2020 ($B)")
+    st.markdown("#### US carriers: capex and revenue since 2020 (\\$B)")
     tc1, tc2 = st.columns(2)
     uscolors = {"AT&T": BLUE, "Verizon": RED, "T-Mobile US": "#E20074"}
     with tc1:
-        figuc = px.line(telco_us, x="year", y="capex_b", color="company",
-                        markers=True, color_discrete_map=uscolors,
-                        labels={"year": "Year", "capex_b": "Capex ($B)",
-                                "company": ""})
+        figuc = px.bar(telco_us, x="year", y="capex_b", color="company",
+                       barmode="group", color_discrete_map=uscolors,
+                       labels={"year": "Year", "capex_b": "Capex ($B)",
+                               "company": ""})
         figuc.update_layout(height=330, hovermode="x unified", legend_title="",
                             title="Capex")
         st.plotly_chart(figuc, width="stretch")
     with tc2:
-        figur = px.line(telco_us, x="year", y="revenue_b", color="company",
-                        markers=True, color_discrete_map=uscolors,
-                        labels={"year": "Year", "revenue_b": "Revenue ($B)",
-                                "company": ""})
+        figur = px.bar(telco_us, x="year", y="revenue_b", color="company",
+                       barmode="group", color_discrete_map=uscolors,
+                       labels={"year": "Year", "revenue_b": "Revenue ($B)",
+                               "company": ""})
         figur.update_layout(height=330, hovermode="x unified", legend_title="",
                             title="Revenue")
         st.plotly_chart(figur, width="stretch")
@@ -909,7 +913,7 @@ with tab_telco:
         "big-3 capex has been flat to declining since 2022 while hyperscaler "
         f"capex tripled. Data as of {DATA_UPDATED}.")
 
-    st.markdown("#### Major telcos: revenue & capex (latest year, $B)")
+    st.markdown("#### Major telcos: revenue & capex (latest year, \\$B)")
     figtp = px.scatter(
         telco_players, x="revenue_b", y="capex_b", color="region",
         text="company", size="capex_b", size_max=28,
