@@ -1,0 +1,12 @@
+year,traffic_eb_month,source_type,note
+2015,4.4,reported,Ericsson Mobility Report; mobile data traffic excl FWA; EB per month at year end
+2016,7.5,estimate,Compiled across successive report editions; Ericsson has revised historicals
+2017,12,estimate,
+2018,20,estimate,
+2019,30,estimate,
+2020,44,estimate,
+2021,60,estimate,
+2022,79,estimate,
+2023,100,estimate,
+2024,126,reported,Ericsson Nov-2025 report: 126 EB/month excl FWA at end-2024
+2025,145,estimate,Extrapolated from Ericsson growth trajectory toward 310 EB/month by 2031

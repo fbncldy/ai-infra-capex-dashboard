@@ -218,6 +218,38 @@ leaderboards (approximate).
   Accenture GenAI new bookings: ~$3B FY24, $5.9B FY25 (quarterly $1.2B to
   $1.8B). Sources: company results, Accenture 8-K (EDGAR).
 
+## Additions of 2026-06-04 (third round, Evans-inspired; data sourced independently)
+
+- `semis_billings.csv`: WSTS/SIA worldwide semiconductor sales, annual
+  1990-2025 (canonical published figures) + 2026 forecast $1T (SIA). Shows the
+  cycle history (2001 -32%, 2009, 2019, 2023) vs the current AI leg.
+- `foundry_players.csv` rewritten: TSMC (reported) + Samsung Electronics and
+  Intel (IDMs, total-company figures; Samsung KRW converted, estimate-flagged).
+  GlobalFoundries/UMC removed per user request.
+- `dc_construction.csv` extended to 2015: 2015-2022 from Census monthly series
+  via Our World in Data grapher (annualized); 2023-25 Census benchmark-revised
+  annuals. Vintage difference flagged.
+- `mobile_traffic.csv`: Ericsson Mobility Report mobile data traffic excl FWA,
+  4.4 EB/mo (2015) to 126 EB/mo (2024, Nov-25 report); mid-years approximate
+  (Ericsson revised historicals; see Light Reading coverage).
+- `telco_stocks.csv`: AT&T / Verizon / Deutsche Telekom start-of-year adjusted
+  closes 2015-2026 (Yahoo Finance chart API). Used as pure-telco proxy because
+  MSCI telecom index history is paywalled; price-only, excl dividends.
+- `ai_usage_depth.csv`: Bick, Blandin & Deming "The Rapid Adoption of
+  Generative AI" (NBER w32966, RPS survey late-2024): 40% ever used; 23% weekly
+  at work; 9% daily at work; 6.4% daily outside work.
+- `enterprise_ai_spend.csv`: Menlo Ventures State of GenAI in the Enterprise
+  2025: $37B total enterprise genAI spend ($11.5B 2024); applications $19B;
+  coding tools $4.2B largest single use case; horizontal copilots $8.4B;
+  vertical $3.5B.
+- `accenture_genai_bookings.csv` extended: H2-FY23 $0.3B; FY24 quarterly
+  0.45/0.6/0.9/1.0 ($3.0B); FY25 1.2/1.4/1.5/1.8 ($5.9B). Cumulative >$9B.
+  All from Accenture 8-Ks. (User questioned the data; it verified correct.)
+- `yc_ai_share.csv`: AI share of YC batches: W23 31%, S23 57%, W24 66%, F24
+  87%, W25 ~80%, 53% of all 2025 YC startups; 2015-2022 ~5-15% approximate from
+  directory analyses.
+- Oracle FY2026 capex guidance raised to ~$50B (from ~$35B); RPO $553B.
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.

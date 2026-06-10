@@ -1,0 +1,38 @@
+year,sales_b,source_type,note
+1990,50.5,reported,WSTS/SIA annual worldwide semiconductor sales
+1991,54.6,reported,
+1992,59.9,reported,
+1993,77.3,reported,
+1994,102.0,reported,
+1995,144.4,reported,
+1996,132.0,reported,
+1997,137.2,reported,
+1998,125.6,reported,
+1999,149.4,reported,
+2000,204.4,reported,Dot-com peak
+2001,139.0,reported,Dot-com bust: -32%
+2002,140.7,reported,
+2003,166.4,reported,
+2004,213.0,reported,
+2005,227.5,reported,
+2006,247.7,reported,
+2007,255.6,reported,
+2008,248.6,reported,
+2009,226.3,reported,Financial crisis
+2010,298.3,reported,
+2011,299.5,reported,
+2012,291.6,reported,
+2013,305.6,reported,
+2014,335.8,reported,
+2015,335.2,reported,
+2016,338.9,reported,
+2017,412.2,reported,Memory boom
+2018,468.8,reported,
+2019,412.3,reported,Memory bust: -12%
+2020,440.4,reported,
+2021,555.9,reported,Pandemic/shortage boom
+2022,574.1,reported,
+2023,526.8,reported,Post-pandemic downturn
+2024,630.5,reported,AI-driven recovery
+2025,791.7,reported,+25.6%; AI demand
+2026,1000.0,forecast,SIA/WSTS forecast: first one-trillion-dollar year

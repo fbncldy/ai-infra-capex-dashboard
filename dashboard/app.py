@@ -90,8 +90,14 @@ telco_us = load_csv("telecom_us_series.csv")
 ocf = load_csv("hyperscaler_ocf.csv")
 si = load_csv("system_integrators.csv")
 genai_bookings = load_csv("accenture_genai_bookings.csv")
+semis = load_csv("semis_billings.csv")
+mobile_traffic = load_csv("mobile_traffic.csv")
+telco_stocks = load_csv("telco_stocks.csv")
+usage_depth = load_csv("ai_usage_depth.csv")
+ent_spend = load_csv("enterprise_ai_spend.csv")
+yc_share = load_csv("yc_ai_share.csv")
 
-DATA_UPDATED = "June 4, 2026"
+DATA_UPDATED = "June 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
 YR = max(YEARS)  # latest reported fiscal year (2025)
@@ -202,8 +208,7 @@ with tab_overview:
         f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B in "
         f"FY2024, because deploying AI into enterprises remains services-heavy."
     )
-    st.caption(f"Data last updated {DATA_UPDATED}. Sources are cited per chart "
-               "and logged in notes/sources.md in the repository.")
+    st.caption(f"Data last updated {DATA_UPDATED}.")
     st.markdown("---")
 
     st.markdown("##### Spend & demand (downstream)")
@@ -282,12 +287,35 @@ with tab_overview:
 # --------------------------------------------------------------------------- #
 with tab_silicon:
     st.markdown("### 1 · Silicon & IP")
-    st.caption(
-        "The compute engines (GPUs / TPUs / ASICs) and the high-bandwidth memory "
-        "stacked beside them.")
+    st.markdown(
+        "**Semiconductors are a \\$792B industry (2025) that has historically "
+        "moved in 3 to 4 year cycles; AI demand drove a 26% jump in 2025 and a "
+        "forecast first one-trillion-dollar year in 2026.** NVIDIA dominates the "
+        "accelerator layer with about \\$115B of data-center revenue, and HBM "
+        "memory is sold out through 2026, making silicon the first gate on AI "
+        "capacity.")
     render_layer_card(1)
 
     st.markdown("---")
+    st.markdown("#### Global semiconductor sales since 1990 (\\$B)")
+    figsem = go.Figure()
+    hist = semis[semis["source_type"] == "reported"]
+    fc = semis[semis["source_type"] == "forecast"]
+    figsem.add_trace(go.Bar(x=hist["year"], y=hist["sales_b"],
+                            marker_color=BLUE, name="Reported"))
+    figsem.add_trace(go.Bar(x=fc["year"], y=fc["sales_b"], marker_color=BLUE,
+                            marker_pattern_shape="/", name="2026 forecast"))
+    figsem.update_layout(height=380, yaxis_title="Annual sales ($B)",
+                         xaxis_title="Year", legend_title="",
+                         hovermode="x unified")
+    st.plotly_chart(figsem, width="stretch")
+    st.caption(
+        "WSTS / SIA worldwide semiconductor billings, annual. The industry has "
+        "cycled repeatedly (2001 down 32%, 2009, 2019, 2023) but each cycle has "
+        "peaked higher. The current AI-driven leg (+26% in 2025, about "
+        "\\$1T forecast for 2026) is the steepest rise since the dot-com era. "
+        f"Sources: WSTS, SIA. Data as of {DATA_UPDATED}.")
+
     st.markdown("#### Revenue by key player (\\$B)")
     figsi = px.bar(
         silicon_rev, x="fy", y="revenue_b", color="company", barmode="group",
@@ -308,22 +336,25 @@ with tab_silicon:
 # --------------------------------------------------------------------------- #
 with tab_foundry:
     st.markdown("### 2 · Foundry & Packaging")
-    st.caption(
-        "Where chips are manufactured and packaged. Advanced packaging (CoWoS) "
-        "co-locates logic and HBM and is the single most-cited physical "
-        "bottleneck in the AI supply chain."
-    )
+    st.markdown(
+        "**Leading-edge manufacturing is effectively a one-company market: TSMC "
+        "holds about 70% of foundry revenue and makes nearly every AI "
+        "accelerator.** Samsung and Intel are spending tens of billions to "
+        "compete at the leading edge with limited success so far, and CoWoS "
+        "advanced packaging remains the single tightest physical constraint in "
+        "the AI supply chain.")
     render_layer_card(2)
 
     st.markdown("---")
     st.markdown("#### Revenue & capex by key player (\\$B)")
     st.caption(
-        "Pure-play foundries. TSMC has about 70% market share; GlobalFoundries "
-        "and UMC "
-        "are specialty / mature-node players. Samsung Foundry (#2) and Intel "
-        "Foundry are loss-making segments inside larger firms, omitted here.")
+        "TSMC is the pure-play foundry. Samsung Electronics and Intel are IDMs: "
+        "figures are total company (Samsung includes memory, phones and "
+        "displays; Intel includes products), so they overstate the foundry "
+        "businesses but show the relative investment scale. Samsung in "
+        "USD-converted KRW.")
     fc1, fc2 = st.columns(2)
-    fcolors = {"TSMC": BLUE, "GlobalFoundries": GREEN, "UMC": YELLOW}
+    fcolors = {"TSMC": BLUE, "Samsung Electronics": GREEN, "Intel": GREY}
     with fc1:
         figfr = px.bar(foundry, x="year", y="revenue_b", color="company",
                        barmode="group", color_discrete_map=fcolors,
@@ -341,7 +372,7 @@ with tab_foundry:
                             title="Capex")
         st.plotly_chart(figfc, width="stretch")
     st.caption(
-        "Sources: TSMC / GlobalFoundries / UMC results (SEC filings). TSMC 2026E "
+        "Sources: TSMC, Samsung and Intel results. TSMC 2026E "
         "capex guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue. OSAT "
         "partners: ASE, Amkor.")
 
@@ -375,9 +406,12 @@ with tab_foundry:
 # --------------------------------------------------------------------------- #
 with tab_systems:
     st.markdown("### 3 · Servers")
-    st.caption(
-        "The OEMs/ODMs that assemble accelerators, memory and networking into "
-        "deployable racks.")
+    st.markdown(
+        "**Server makers turn GPUs into deployable systems and were among the "
+        "first beneficiaries of the AI buildout, with revenue inflecting from "
+        "2023.** Margins are thin and the largest volumes flow through "
+        "Taiwanese ODMs; Supermicro's run from \\$3B to a \\$33B revenue target "
+        "in six years shows both the upside and the volatility of this layer.")
     render_layer_card(3)
 
     st.markdown("---")
@@ -403,9 +437,12 @@ with tab_systems:
 # --------------------------------------------------------------------------- #
 with tab_network:
     st.markdown("### 4 · Networking")
-    st.caption(
-        "Back-end GPU fabric (NVLink, InfiniBand/Ethernet) and front-end / "
-        "data-centre interconnect.")
+    st.markdown(
+        "**As clusters pass 100k GPUs the network, not the chip, increasingly "
+        "sets training efficiency, shifting value to back-end fabrics and "
+        "optics.** Arista is the clearest listed pure-play beneficiary, roughly "
+        "quadrupling revenue since 2020; most networking revenue still sits "
+        "inside diversified firms like Cisco and Nokia.")
     render_layer_card(4)
 
     st.markdown("---")
@@ -429,11 +466,12 @@ with tab_network:
 # --------------------------------------------------------------------------- #
 with tab_dc:
     st.markdown("### 5 · Data Centers")
-    st.caption(
-        "Shells, cooling and electricity. After packaging eases, grid "
-        "interconnection and power become the next constraint. Chips ship in "
-        "months; a high-voltage substation takes 3 to 5 years."
-    )
+    st.markdown(
+        "**US data center construction passed office construction in 2025, the "
+        "clearest physical-economy signal of the AI buildout.** The binding "
+        "constraint is shifting from buildings to electricity: named gigawatt "
+        "projects total about 17 GW while high-voltage substations take 3 to 5 "
+        "years, so power availability increasingly drives siting and timing.")
     render_layer_card(5)
 
     st.markdown("---")
@@ -450,13 +488,15 @@ with tab_dc:
                         xaxis_title="Year", hovermode="x unified")
     st.plotly_chart(figdc, width="stretch")
     st.caption(
-        "US Census construction spending. Data center spend went from about \\$9B "
-        "(2020) to about \\$41B (2025, up 344%); office fell from about \\$72B to "
-        "about \\$49B (lowest since 2015). On a monthly run-rate the two crossed in "
-        "Dec 2025 (data centers about \\$45B vs offices about \\$44B). Data center "
-        "values for 2023 and 2024 are derived from Census-reported growth rates; "
-        "2021-22 and the office mid-years are interpolated, flagged in the data "
-        f"file. Data as of {DATA_UPDATED}.")
+        "US Census construction spending. Data center construction was about "
+        "\\$3B a year in 2015 and roughly \\$9-10B through 2020-2022, then "
+        "tripled in three years to about \\$41B (2025). Office construction "
+        "peaked near \\$72B in 2020 and fell to \\$49B, its lowest since 2015. "
+        "On a monthly run-rate the two crossed in Dec 2025. Data center values "
+        "for 2015-2022 are from the Census monthly series (via Our World in "
+        "Data) and 2023-25 from benchmark-revised Census annuals; office "
+        "mid-years are approximate, flagged in the data file. Data as of "
+        f"{DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Gigawatt-scale buildout")
@@ -504,10 +544,12 @@ with tab_dc:
 # --------------------------------------------------------------------------- #
 with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
-    st.caption(
-        "Google Cloud, Azure, AWS, Oracle. The demand engine of the value chain: "
-        "their capex is the pull on every upstream layer."
-    )
+    st.markdown(
+        "**Five companies are spending at a scale with few precedents: about "
+        "\\$379B of capex in FY2025 and roughly \\$760B guided for 2026.** "
+        "Capex has outgrown operating cash flow at Oracle and nearly so at "
+        "Amazon, pushing funding into the bond market. This spend is the demand "
+        "pull behind every upstream layer of the chain.")
     render_layer_card(6)
     st.markdown("---")
 
@@ -677,9 +719,12 @@ with tab_hyper:
 # --------------------------------------------------------------------------- #
 with tab_neo:
     st.markdown("### 7 · NeoClouds")
-    st.caption(
-        "Specialised GPU-rental providers between silicon and the AI labs. Much "
-        "of the build is funded by GPU-backed debt.")
+    st.markdown(
+        "**GPU rental specialists went from niche to roughly \\$100B of "
+        "contracted backlog in about two years, financed largely with "
+        "GPU-backed debt.** Backlogs are concentrated on a few anchor tenants "
+        "such as OpenAI and Meta, so durability depends on rental pricing "
+        "holding up over a 4 to 6 year asset life.")
     render_layer_card(7)
     st.markdown("---")
 
@@ -724,10 +769,13 @@ with tab_neo:
 # --------------------------------------------------------------------------- #
 with tab_labs:
     st.markdown("### 8 · AI Labs")
-    st.caption(
-        "Model developers consume the compute the rest of the chain supplies. "
-        "Their revenue and compute commitments are the demand signal, and "
-        "increasingly the financing counterparty behind NeoCloud backlogs.")
+    st.markdown(
+        "**Lab revenue is large and concentrating, with Anthropic and OpenAI "
+        "run-rates above \\$70B combined, but usage is broad rather than deep: "
+        "only about 5 to 6% of ChatGPT users pay and under 10% of US adults use "
+        "generative AI daily.** With frontier capability converging across "
+        "labs, whether value accrues to models, applications or the "
+        "infrastructure below them is the open question.")
     render_layer_card(8)
 
     st.markdown("---")
@@ -781,6 +829,43 @@ with tab_labs:
         "OpenAI disclosures. Weekly active users went from 100M (Aug-23) to 900M "
         "(Feb-26).")
 
+    ud1, ud2 = st.columns(2)
+    with ud1:
+        st.markdown("#### Depth of use: a mile wide, an inch deep (% of US adults)")
+        figud = px.bar(usage_depth, x="share_pct", y="measure",
+                       orientation="h", text="share_pct",
+                       labels={"share_pct": "% of US adults (18-64)",
+                               "measure": ""})
+        figud.update_traces(marker_color=BLUE,
+                            texttemplate="%{text:.0f}%",
+                            textposition="outside")
+        figud.update_layout(height=300,
+                            xaxis_range=[0, 50],
+                            yaxis={"categoryorder": "total ascending"})
+        st.plotly_chart(figud, width="stretch")
+        st.caption(
+            "About 40% of US working-age adults have used generative AI, but "
+            "under 10% use it daily. Adoption is broad and shallow. Source: "
+            "Bick, Blandin and Deming, Real-Time Population Survey (NBER), "
+            "late 2024.")
+    with ud2:
+        st.markdown("#### Enterprise AI application spend, 2025 (\\$B)")
+        figes = px.bar(ent_spend.sort_values("spend_b"), x="spend_b",
+                       y="category", orientation="h", text="spend_b",
+                       labels={"spend_b": "Annual spend ($B)", "category": ""})
+        figes.update_traces(marker_color=GREEN,
+                            texttemplate="$%{text:.1f}B",
+                            textposition="outside")
+        figes.update_layout(height=300,
+                            xaxis_range=[0, ent_spend["spend_b"].max() * 1.25])
+        st.plotly_chart(figes, width="stretch")
+        st.caption(
+            "Enterprise generative AI application spend reached \\$19B in 2025 "
+            "(of \\$37B total enterprise genAI spend, up from \\$11.5B in "
+            "2024). Coding tools are the largest single use case at \\$4.2B. "
+            "Source: Menlo Ventures, State of Generative AI in the Enterprise "
+            "2025.")
+
     st.caption(
         "Revenue is concentrating in Anthropic and OpenAI, while frontier "
         "benchmark scores are converging in the 90s. Lab revenue and multi-year "
@@ -798,20 +883,19 @@ with tab_labs:
          "Signal": "100k+ GPU clusters; vertical power build-out"},
     ])
     st.dataframe(deals, width="stretch", hide_index=True)
-    st.caption(
-        "Full data provenance for every figure in the dashboard is logged in "
-        "`notes/sources.md` (URLs + SEC accession numbers).")
 
 # --------------------------------------------------------------------------- #
 # 9 · System Integrators
 # --------------------------------------------------------------------------- #
 with tab_si:
     st.markdown("### 9 · System Integrators")
-    st.caption(
-        "The services firms that deploy AI into enterprises. Model capability "
-        "is converging, but getting it into production workflows remains "
-        "services-heavy, which makes integrators a measurable read on actual "
-        "enterprise adoption.")
+    st.markdown(
+        "**Deploying AI into enterprises is services-heavy work, which makes "
+        "integrators one of the most measurable reads on real adoption.** "
+        "Accenture's GenAI bookings compounded from \\$0.3B in FY2023 to "
+        "\\$5.9B in FY2025, and startup formation tells the same story: AI went "
+        "from a niche Y Combinator category to the large majority of recent "
+        "batches.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -831,28 +915,94 @@ with tab_si:
         "are comparable players but are private or embedded in a larger group. "
         "Sources: company results.")
 
-    st.markdown("#### Accenture GenAI new bookings (\\$B)")
-    figgb = px.bar(
-        genai_bookings, x="period", y="bookings_b",
-        labels={"period": "", "bookings_b": "New bookings ($B)"})
-    figgb.update_traces(marker_color="#A100FF")
-    figgb.update_layout(height=300)
+    st.markdown("#### Accenture GenAI new bookings since 2023 (\\$B)")
+    gb = genai_bookings.copy()
+    gb["cumulative_b"] = gb["bookings_b"].cumsum()
+    figgb = go.Figure()
+    figgb.add_trace(go.Bar(x=gb["period"], y=gb["bookings_b"],
+                           name="New bookings per period",
+                           marker_color="#A100FF"))
+    figgb.add_trace(go.Scatter(x=gb["period"], y=gb["cumulative_b"],
+                               name="Cumulative since 2023",
+                               mode="lines+markers",
+                               line=dict(color="#202124", width=3)))
+    figgb.update_layout(height=340, legend_title="",
+                        yaxis_title="$B", hovermode="x unified")
     st.plotly_chart(figgb, width="stretch")
     st.caption(
-        "GenAI new bookings as disclosed by Accenture: about \\$3B in FY2024, "
-        "then \\$5.9B in FY2025 with a rising quarterly run-rate (\\$1.2B to \\$1.8B "
-        "through the year). The clearest public number on enterprise AI "
-        f"deployment demand. Source: Accenture 8-K filings. Data as of "
-        f"{DATA_UPDATED}.")
+        "GenAI new bookings as disclosed in Accenture's quarterly results: "
+        "\\$0.3B in the first two quarters of disclosure (FY2023), \\$3.0B in "
+        "FY2024, \\$5.9B in FY2025. Cumulative bookings since 2023 passed "
+        "\\$9B. Source: Accenture 8-K filings.")
+
+    st.markdown("#### Y Combinator: AI share of startup batches (%)")
+    figyc = go.Figure()
+    figyc.add_trace(go.Bar(x=yc_share["year"], y=yc_share["ai_share_pct"],
+                           name="AI startups", marker_color=RED))
+    figyc.add_trace(go.Bar(x=yc_share["year"],
+                           y=100 - yc_share["ai_share_pct"],
+                           name="Other startups", marker_color="#dadce0"))
+    figyc.update_layout(barmode="stack", height=320, legend_title="",
+                        yaxis_title="% of batch",
+                        yaxis_range=[0, 100])
+    st.plotly_chart(figyc, width="stretch")
+    st.caption(
+        "Share of Y Combinator batch companies tagged as AI. Roughly 5 to 15% "
+        "of batches from 2015 to 2022, then 44% (2023), about 70% (2024) and "
+        "about 80% (2025). Startup formation has concentrated almost entirely "
+        "on AI. Compiled from YC directory analyses and press reports; "
+        f"2015-2022 values are approximate. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 10 · Telecoms (context)
 # --------------------------------------------------------------------------- #
 with tab_telco:
     st.markdown("### 10 · Telecoms")
-    st.caption(
-        "Shown for context. Global telecom capex has stayed roughly flat at about "
-        "\\$300B while hyperscaler capex has grown past it.")
+    st.markdown(
+        "**Telecoms built the last infrastructure wave: mobile traffic grew "
+        "roughly 30x since 2015 while sector capex stayed flat near \\$300B and "
+        "share prices went sideways.** That gap between usage growth and value "
+        "capture is the cautionary case for AI infrastructure: heavy capex does "
+        "not guarantee returns.")
+
+    st.markdown("---")
+    tt1, tt2 = st.columns(2)
+    with tt1:
+        st.markdown("#### Global mobile data traffic (EB per month)")
+        figmt = px.bar(mobile_traffic, x="year", y="traffic_eb_month",
+                       labels={"year": "Year",
+                               "traffic_eb_month": "EB per month"})
+        figmt.update_traces(marker_color=BLUE)
+        figmt.update_layout(height=340)
+        st.plotly_chart(figmt, width="stretch")
+        st.caption(
+            "Mobile network data traffic excluding fixed wireless access, at "
+            "year end. About 4.4 EB per month in 2015 to about 126 EB in 2024, "
+            "a roughly 30x increase. Compiled from successive Ericsson Mobility "
+            "Reports (Ericsson has revised historical figures; mid-years are "
+            "approximate).")
+    with tt2:
+        st.markdown("#### Large-cap telco share prices (2015 = 100)")
+        ts = telco_stocks.copy()
+        base = ts[ts["year"] == 2015].set_index("company")["price"]
+        ts["indexed"] = ts.apply(
+            lambda r: r["price"] / base[r["company"]] * 100, axis=1)
+        figts2 = px.line(ts, x="year", y="indexed", color="company",
+                         markers=True,
+                         color_discrete_map={"AT&T": BLUE, "Verizon": RED,
+                                             "Deutsche Telekom": "#E20074"},
+                         labels={"year": "Year", "indexed": "Index (2015 = 100)",
+                                 "company": ""})
+        figts2.add_hline(y=100, line_dash="dash", line_color=GREY)
+        figts2.update_layout(height=340, hovermode="x unified",
+                             legend_title="")
+        st.plotly_chart(figts2, width="stretch")
+        st.caption(
+            "Share prices of the three largest Western telcos, indexed to 100 "
+            "at the start of 2015 (price only, excluding dividends; Yahoo "
+            "Finance). AT&T and Verizon trade below their 2015 level a decade "
+            "later. Used as a proxy because MSCI pure-telecom index history is "
+            "paywalled.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())

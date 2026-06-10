@@ -1,0 +1,12 @@
+year,ai_share_pct,source_type,note
+2015,5,estimate,Share of YC batch companies with AI tag; compiled from YC directory analyses
+2016,6,estimate,
+2017,8,estimate,
+2018,10,estimate,
+2019,11,estimate,
+2020,12,estimate,
+2021,12,estimate,
+2022,15,estimate,
+2023,44,reported,W23 31% S23 57% (self-reported AI tag)
+2024,70,reported,W24 66% F24 87%
+2025,80,reported,W25 ~80%; AI = 53% of all new YC startups in 2025

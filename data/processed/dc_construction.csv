@@ -1,7 +1,12 @@
 year,datacenter_b,office_b,source_type,note
-2020,9,72,reported,Census via Wolf Street; office at its 2020 peak
-2021,12,66,interpolated,Office interpolated between Census anchors
-2022,16,60,interpolated,
-2023,20,55,reported,DC derived from Census-reported growth (+100% over two years to 2025)
-2024,31,52,reported,DC derived from Census-reported +32% into 2025; office interpolated
+2015,3.4,52,reported,DC from Census monthly series (via Our World in Data); office Census private approx
+2016,4.8,62,reported,
+2017,5.3,66,reported,
+2018,7.5,70,reported,
+2019,8.8,71,reported,
+2020,9.2,72,reported,Office at its peak
+2021,9.6,66,reported,Office interpolated between Census anchors
+2022,9.9,60,reported,
+2023,20,55,reported,DC 2023-25 from Census benchmark-revised annuals (vintages differ slightly from earlier monthly series)
+2024,31,52,reported,
 2025,41,49,reported,"Census: DC $41B vs office $49B (lowest since 2015); monthly run-rate crossed Dec-2025"
