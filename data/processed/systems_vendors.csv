@@ -1,19 +1,21 @@
 company,year,revenue_b,source_type,note
-Dell ISG,2021,33.9,reported,Dell fiscal year ends ~Jan; ISG incl storage
-Dell ISG,2022,34.4,reported,
-Dell ISG,2023,38.4,reported,
-Dell ISG,2024,33.9,reported,
-Dell ISG,2025,43.6,reported,+29% YoY on AI servers
+Dell ISG,2020,33.9,reported,Dell FY2021 (ends ~Jan); plotted against the calendar year covering most of the fiscal year
+Dell ISG,2021,34.4,reported,FY2022
+Dell ISG,2022,38.4,reported,FY2023
+Dell ISG,2023,33.9,reported,FY2024
+Dell ISG,2024,43.6,reported,FY2025; +29% on AI servers
+Dell ISG,2025,60.8,reported,FY2026; +40%; AI server shipments ~$25B
 Supermicro,2020,3.3,reported,Supermicro fiscal year ends ~Jun
 Supermicro,2021,3.6,reported,
 Supermicro,2022,5.2,reported,
 Supermicro,2023,7.1,reported,
 Supermicro,2024,14.9,reported,
 Supermicro,2025,22.0,reported,
-Supermicro,2026,33.0,guidance,Company FY2026 revenue target ~$33B
+Supermicro,2026,39.7,guidance,FY2026 guidance $38.9-40.4B; >$13B Blackwell Ultra backlog
 HPE Server,2020,13.0,estimate,HPE fiscal year ends ~Oct; server segment approx
 HPE Server,2021,13.6,estimate,
 HPE Server,2022,13.9,estimate,
 HPE Server,2023,14.4,estimate,
 HPE Server,2024,15.3,reported,
 HPE Server,2025,19.0,estimate,AI systems ramping
+HPE Server,2026,25.0,guidance,Estimate from FY26 group growth guidance of 29-33%; segment now reported as Cloud & AI

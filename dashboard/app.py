@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "processed"
 
 st.set_page_config(
-    page_title="AI Infrastructure Capex",
+    page_title="The AI Value Chain",
     page_icon="🛰️",
     layout="wide",
 )
@@ -83,7 +83,6 @@ silicon_rev = load_csv("silicon_revenue.csv")
 chatgpt = load_csv("chatgpt_users.csv")
 bench_lab = load_csv("llm_benchmark_by_lab.csv")
 telco_capex = load_csv("telecom_capex.csv")
-telco_players = load_csv("telecom_players.csv")
 capex_q = load_csv("hyperscaler_capex_quarterly.csv")
 accel_rev = load_csv("accelerator_dc_revenue.csv")
 telco_us = load_csv("telecom_us_series.csv")
@@ -94,6 +93,7 @@ semis = load_csv("semis_billings.csv")
 net_full = load_csv("network_players_full.csv")
 mobile_net = load_csv("mobile_networks.csv")
 mobile_traffic = load_csv("mobile_traffic.csv")
+fixed_traffic = load_csv("fixed_traffic.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -118,10 +118,12 @@ COMPANY_COLORS = {
 }
 
 
-st.title("AI Infrastructure Capex")
+st.title("The AI Value Chain")
 st.caption(
-    "How AI compute is financed, built, and priced across the value chain, from "
-    "silicon and packaging through hyperscalers, NeoClouds, and the AI labs."
+    "Who builds, who pays and who earns across the AI buildout: company "
+    "financials, capacity constraints and demand signals from silicon to "
+    "applications, with the telecom era as precedent. Figures from filings "
+    "and primary sources."
 )
 
 (tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
@@ -148,12 +150,7 @@ prev = view[view["fiscal_year"] == (YR - 1)]
 # Overview — whole value chain
 # --------------------------------------------------------------------------- #
 with tab_overview:
-    st.markdown("### The AI compute value chain, end to end")
-    st.caption(
-        "Capex flows downstream from silicon to models; each layer has a binding "
-        "bottleneck. Key metrics across the chain, then a deep-dive per step in "
-        "the tabs to the right."
-    )
+    st.markdown("### 0 · Overview")
 
     total_now = latest["capex_usd_b"].sum()
     total_prev = prev["capex_usd_b"].sum()
@@ -181,25 +178,43 @@ with tab_overview:
         f"debt-financed: hyperscalers issued \\$121B of bonds in 2025, four times "
         f"the five-year average, including Meta's \\$30B, the largest corporate "
         f"bond since 2023.\n"
-        f"- **Supply remains the constraint.** TSMC's CoWoS packaging capacity "
-        f"roughly doubled in 2025 to about {cowos25:.0f}k wafers per month and "
-        f"is fully booked; HBM suppliers are sold out through 2026. Microsoft "
-        f"attributed about \\$25B of its 2026 guidance increase to memory and "
-        f"component cost inflation rather than added capacity. CoreWeave's "
-        f"contracted backlog reached about \\$100B in Q1 2026.\n"
-        f"- **Power is the next gate.** About {gw['capacity_gw'].sum():.0f} GW "
-        f"of named gigawatt-scale projects are in the pipeline, while "
-        f"high-voltage substation lead times run 3 to 5 years.\n"
+        f"- **The binding constraint is migrating along the chain, and each "
+        f"layer's shortage becomes the next layer's cost line.** TSMC's CoWoS "
+        f"packaging capacity roughly doubled in 2025 to about {cowos25:.0f}k "
+        f"wafers per month and is fully booked; HBM suppliers are sold out "
+        f"through 2026, and that scarcity already shows up downstream as "
+        f"Microsoft attributing about \\$25B of its 2026 guidance increase to "
+        f"memory and component cost inflation. Power is queued up behind "
+        f"packaging: about {gw['capacity_gw'].sum():.0f} GW of named "
+        f"gigawatt-scale projects face high-voltage substation lead times of "
+        f"3 to 5 years.\n"
+        f"- **The chain is becoming self-referential, which concentrates "
+        f"risk.** Lab compute commitments underwrite NeoCloud backlogs "
+        f"(CoreWeave about \\$100B in Q1 2026, Nebius roughly \\$45B from "
+        f"Microsoft and Meta deals), those backlogs collateralize over \\$20B "
+        f"of GPU-backed debt, and the GPUs come from a single dominant "
+        f"vendor. A demand wobble at the lab layer would propagate through "
+        f"NeoCloud credit into the bond exposure built up in 2025.\n"
+        f"- **Capex gravity has shifted from telecoms to hyperscalers, and "
+        f"suppliers are repositioning.** Global telecom capex (about \\$295B, "
+        f"lowest since 2011) now equals five weeks of hyperscaler guidance; "
+        f"US carriers guide roughly \\$50B for 2026 with no 6G cycle in "
+        f"sight. Equipment vendors are following the money: Nokia bought "
+        f"Infinera for AI data-center optics while Arista quadrupled on "
+        f"hyperscaler demand and Ericsson shrank.\n"
         f"- **Demand is keeping pace, but value capture is an open question.** "
         f"ChatGPT reached 900M weekly active users in Feb 2026; Anthropic and "
-        f"OpenAI report run-rate revenue of \\$47B and \\$25B. Only about 5 to 6% "
-        f"of ChatGPT users pay, and frontier capability has converged across "
-        f"labs with no clear network effects, which raises the question of "
-        f"whether value migrates to infrastructure below and applications "
-        f"above the model layer.\n"
+        f"OpenAI report run-rate revenue of \\$47B and \\$25B. Usage is broad "
+        f"but shallow: only about 5 to 6% of ChatGPT users pay, and frontier "
+        f"capability has converged across labs with no clear network effects, "
+        f"which raises the question of whether value migrates to "
+        f"infrastructure below and applications above the model layer.\n"
         f"- **System integrators are quiet winners of the deployment phase.** "
-        f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B in "
-        f"FY2024, because deploying AI into enterprises remains services-heavy."
+        f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B "
+        f"in FY2024, because deploying AI into enterprises remains "
+        f"services-heavy. The telecom precedent (ROCE at the cost of capital "
+        f"across the 5G buildout) is the cautionary benchmark for every layer "
+        f"above."
     )
     st.caption(f"Data last updated {DATA_UPDATED}.")
     st.markdown("---")
@@ -211,7 +226,7 @@ with tab_overview:
               f"+{(guide26/total_now-1)*100:.0f}% vs FY25")
     d3.metric(f"Capex CAGR FY{first_yr}-{YR}", f"{cagr*100:.0f}%/yr",
               "AI-era acceleration")
-    d4.metric("NeoCloud backlog (CoreWeave)", "$66.8B", "~$100B by Q1'26")
+    d4.metric("NeoCloud backlog (CoreWeave)", "~$100B", "Q1 2026")
 
     st.markdown("##### Supply & constraint (upstream)")
     s1, s2, s3, s4 = st.columns(4)
@@ -253,8 +268,8 @@ with tab_overview:
     figo.update_yaxes(range=[0, max(totals.values()) * 1.12])
     st.plotly_chart(figo, width="stretch")
     st.caption(
-        "Figures are total reported capex, not an AI-only carve-out (companies "
-        "do not disclose the split). Totals are shown above each bar. Bars for "
+        "Figures are total reported capex; companies do not disclose an "
+        "AI-only split. Totals are shown above each bar. Bars for "
         "2018 to 2025 are reported cash PP&E; the hatched 2026E bar is the "
         "guidance midpoint, which is reported on a broader basis (total capex "
         "including finance leases). Microsoft's fiscal year ends in June and "
@@ -293,8 +308,8 @@ with tab_silicon:
         "- **High-bandwidth memory is the supply-constrained input:** SK Hynix "
         "(about 57% share), Micron and Samsung are sold out through 2026.\n"
         "- **Silicon is the first gate on AI capacity:** shipping more "
-        "accelerators requires more HBM and more advanced packaging, not just "
-        "more fab starts.")
+        "accelerators requires more HBM and more advanced packaging alongside "
+        "fab starts.")
 
     st.markdown("---")
     st.markdown("#### Global semiconductor sales since 1990 (\\$B)")
@@ -420,11 +435,13 @@ with tab_systems:
         "largest AI-server volumes flow through Taiwanese ODMs (Foxconn, "
         "Quanta, Wistron) building directly for hyperscalers, a lower-margin "
         "and far less disclosed channel.\n"
-        "- **Value depends on GPU allocation rather than design:** vendors who "
-        "secured NVIDIA supply early, like Supermicro, grew from \\$3B revenue "
-        "to a \\$33B target in six years.\n"
+        "- **GPU allocation drives value in this layer:** vendors who secured "
+        "NVIDIA supply early, like Supermicro, grew from \\$3B revenue toward "
+        "a \\$40B guidance in six years, and Dell's ISG jumped 40% in its "
+        "latest fiscal year.\n"
         "- **Margins stay thin and volatile** because the scarce input, the "
-        "accelerator, is priced by NVIDIA rather than the system builder.")
+        "accelerator, is priced by NVIDIA, leaving system builders little "
+        "pricing power.")
 
     st.markdown("---")
     st.markdown("#### Server revenue by vendor (\\$B)")
@@ -437,8 +454,11 @@ with tab_systems:
     figsy.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
     st.caption(
-        "Fiscal years differ (Dell ends in January, Supermicro in June, HPE in "
-        "October). Dell ISG "
+        "Fiscal years differ (Dell ends in January, Supermicro in June, HPE "
+        "in October); Dell fiscal years are plotted against the calendar year "
+        "they mostly cover, so its FY2026 (\\$60.8B, +40%) appears as 2025. "
+        "The 2026 bars are guidance: Supermicro \\$38.9-40.4B and an HPE "
+        "estimate from its 29-33% group growth outlook. Dell ISG "
         "includes storage; Supermicro 2026 is the company revenue target "
         "(guidance); the HPE server segment is partly estimated. Most AI-server "
         "volume flows through Taiwanese ODMs (Foxconn/Hon Hai, Quanta, Wistron), "
@@ -450,9 +470,9 @@ with tab_systems:
 with tab_network:
     st.markdown("### 4 · Networking")
     st.markdown(
-        "- **As clusters pass 100k GPUs the network, not the chip, "
-        "increasingly sets training efficiency, shifting value to back-end "
-        "fabrics and optics.** NVIDIA bundles its own interconnect (NVLink, "
+        "- **As clusters pass 100k GPUs the network increasingly sets "
+        "training efficiency, shifting value to back-end fabrics and "
+        "optics.** NVIDIA bundles its own interconnect (NVLink, "
         "InfiniBand), Arista is the clearest listed pure-play beneficiary with "
         "revenue roughly quadrupling since 2020, and Broadcom supplies the "
         "switch silicon (covered under Silicon & IP).\n"
@@ -464,6 +484,11 @@ with tab_network:
         "2025) is the clearest strategic signal:** a mobile-era vendor buying "
         "optical networking scale specifically to chase AI data-center "
         "interconnect, repositioning away from its shrinking mobile core.\n"
+        "- **The revenue base is moving from carriers to hyperscalers.** US "
+        "carrier capex guidance for 2026 sits near \\$50B with no 6G cycle "
+        "ahead, so vendors selling to telecoms face a flat market while "
+        "hyperscaler-facing vendors ride a budget that doubled in two years; "
+        "Arista's quadrupling and Ericsson's decline track that divide.\n"
         "- **Optics and switch-ASIC supply are the layer's bottlenecks** as "
         "training spreads across sites and rack power density rises.")
 
@@ -544,9 +569,9 @@ with tab_dc:
         "electricity:** high-voltage substations take 3 to 5 years, 7 of 13 US "
         "grid regions are projected below safety margins by 2030, and Goldman "
         "estimates about \\$720B of grid investment is needed this decade.\n"
-        "- **Power availability, not land or capital, increasingly decides "
-        "where and when capacity gets built**, making behind-the-meter "
-        "generation and nuclear deals a competitive differentiator.")
+        "- **Power availability increasingly decides where and when capacity "
+        "gets built**, making behind-the-meter generation and nuclear deals a "
+        "competitive differentiator.")
 
     st.markdown("---")
     st.markdown("#### Data center vs office construction (US, \\$B/year)")
@@ -603,8 +628,9 @@ with tab_dc:
         width="stretch", hide_index=True)
     st.caption(
         "Capacity figures are announced or planned site totals at varying "
-        "horizons (for example, Hyperion's 5 GW scales out to 2030), not all "
-        "online today. Read them as the build pipeline, not installed base.")
+        "horizons (for example, Hyperion's 5 GW scales out to 2030); most of "
+        "this capacity is still under construction. Read it as the build "
+        "pipeline.")
 
     st.caption(
         "Grid context: high-voltage substation lead times run 3 to 5 years, 7 of "
@@ -754,7 +780,7 @@ with tab_hyper:
     st.caption(
         "Part of the jump is definitional (guidance includes finance leases). "
         "Microsoft also flagged about \\$25B of its 2026 step-up as memory and "
-        "component cost inflation rather than added capacity, so higher capex "
+        "component cost inflation, so higher capex "
         "does not map one-to-one to more compute. Oracle guidance covers its "
         "fiscal year ending May 2026.")
 
@@ -809,7 +835,7 @@ with tab_neo:
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("CoreWeave backlog (end-2025)", "$66.8B", "~$100B by Q1'26")
+    c1.metric("CoreWeave backlog (Q1 2026)", "~$100B", "$66.8B end-2025")
     c2.metric("Nebius 2026E capex", "$20-25B")
     c3.metric("Sector GPU-backed debt", ">$20B")
 
@@ -823,26 +849,15 @@ with tab_neo:
                        yaxis_title="$B", hovermode="x unified")
     st.plotly_chart(fign, width="stretch")
     st.caption(
-        "CoreWeave's backlog is far larger than its current revenue, and "
-        "concentrated (the OpenAI deal added \\$11.2B). Blanks are not disclosed; "
-        "Crusoe and Lambda are private and report little.")
-
-    st.markdown("**Provider snapshot**")
-    st.dataframe(
-        neo[["company", "ownership", "revenue_2025_b", "revenue_2026e_b",
-             "backlog_b", "capex_2026e_b", "power_contracted_gw", "valuation_b",
-             "key_financing_signal"]].rename(columns={
-            "company": "Company", "ownership": "Ownership",
-            "revenue_2025_b": "Rev 2025 $B", "revenue_2026e_b": "Rev 2026E $B",
-            "backlog_b": "Backlog $B", "capex_2026e_b": "Capex 2026E $B",
-            "power_contracted_gw": "Power GW", "valuation_b": "Valuation $B",
-            "key_financing_signal": "Financing signal"}),
-        width="stretch", hide_index=True)
-    st.caption(
-        "NeoClouds carry over \\$20B in GPU-backed debt. GPUs depreciate on a 4 to "
-        "6 year schedule, and rental pricing can move faster. Customer "
-        "concentration on a few anchor tenants is the main risk. Sources: company "
-        "filings and press.")
+        "CoreWeave's backlog (about \\$100B as of Q1 2026, up from \\$66.8B "
+        "at end-2025) dwarfs its current revenue and is concentrated (the "
+        "OpenAI deal added \\$11.2B). The Nebius bar is an estimate built "
+        "from its disclosed Microsoft (\\$17-19B) and Meta (\\$27B) "
+        "contracts. Crusoe and Lambda are private and disclose no backlog, "
+        "so they show revenue only. GPUs depreciate on a 4 to 6 year "
+        "schedule while rental pricing can move faster, and over \\$20B of "
+        "sector debt is secured against them. Sources: company filings and "
+        f"press. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 8 · AI Labs (demand)
@@ -916,7 +931,7 @@ with tab_labs:
 
     ud1, ud2 = st.columns(2)
     with ud1:
-        st.markdown("#### Depth of use: a mile wide, an inch deep (% of US adults)")
+        st.markdown("#### Depth of use: broad but shallow (% of US adults)")
         figud = px.bar(usage_depth, x="share_pct", y="measure",
                        orientation="h", text="share_pct",
                        labels={"share_pct": "% of US adults (18-64)",
@@ -1003,8 +1018,8 @@ with tab_si:
         "\\$5.9B (FY2025)**, with cumulative bookings past \\$9B, the steepest "
         "new-offering ramp in the firm's disclosures.\n"
         "- **The integrators are also a check on the hype:** overall revenue "
-        "grows single digits, so GenAI work is so far additive rather than "
-        "transformative to the services industry itself.")
+        "grows single digits, so GenAI work has so far been additive for the "
+        "services industry itself.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -1062,28 +1077,53 @@ with tab_telco:
         "major developed-market telcos averaged roughly 4 to 9% over 2020-25, "
         "at or below the 6 to 8% cost-of-capital band, so a decade of network "
         "capex earned about its cost of capital at best.\n"
-        "- **Global telecom capex in 2024 was the lowest since 2011** even as "
-        "traffic kept compounding.\n"
-        "- **This is the cautionary precedent for AI infrastructure:** "
-        "enormous capex and real usage growth do not guarantee returns if the "
-        "layer above commoditizes you.")
+        "- **Carrier capex has settled into a steady state with no 6G "
+        "spike ahead:** global telecom capex in 2024 was the lowest since "
+        "2011, and US carrier guidance for 2026 (AT&T \\$23-24B, Verizon "
+        "\\$16-16.5B, T-Mobile \\$10B) points to a flat \\$50B run-rate. "
+        "Lower capex lifts carrier free cash flow and dividends, and it caps "
+        "growth for the equipment vendors that sell to them.\n"
+        "- **AI adds load to fixed and data-center networks far more than to "
+        "mobile:** chatbot traffic is small in bandwidth terms, and the heavy "
+        "AI flows run inside and between data centers on fiber backbones. "
+        "Mobile traffic growth is decelerating (Ericsson has cut its "
+        "forecasts), so AI gives carriers little new revenue while the "
+        "optical and data-center interconnect layer absorbs the growth.\n"
+        "- **The telecom era is the cautionary precedent for AI "
+        "infrastructure:** enormous capex and real usage growth did not "
+        "translate into returns once the layer above commoditized the "
+        "network.")
 
     st.markdown("---")
     tt1, tt2 = st.columns(2)
     with tt1:
-        st.markdown("#### Global mobile data traffic (EB per month)")
-        figmt = px.bar(mobile_traffic, x="year", y="traffic_eb_month",
-                       labels={"year": "Year",
-                               "traffic_eb_month": "EB per month"})
-        figmt.update_traces(marker_color=BLUE)
-        figmt.update_layout(height=340)
+        st.markdown("#### Global data traffic: mobile vs fixed (EB per month)")
+        figmt = go.Figure()
+        mt = mobile_traffic.copy()
+        ft = fixed_traffic.copy()
+        figmt.add_trace(go.Bar(
+            x=ft["year"], y=ft["traffic_eb_month"], name="Fixed",
+            marker_color=GREEN,
+            marker_pattern_shape=["/" if s == "forecast" else ""
+                                  for s in ft["source_type"]]))
+        figmt.add_trace(go.Bar(
+            x=mt["year"], y=mt["traffic_eb_month"], name="Mobile",
+            marker_color=BLUE,
+            marker_pattern_shape=["/" if s == "forecast" else ""
+                                  for s in mt["source_type"]]))
+        figmt.update_layout(height=340, barmode="group", legend_title="",
+                            yaxis_title="EB per month",
+                            hovermode="x unified")
         st.plotly_chart(figmt, width="stretch")
         st.caption(
-            "Mobile network data traffic excluding fixed wireless access, at "
-            "year end. About 4.4 EB per month in 2015 to about 126 EB in 2024, "
-            "a roughly 30x increase. Compiled from successive Ericsson Mobility "
-            "Reports (Ericsson has revised historical figures; mid-years are "
-            "approximate).")
+            "Mobile traffic (excluding fixed wireless access) is from "
+            "successive Ericsson Mobility Reports; about 4.4 EB per month in "
+            "2015 to about 126 EB in 2024, with roughly 145 (2025) and 162 "
+            "(2026) on Ericsson's trajectory. Fixed/wireline traffic is an "
+            "estimate compiled from Cisco VNI history and ITU/TeleGeography "
+            "data and carries most of the world's data, roughly 3x mobile. "
+            "Hatched bars are forecasts. AI workloads land mainly on the "
+            "fixed and data-center side; mobile growth is decelerating.")
     with tt2:
         st.markdown("#### Total shareholder return, indexed (2015 = 100)")
         ts = telco_tsr.copy()
@@ -1146,18 +1186,6 @@ with tab_telco:
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())
-    rows = []
-    for y in range(2020, 2025):
-        rows.append({"year": y, "capex_b": float(
-            telco_capex.loc[telco_capex.year == y, "telecom_capex_b"].iloc[0]),
-            "series": "Global telecom capex"})
-    for y in range(2020, 2026):
-        if y in hyp_year.index:
-            rows.append({"year": y, "capex_b": float(hyp_year.loc[y]),
-                         "series": "Big-5 hyperscaler capex"})
-    rows.append({"year": 2026, "capex_b": guide_total,
-                 "series": "Big-5 hyperscaler capex"})
-    cmpdf = pd.DataFrame(rows)
 
     k1, k2, k3 = st.columns(3)
     k1.metric("Global telecom capex 2024", "~$295B", "lowest since 2011")
@@ -1167,19 +1195,40 @@ with tab_telco:
               f"~{guide_total/295:.1f}x global telecom")
 
     st.markdown("#### Capex: hyperscalers vs telecoms (\\$B)")
-    figt = px.line(cmpdf, x="year", y="capex_b", color="series", markers=True,
-                   color_discrete_map={"Global telecom capex": GREY,
-                                       "Big-5 hyperscaler capex": BLUE},
-                   labels={"year": "Year", "capex_b": "Capex ($B)", "series": ""})
-    figt.update_layout(height=360, hovermode="x unified", legend_title="")
+    tc = telco_capex.copy()
+    tc_hist = tc[tc["source_type"] != "forecast"]
+    tc_fc = tc[tc["year"] >= int(tc_hist["year"].max())]
+    hyp_hist_y = [y for y in range(2020, 2026) if y in hyp_year.index]
+    figt = go.Figure()
+    figt.add_trace(go.Scatter(
+        x=tc_hist["year"], y=tc_hist["telecom_capex_b"],
+        name="Global telecom capex", mode="lines+markers",
+        line=dict(color=GREY, width=3)))
+    figt.add_trace(go.Scatter(
+        x=tc_fc["year"], y=tc_fc["telecom_capex_b"],
+        name="Global telecom capex (forecast)", mode="lines+markers",
+        line=dict(color=GREY, width=3, dash="dot")))
+    figt.add_trace(go.Scatter(
+        x=hyp_hist_y, y=[float(hyp_year.loc[y]) for y in hyp_hist_y],
+        name="Big-5 hyperscaler capex", mode="lines+markers",
+        line=dict(color=BLUE, width=3)))
+    figt.add_trace(go.Scatter(
+        x=[2025, 2026], y=[float(hyp_year.loc[2025]), guide_total],
+        name="Big-5 hyperscaler capex (guidance)", mode="lines+markers",
+        line=dict(color=BLUE, width=3, dash="dot")))
+    figt.update_layout(height=380, hovermode="x unified", legend_title="",
+                       yaxis_title="Capex ($B)", xaxis_title="Year")
     st.plotly_chart(figt, width="stretch")
     st.caption(
-        "Telecom is global industry capex (MTN Consulting). Hyperscaler is the "
-        "Big-5 (Alphabet, Amazon, Meta, Microsoft, Oracle); 2026 is the guidance "
-        "midpoint. Hyperscaler capex has passed the whole global telecom "
-        "industry's.")
+        "Telecom is global industry capex (MTN Consulting); 2025-26 assumes "
+        "the flat-to-declining trajectory continues, consistent with carrier "
+        "guidance and the absence of a 6G investment cycle. Hyperscaler is "
+        "the Big-5 (Alphabet, Amazon, Meta, Microsoft, Oracle); 2026 is the "
+        "guidance midpoint. Dotted segments are forecasts. The two lines "
+        "crossed in 2025 and the gap roughly doubles in 2026: the world's "
+        "infrastructure capex engine has changed hands.")
 
-    st.markdown("#### US carriers: capex and revenue since 2020 (\\$B)")
+    st.markdown("#### US carriers: capex and revenue, with 2026 guidance (\\$B)")
     tc1, tc2 = st.columns(2)
     uscolors = {"AT&T": BLUE, "Verizon": RED, "T-Mobile US": "#E20074"}
     with tc1:
@@ -1199,31 +1248,13 @@ with tab_telco:
                             title="Revenue")
         st.plotly_chart(figur, width="stretch")
     st.caption(
-        "Reported figures from company results. AT&T revenue includes "
-        "WarnerMedia until its spin-off in April 2022, which explains the step "
-        "down. Verizon's 2022 capex peak reflects the C-Band spectrum buildout; "
-        "T-Mobile's 2021-22 peak reflects Sprint network integration. Combined "
-        "big-3 capex has been flat to declining since 2022 while hyperscaler "
-        f"capex tripled. Data as of {DATA_UPDATED}.")
-
-    st.markdown("#### Major telcos: revenue & capex (latest year, \\$B)")
-    figtp = px.scatter(
-        telco_players, x="revenue_b", y="capex_b", color="region",
-        text="company", size="capex_b", size_max=28,
-        color_discrete_map={"US": BLUE, "Europe": GREEN},
-        labels={"revenue_b": "Revenue ($B)", "capex_b": "Capex ($B)",
-                "region": ""})
-    figtp.update_traces(textposition="top center")
-    figtp.update_layout(height=400, legend_title="")
-    st.plotly_chart(figtp, width="stretch")
-    st.dataframe(
-        telco_players[["company", "region", "revenue_b", "capex_b", "year",
-                       "note"]].rename(columns={
-            "company": "Company", "region": "Region", "revenue_b": "Revenue $B",
-            "capex_b": "Capex $B", "year": "Year", "note": "Note"}),
-        width="stretch", hide_index=True)
-    st.caption(
-        "Latest available year (mostly 2024); some figures approximate. Deutsche "
-        "Telekom revenue/capex include T-Mobile US (overlaps the US row). Major "
-        "US + European operators, not exhaustive. Sources: company filings / "
-        "MTN Consulting.")
+        "2020-2024 are reported figures; 2025 is an approximate full year and "
+        "2026 is company guidance (AT&T \\$23-24B on fiber, Verizon "
+        "\\$16-16.5B cut, T-Mobile about \\$10B; revenue per low-single-digit "
+        "service growth guidance). AT&T revenue includes WarnerMedia until "
+        "its spin-off in April 2022. Verizon's 2022 capex peak reflects the "
+        "C-Band buildout; T-Mobile's 2021-22 peak reflects Sprint "
+        "integration. The shape that emerges is steady-state capex near "
+        "\\$50B combined with no 6G spike: better for carrier free cash flow "
+        "and dividends, flat for the vendors selling into it. Data as of "
+        f"{DATA_UPDATED}.")

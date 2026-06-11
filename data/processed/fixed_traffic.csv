@@ -1,0 +1,13 @@
+year,traffic_eb_month,source_type,note
+2015,55,estimate,Global fixed/wireline internet traffic EB per month; compiled from Cisco VNI history and ITU/TeleGeography estimates
+2016,68,estimate,
+2017,85,estimate,
+2018,110,estimate,
+2019,140,estimate,
+2020,190,estimate,COVID step-up
+2021,230,estimate,
+2022,270,estimate,
+2023,310,estimate,
+2024,350,estimate,
+2025,390,forecast,
+2026,430,forecast,
