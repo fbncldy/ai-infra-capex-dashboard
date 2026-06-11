@@ -113,9 +113,9 @@ COMPANY_COLORS = {
 st.title("The AI Value Chain")
 st.caption(
     "Who builds, who pays and who earns across the AI buildout: company "
-    "financials, capacity constraints and demand signals from silicon to "
-    "applications, with the telecom era as precedent. Figures from filings "
-    "and primary sources."
+    "financials, capacity constraints and demand signals from silicon and "
+    "power through hyperscalers and the AI labs to the telecom networks that "
+    "distribute the output. Figures from filings and primary sources."
 )
 
 (tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
@@ -1057,9 +1057,16 @@ with tab_si:
 with tab_telco:
     st.markdown("### 10 · Telecoms")
     st.markdown(
-        "- **Telecoms built the last infrastructure wave:** mobile traffic "
-        "grew roughly 30x since 2015 while sector capex stayed flat near "
-        "\\$300B.\n"
+        "- **Telecoms are the distribution layer of the value chain:** every "
+        "model reaches its user over a fixed or mobile network. They are also "
+        "its sharpest precedent, because a decade of carrying exponential "
+        "traffic has shown that being essential to distribution does not "
+        "translate into capturing value. The network is horizontal "
+        "infrastructure that carries AI the way it carries video, so it cannot "
+        "price the AI load specifically.\n"
+        "- **They built the last infrastructure wave on the same pattern:** "
+        "mobile traffic grew roughly 30x since 2015 while sector capex stayed "
+        "flat near \\$300B.\n"
         "- **Even with dividends reinvested, shareholders earned bond-like "
         "returns on an equity-risk buildout:** total shareholder return since "
         "2015 ran about 5% a year for Verizon and 7% for AT&T against about "
