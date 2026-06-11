@@ -30,10 +30,6 @@ def load_capex() -> pd.DataFrame:
     return df
 
 
-def load_value_chain() -> pd.DataFrame:
-    return pd.read_csv(DATA / "value_chain.csv").sort_values("layer_order")
-
-
 def load_guidance() -> pd.DataFrame:
     return pd.read_csv(DATA / "capex_guidance_2026.csv")
 
@@ -59,7 +55,6 @@ def load_csv(name: str) -> pd.DataFrame:
 
 
 capex = load_capex()
-chain = load_value_chain()
 guidance = load_guidance()
 neo = load_neoclouds()
 cowos = load_cowos()
@@ -272,15 +267,49 @@ with tab_overview:
         "2026.")
 
     st.markdown("#### Value-chain map")
-    st.caption("Each step, its key metric, and its main bottleneck.")
-    cmap = chain[["layer_order", "layer", "segment", "key_metric", "bottleneck"]]
-    st.dataframe(
-        cmap.rename(columns={
-            "layer_order": "#", "layer": "Step", "segment": "Segment",
-            "key_metric": "Key metric", "bottleneck": "Bottleneck",
-        }),
-        width="stretch", hide_index=True,
-    )
+    st.caption("The ten steps, upstream to downstream, and what each one does.")
+    vc_map = pd.DataFrame([
+        ["1 · Silicon & IP",
+         "Designs the accelerators and the high-bandwidth memory stacked beside "
+         "them. NVIDIA dominates the logic; HBM supply is the first hard limit "
+         "on how many chips can ship."],
+        ["2 · Foundry & Packaging",
+         "Manufactures and packages the chips. TSMC makes nearly all of them, "
+         "and its CoWoS advanced packaging is the single tightest physical "
+         "bottleneck in the chain."],
+        ["3 · Servers",
+         "Assembles accelerators, memory and networking into deployable racks. "
+         "Margins stay thin because the scarce input is priced by NVIDIA, "
+         "leaving system builders little pricing power."],
+        ["4 · Networking",
+         "Wires servers into clusters and links data centers to each other. The "
+         "one layer that sells into both the AI buildout upstream and the "
+         "carrier networks at the far end of the chain."],
+        ["5 · Data Centers",
+         "Houses, cools and powers the clusters. Power has become the binding "
+         "constraint ahead of capital or land, with grid connections taking 3 "
+         "to 5 years."],
+        ["6 · Hyperscalers",
+         "Operate the data centers and rent compute at scale. They are the "
+         "demand pull of the whole chain, funding the upstream buildout from "
+         "cash flow and, increasingly, debt."],
+        ["7 · NeoClouds",
+         "Specialist providers that rent GPUs alongside the hyperscalers, "
+         "financed largely by debt secured against the GPUs themselves and by "
+         "anchor-tenant backlogs."],
+        ["8 · AI Labs",
+         "Consume compute to train and serve models. Their multi-year compute "
+         "commitments are the contracts that underwrite the buildout below "
+         "them."],
+        ["9 · System Integrators",
+         "Deploy models into enterprises. A services-heavy channel and one of "
+         "the most measurable reads on real, paid adoption."],
+        ["10 · Telecoms",
+         "Distribute model output to users over fixed and mobile networks. "
+         "Essential to delivery, yet a decade of traffic growth shows the layer "
+         "captures little of the value it carries."],
+    ], columns=["Step", "Role in the value chain"]).set_index("Step")
+    st.table(vc_map)
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
