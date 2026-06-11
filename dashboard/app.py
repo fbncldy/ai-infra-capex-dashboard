@@ -81,6 +81,7 @@ net_full = load_csv("network_players_full.csv")
 mobile_net = load_csv("mobile_networks.csv")
 mobile_traffic = load_csv("mobile_traffic.csv")
 fixed_traffic = load_csv("fixed_traffic.csv")
+server_margins = load_csv("server_margins.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -268,48 +269,68 @@ with tab_overview:
 
     st.markdown("#### Value-chain map")
     st.caption("The ten steps, upstream to downstream, and what each one does.")
-    vc_map = pd.DataFrame([
-        ["1 · Silicon & IP",
+    vc_rows = [
+        ("1 · Silicon & IP",
          "Designs the accelerators and the high-bandwidth memory stacked beside "
          "them. NVIDIA dominates the logic; HBM supply is the first hard limit "
-         "on how many chips can ship."],
-        ["2 · Foundry & Packaging",
+         "on how many chips can ship."),
+        ("2 · Foundry & Packaging",
          "Manufactures and packages the chips. TSMC makes nearly all of them, "
          "and its CoWoS advanced packaging is the single tightest physical "
-         "bottleneck in the chain."],
-        ["3 · Servers",
+         "bottleneck in the chain."),
+        ("3 · Servers",
          "Assembles accelerators, memory and networking into deployable racks. "
          "Margins stay thin because the scarce input is priced by NVIDIA, "
-         "leaving system builders little pricing power."],
-        ["4 · Networking",
+         "leaving system builders little pricing power."),
+        ("4 · Networking",
          "Wires servers into clusters and links data centers to each other. The "
          "one layer that sells into both the AI buildout upstream and the "
-         "carrier networks at the far end of the chain."],
-        ["5 · Data Centers",
+         "carrier networks at the far end of the chain."),
+        ("5 · Data Centers",
          "Houses, cools and powers the clusters. Power has become the binding "
          "constraint ahead of capital or land, with grid connections taking 3 "
-         "to 5 years."],
-        ["6 · Hyperscalers",
+         "to 5 years."),
+        ("6 · Hyperscalers",
          "Operate the data centers and rent compute at scale. They are the "
          "demand pull of the whole chain, funding the upstream buildout from "
-         "cash flow and, increasingly, debt."],
-        ["7 · NeoClouds",
+         "cash flow and, increasingly, debt."),
+        ("7 · NeoClouds",
          "Specialist providers that rent GPUs alongside the hyperscalers, "
          "financed largely by debt secured against the GPUs themselves and by "
-         "anchor-tenant backlogs."],
-        ["8 · AI Labs",
+         "anchor-tenant backlogs."),
+        ("8 · AI Labs",
          "Consume compute to train and serve models. Their multi-year compute "
          "commitments are the contracts that underwrite the buildout below "
-         "them."],
-        ["9 · System Integrators",
+         "them."),
+        ("9 · System Integrators",
          "Deploy models into enterprises. A services-heavy channel and one of "
-         "the most measurable reads on real, paid adoption."],
-        ["10 · Telecoms",
+         "the most measurable reads on real, paid adoption."),
+        ("10 · Telecoms",
          "Distribute model output to users over fixed and mobile networks. "
          "Essential to delivery, yet a decade of traffic growth shows the layer "
-         "captures little of the value it carries."],
-    ], columns=["Step", "Role in the value chain"]).set_index("Step")
-    st.table(vc_map)
+         "captures little of the value it carries."),
+    ]
+    vc_html = [
+        "<table style='width:100%;border-collapse:collapse;font-size:0.92rem;"
+        "line-height:1.4;'>",
+        "<thead><tr>"
+        "<th style='text-align:left;padding:8px 12px;width:200px;"
+        "border-bottom:2px solid #c8ccd0;'>Step</th>"
+        "<th style='text-align:left;padding:8px 12px;"
+        "border-bottom:2px solid #c8ccd0;'>Role in the value chain</th>"
+        "</tr></thead><tbody>",
+    ]
+    for step, role in vc_rows:
+        vc_html.append(
+            "<tr>"
+            "<td style='padding:8px 12px;vertical-align:top;"
+            "border-bottom:1px solid #ebedf0;font-weight:600;'>"
+            f"{step}</td>"
+            "<td style='padding:8px 12px;vertical-align:top;"
+            f"border-bottom:1px solid #ebedf0;'>{role}</td>"
+            "</tr>")
+    vc_html.append("</tbody></table>")
+    st.markdown("".join(vc_html), unsafe_allow_html=True)
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
@@ -357,15 +378,16 @@ with tab_silicon:
         silicon_rev, x="fy", y="revenue_b", color="company", barmode="group",
         labels={"fy": "Fiscal year", "revenue_b": "Revenue ($B)", "company": ""},
         color_discrete_map={"NVIDIA": GREEN, "AMD": RED, "Broadcom": BLUE,
-                            "Micron": YELLOW})
+                            "Micron": YELLOW, "SK Hynix": PURPLE})
     figsi.update_layout(height=400, hovermode="x unified", legend_title="")
     st.plotly_chart(figsi, width="stretch")
     st.caption(
         "Total company revenue. NVIDIA / Broadcom / Micron fiscal years are "
         "offset from calendar. NVIDIA's data-center segment alone was about "
-        "\\$115B in FY2025. Memory: HBM is the supply-constrained input (SK "
-        "Hynix about 57% share, sold out through 2026); Micron shown as the "
-        "US-listed memory proxy. Sources: company filings.")
+        "\\$115B in FY2025. On memory, SK Hynix is the HBM leader (about 57% "
+        "share) and the key supplier of the constrained input; Micron is the "
+        "US-listed peer. SK Hynix and Micron figures are currency-converted "
+        "and approximate. Sources: company filings.")
 
 # --------------------------------------------------------------------------- #
 # 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
@@ -469,21 +491,44 @@ with tab_systems:
     figsy = px.bar(
         systems, x="year", y="revenue_b", color="company", barmode="group",
         color_discrete_map={"Dell ISG": BLUE, "Supermicro": GREEN,
-                            "HPE Server": YELLOW},
+                            "HPE Server": YELLOW,
+                            "Foxconn (Cloud & Networking)": RED,
+                            "Quanta (servers)": PURPLE,
+                            "Wistron (servers)": "#00838F"},
         labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
                 "company": ""})
-    figsy.update_layout(height=380, hovermode="x unified", legend_title="")
+    figsy.update_layout(height=400, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
     st.caption(
-        "Fiscal years differ (Dell ends in January, Supermicro in June, HPE "
-        "in October); Dell fiscal years are plotted against the calendar year "
-        "they mostly cover, so its FY2026 (\\$60.8B, +40%) appears as 2025. "
-        "The 2026 bars are guidance: Supermicro \\$38.9-40.4B and an HPE "
-        "estimate from its 29-33% group growth outlook. Dell ISG "
-        "includes storage; Supermicro 2026 is the company revenue target "
-        "(guidance); the HPE server segment is partly estimated. Most AI-server "
-        "volume flows through Taiwanese ODMs (Foxconn/Hon Hai, Quanta, Wistron), "
-        "which are lower-margin and under-disclosed. Sources: company filings.")
+        "Listed OEMs (Dell ISG, Supermicro, HPE) plus the Taiwanese ODMs that "
+        "carry most AI-server volume. Foxconn's Cloud & Networking segment "
+        "alone (about \\$90B in 2025) is larger than any branded OEM, which is "
+        "the point: the visible brands are a minority of the build. ODM figures "
+        "are server/cloud-segment estimates (currency-converted, approximate); "
+        "their group totals are far larger but mostly non-server. Dell fiscal "
+        "years are plotted against the calendar year they mostly cover (FY2026, "
+        "\\$60.8B, appears as 2025); 2026 bars for Supermicro (\\$38.9-40.4B) "
+        "and HPE are guidance. Sources: company filings.")
+
+    st.markdown("#### Operating margin: assembly vs the chip it ships (%)")
+    sm = server_margins.sort_values("op_margin_pct")
+    figsm = px.bar(
+        sm, x="op_margin_pct", y="company", orientation="h",
+        color=sm["company"].eq("NVIDIA").map({True: "chip", False: "assembler"}),
+        color_discrete_map={"chip": GREEN, "assembler": GREY},
+        text="op_margin_pct",
+        labels={"op_margin_pct": "Operating margin (%)", "company": ""})
+    figsm.update_traces(texttemplate="%{text:.0f}%", textposition="outside")
+    figsm.update_layout(height=300, showlegend=False,
+                        xaxis_range=[0, 70])
+    st.plotly_chart(figsm, width="stretch")
+    st.caption(
+        "Latest-year segment or group operating margin. The server makers earn "
+        "single digits to low teens because the scarce input, the accelerator, "
+        "is priced by NVIDIA, which itself runs about a 60% operating margin on "
+        "the same box. The ODMs (Foxconn around 3-4%) sit lowest of all. HPE and "
+        "Foxconn figures are estimates; others are reported. Sources: company "
+        f"filings. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Networking
@@ -580,8 +625,10 @@ with tab_network:
 with tab_dc:
     st.markdown("### 5 · Data Centers")
     st.markdown(
-        "- **US data center construction passed office construction in 2025**, "
-        "the clearest physical-economy signal of the AI buildout.\n"
+        "- **US data center construction is overtaking office construction**, "
+        "crossing on a monthly run-rate basis in late 2025 and on track to "
+        "pass it for the full year in 2026, the clearest physical-economy "
+        "signal of the AI buildout.\n"
         "- **Capacity comes from hyperscaler self-build, colocation providers "
         "(Equinix, Digital Realty) and dedicated AI campuses:** the named "
         "gigawatt-scale pipeline (Stargate, Hyperion, Colossus and others) "
@@ -596,7 +643,8 @@ with tab_dc:
 
     st.markdown("---")
     st.markdown("#### Data center vs office construction (US, \\$B/year)")
-    st.caption("US data center construction has overtaken office construction.")
+    st.caption("Annual spend; the two are converging as offices fall and data "
+               "centers climb.")
     figdc = go.Figure()
     figdc.add_trace(go.Scatter(
         x=dc_con["year"], y=dc_con["datacenter_b"], name="Data centers",
@@ -606,6 +654,7 @@ with tab_dc:
         mode="lines+markers", line=dict(color=GREY, width=3, dash="dot")))
     figdc.update_layout(height=320, legend_title="", yaxis_title="$B / year",
                         xaxis_title="Year", hovermode="x unified")
+    figdc.update_xaxes(dtick=1, tickangle=-45)
     st.plotly_chart(figdc, width="stretch")
     st.caption(
         "US Census construction spending. Data center construction was about "
@@ -846,8 +895,11 @@ with tab_neo:
         "private.\n"
         "- **Backlogs are concentrated on a few anchor tenants** (the OpenAI "
         "deal added \\$11.2B to CoreWeave's backlog, Meta committed \\$27B to "
-        "Nebius), which is both the model's strength and its single-point "
-        "risk.\n"
+        "Nebius). The strength is that a multi-year contract with a "
+        "creditworthy counterparty is what lets a NeoCloud raise GPU-backed "
+        "debt cheaply and pre-fund its buildout. The risk is the mirror image: "
+        "if that one tenant slows, renegotiates or fails, a large share of the "
+        "backlog and the debt secured against it is exposed at once.\n"
         "- **The sector carries over \\$20B of debt secured against GPUs that "
         "depreciate over 4 to 6 years**, so durability depends on rental "
         "pricing holding up through successive accelerator generations.\n"
@@ -1101,10 +1153,10 @@ with tab_telco:
         "2015 ran about 5% a year for Verizon and 7% for AT&T against about "
         "12% for the MSCI World; BT shareholders lost roughly half their "
         "money, and only Deutsche Telekom came close to market returns.\n"
-        "- **Returns on capital tell the same story:** computed ROCE for the "
-        "major developed-market telcos averaged roughly 4 to 9% over 2020-25, "
-        "at or below the 6 to 8% cost-of-capital band, so a decade of network "
-        "capex earned about its cost of capital at best.\n"
+        "- **Returns on capital tell the same story:** ROCE for the major "
+        "developed-market telcos averaged roughly 4 to 9% over 2020-25, at or "
+        "below the 6 to 8% cost-of-capital band, so a decade of network capex "
+        "earned about its cost of capital at best.\n"
         "- **Carrier capex has settled into a steady state with no 6G "
         "spike ahead:** global telecom capex in 2024 was the lowest since "
         "2011, and US carrier guidance for 2026 (AT&T \\$23-24B, Verizon "
@@ -1202,18 +1254,28 @@ with tab_telco:
                           yaxis_range=[0, 11])
     st.plotly_chart(figroce, width="stretch")
     st.caption(
-        "ROCE computed as operating income divided by capital employed (total "
-        "assets minus current liabilities), averaged over the years shown per "
-        "company, from 10-K and 20-F filings (SEC EDGAR XBRL); Deutsche "
-        "Telekom and BT approximated from annual reports as neither files "
-        "with the SEC today. One-offs distort single years (AT&T's 2022 "
-        "impairments, tower-sale gains at Telefonica 2021 and Vodafone "
-        "FY2023) but averages wash most of this out. Only Verizon and BT "
-        "reach the top of the 6 to 8% cost-of-capital band; the sector as a "
-        "whole earned roughly its cost of capital across the 5G buildout. BT "
-        "also shows that the two lenses can diverge: top-of-band ROCE but a "
-        "deeply negative TSR, because the market de-rated the equity. Data "
-        f"as of {DATA_UPDATED}.")
+        "ROCE is computed as operating income divided by capital employed "
+        "(total assets minus current liabilities), averaged over the years "
+        "shown per company, from 10-K and 20-F filings (SEC EDGAR XBRL); "
+        "Deutsche Telekom and BT are approximated from annual reports as "
+        "neither files with the SEC today. One-offs distort single years "
+        "(AT&T's 2022 impairments, tower-sale gains at Telefonica 2021 and "
+        "Vodafone FY2023) but averages wash most of this out. Only Verizon "
+        "and BT reach the top of the 6 to 8% band; the sector as a whole "
+        "earned roughly its cost of capital across the 5G buildout.")
+    st.caption(
+        "**Why BT's ROCE looks fine but its TSR is the worst here:** ROCE "
+        "measures the return on the whole operating asset base, while TSR is "
+        "the return to the thin slice of equity that sits behind everything "
+        "else. BT carries roughly £15-20B of net debt and a very large pension "
+        "scheme that has absorbed billions in deficit-repair cash, so an "
+        "8% asset return, after interest and pension top-ups, leaves little "
+        "for equity holders. On top of that the market steadily de-rated the "
+        "shares as revenue stalled and Openreach fibre capex ramped. Decent "
+        "asset returns and a destroyed equity coexist because of leverage, "
+        "pension drag and a falling multiple. The gap is the whole point: "
+        "being a sound operating business does not guarantee value for "
+        f"shareholders. Data as of {DATA_UPDATED}.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())
