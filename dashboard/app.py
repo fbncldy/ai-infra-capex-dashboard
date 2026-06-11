@@ -1264,7 +1264,7 @@ with tab_telco:
         "and BT reach the top of the 6 to 8% band; the sector as a whole "
         "earned roughly its cost of capital across the 5G buildout.")
     st.caption(
-        "**Why BT's ROCE looks fine but its TSR is the worst here:** ROCE "
+        "**BT note:** ROCE "
         "measures the return on the whole operating asset base, while TSR is "
         "the return to the thin slice of equity that sits behind everything "
         "else. BT carries roughly £15-20B of net debt and a very large pension "
