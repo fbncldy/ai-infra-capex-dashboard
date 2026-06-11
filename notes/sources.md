@@ -250,6 +250,22 @@ leaderboards (approximate).
   directory analyses.
 - Oracle FY2026 capex guidance raised to ~$50B (from ~$35B); RPO $553B.
 
+## Telecom value-capture metrics (added 2026-06)
+
+- **TSR** (`telco_tsr.csv`): Yahoo Finance dividend- and split-adjusted closes
+  (adjclose = dividends reinvested), start-of-year, 2015-2026, for AT&T,
+  Verizon, Deutsche Telekom and URTH (iShares MSCI World ETF) as benchmark.
+  CAGRs 2015 to early 2026: VZ ~5%, T ~7%, DT ~10%, MSCI World ~12%. Replaced
+  the earlier price-only chart, which understated telco returns by the
+  dividend yield.
+- **ROCE** (`telco_roce.csv`): computed as operating income / (total assets -
+  current liabilities) from EDGAR XBRL (us-gaap for T/VZ, ifrs-full for
+  VOD/TEF 20-F filings), averaged: AT&T 4.0% (2020-25, 2022 impairment year
+  -1.3%), Verizon 9.1%, Vodafone 5.9% (FY23 inflated by disposals),
+  Telefonica 6.5% (2021 inflated by tower sales), Deutsche Telekom ~7.5%
+  estimate (no SEC filings; from annual reports). WACC band 6-8% per
+  Damodaran developed-market telecom cost-of-capital data.
+
 ## To add next
 - HBM4 transition (2026+) and CoWoP / OSAT outsourcing (ASE) as capacity relief.
 - Behind-the-meter power deals (nuclear/SMR, gas) by operator.

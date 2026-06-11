@@ -94,7 +94,8 @@ semis = load_csv("semis_billings.csv")
 net_full = load_csv("network_players_full.csv")
 mobile_net = load_csv("mobile_networks.csv")
 mobile_traffic = load_csv("mobile_traffic.csv")
-telco_stocks = load_csv("telco_stocks.csv")
+telco_tsr = load_csv("telco_tsr.csv")
+telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
@@ -1051,11 +1052,16 @@ with tab_telco:
     st.markdown(
         "- **Telecoms built the last infrastructure wave:** mobile traffic "
         "grew roughly 30x since 2015 while sector capex stayed flat near "
-        "\\$300B and share prices went sideways.\n"
-        "- **Operators delivered the usage explosion but captured almost none "
-        "of the value**, which flowed to the platforms running on top of "
-        "their networks; AT&T and Verizon trade below their 2015 share prices "
-        "a decade later.\n"
+        "\\$300B.\n"
+        "- **Even with dividends reinvested, shareholders earned bond-like "
+        "returns on an equity-risk buildout:** total shareholder return since "
+        "2015 ran about 5% a year for Verizon and 7% for AT&T against about "
+        "12% for the MSCI World; only Deutsche Telekom came close to market "
+        "returns.\n"
+        "- **Returns on capital tell the same story:** computed ROCE for the "
+        "major developed-market telcos averaged roughly 4 to 9% over 2020-25, "
+        "at or below the 6 to 8% cost-of-capital band, so a decade of network "
+        "capex earned about its cost of capital at best.\n"
         "- **Global telecom capex in 2024 was the lowest since 2011** even as "
         "traffic kept compounding.\n"
         "- **This is the cautionary precedent for AI infrastructure:** "
@@ -1079,15 +1085,16 @@ with tab_telco:
             "Reports (Ericsson has revised historical figures; mid-years are "
             "approximate).")
     with tt2:
-        st.markdown("#### Large-cap telco share prices (2015 = 100)")
-        ts = telco_stocks.copy()
-        base = ts[ts["year"] == 2015].set_index("company")["price"]
+        st.markdown("#### Total shareholder return, indexed (2015 = 100)")
+        ts = telco_tsr.copy()
+        base = ts[ts["year"] == 2015].set_index("company")["adj"]
         ts["indexed"] = ts.apply(
-            lambda r: r["price"] / base[r["company"]] * 100, axis=1)
+            lambda r: r["adj"] / base[r["company"]] * 100, axis=1)
         figts2 = px.line(ts, x="year", y="indexed", color="company",
                          markers=True,
                          color_discrete_map={"AT&T": BLUE, "Verizon": RED,
-                                             "Deutsche Telekom": "#E20074"},
+                                             "Deutsche Telekom": "#E20074",
+                                             "MSCI World (URTH)": GREY},
                          labels={"year": "Year", "indexed": "Index (2015 = 100)",
                                  "company": ""})
         figts2.add_hline(y=100, line_dash="dash", line_color=GREY)
@@ -1095,11 +1102,44 @@ with tab_telco:
                              legend_title="")
         st.plotly_chart(figts2, width="stretch")
         st.caption(
-            "Share prices of the three largest Western telcos, indexed to 100 "
-            "at the start of 2015 (price only, excluding dividends; Yahoo "
-            "Finance). AT&T and Verizon trade below their 2015 level a decade "
-            "later. Used as a proxy because MSCI pure-telecom index history is "
-            "paywalled.")
+            "Total shareholder return: dividend- and split-adjusted prices "
+            "(dividends reinvested), indexed to 100 at the start of 2015 "
+            "(Yahoo Finance adjusted closes). Through early 2026 that is "
+            "roughly +72% for Verizon (about 5% a year), +107% for AT&T "
+            "(about 7%) and +175% for Deutsche Telekom (about 10%), versus "
+            "+235% (about 12% a year) for the MSCI World ETF. Price-only "
+            "comparisons understate telco returns because the sector pays "
+            "out 4 to 7% dividend yields.")
+
+    st.markdown("#### Return on capital employed vs cost of capital")
+    figroce = go.Figure()
+    figroce.add_hrect(y0=6, y1=8, fillcolor="rgba(154,160,166,0.25)",
+                      line_width=0,
+                      annotation_text="WACC band 6-8% (Damodaran, "
+                                      "developed-market telecom)",
+                      annotation_position="top right")
+    figroce.add_trace(go.Bar(
+        x=telco_roce["company"], y=telco_roce["roce_pct"],
+        marker_color=[BLUE, RED, "#E20074", "#E60000", "#0066FF"],
+        text=telco_roce["roce_pct"],
+        customdata=telco_roce["years"],
+        hovertemplate="%{x}: %{y:.1f}% (avg %{customdata})<extra></extra>"))
+    figroce.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
+    figroce.update_layout(height=360, yaxis_title="Average ROCE (%)",
+                          showlegend=False,
+                          yaxis_range=[0, 11])
+    st.plotly_chart(figroce, width="stretch")
+    st.caption(
+        "ROCE computed as operating income divided by capital employed (total "
+        "assets minus current liabilities), averaged over the years shown per "
+        "company, from 10-K and 20-F filings (SEC EDGAR XBRL); Deutsche "
+        "Telekom approximated from annual reports as it does not file with "
+        "the SEC. One-offs distort single years (AT&T's 2022 impairments, "
+        "tower-sale gains at Telefonica 2021 and Vodafone FY2023) but "
+        "averages wash most of this out. Only Verizon clears the top of the "
+        "6 to 8% cost-of-capital band; the sector as a whole earned roughly "
+        f"its cost of capital across the 5G buildout. Data as of "
+        f"{DATA_UPDATED}.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())

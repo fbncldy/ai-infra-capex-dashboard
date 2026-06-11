@@ -1,0 +1,6 @@
+company,roce_pct,years,source_type,note
+AT&T,4.0,2020-2025,computed (EDGAR XBRL),EBIT / (total assets - current liabilities); 2022 dragged by impairments (-1.3% that year)
+Verizon,9.1,2020-2025,computed (EDGAR XBRL),
+Deutsche Telekom,7.5,2020-2024,estimate,No SEC filings; computed approx from annual reports (EBIT rising EUR 13B to 23B; capital employed ~EUR 250B)
+Vodafone,5.9,2020-2023,computed (EDGAR XBRL),FY ends March; FY2023 boosted by one-off disposal gains
+Telefonica,6.5,2020-2024,computed (EDGAR XBRL),2021 boosted by tower-sale gains (16.2% that year)
