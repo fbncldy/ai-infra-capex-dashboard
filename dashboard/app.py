@@ -1056,8 +1056,8 @@ with tab_telco:
         "- **Even with dividends reinvested, shareholders earned bond-like "
         "returns on an equity-risk buildout:** total shareholder return since "
         "2015 ran about 5% a year for Verizon and 7% for AT&T against about "
-        "12% for the MSCI World; only Deutsche Telekom came close to market "
-        "returns.\n"
+        "12% for the MSCI World; BT shareholders lost roughly half their "
+        "money, and only Deutsche Telekom came close to market returns.\n"
         "- **Returns on capital tell the same story:** computed ROCE for the "
         "major developed-market telcos averaged roughly 4 to 9% over 2020-25, "
         "at or below the 6 to 8% cost-of-capital band, so a decade of network "
@@ -1094,6 +1094,7 @@ with tab_telco:
                          markers=True,
                          color_discrete_map={"AT&T": BLUE, "Verizon": RED,
                                              "Deutsche Telekom": "#E20074",
+                                             "BT Group": "#5514B4",
                                              "MSCI World (URTH)": GREY},
                          labels={"year": "Year", "indexed": "Index (2015 = 100)",
                                  "company": ""})
@@ -1106,10 +1107,10 @@ with tab_telco:
             "(dividends reinvested), indexed to 100 at the start of 2015 "
             "(Yahoo Finance adjusted closes). Through early 2026 that is "
             "roughly +72% for Verizon (about 5% a year), +107% for AT&T "
-            "(about 7%) and +175% for Deutsche Telekom (about 10%), versus "
-            "+235% (about 12% a year) for the MSCI World ETF. Price-only "
-            "comparisons understate telco returns because the sector pays "
-            "out 4 to 7% dividend yields.")
+            "(about 7%), +175% for Deutsche Telekom (about 10%) and -53% for "
+            "BT Group, versus +235% (about 12% a year) for the MSCI World "
+            "ETF. Price-only comparisons understate telco returns because "
+            "the sector pays out 4 to 7% dividend yields.")
 
     st.markdown("#### Return on capital employed vs cost of capital")
     figroce = go.Figure()
@@ -1120,7 +1121,7 @@ with tab_telco:
                       annotation_position="top right")
     figroce.add_trace(go.Bar(
         x=telco_roce["company"], y=telco_roce["roce_pct"],
-        marker_color=[BLUE, RED, "#E20074", "#E60000", "#0066FF"],
+        marker_color=[BLUE, RED, "#E20074", "#E60000", "#0066FF", "#5514B4"],
         text=telco_roce["roce_pct"],
         customdata=telco_roce["years"],
         hovertemplate="%{x}: %{y:.1f}% (avg %{customdata})<extra></extra>"))
@@ -1133,13 +1134,15 @@ with tab_telco:
         "ROCE computed as operating income divided by capital employed (total "
         "assets minus current liabilities), averaged over the years shown per "
         "company, from 10-K and 20-F filings (SEC EDGAR XBRL); Deutsche "
-        "Telekom approximated from annual reports as it does not file with "
-        "the SEC. One-offs distort single years (AT&T's 2022 impairments, "
-        "tower-sale gains at Telefonica 2021 and Vodafone FY2023) but "
-        "averages wash most of this out. Only Verizon clears the top of the "
-        "6 to 8% cost-of-capital band; the sector as a whole earned roughly "
-        f"its cost of capital across the 5G buildout. Data as of "
-        f"{DATA_UPDATED}.")
+        "Telekom and BT approximated from annual reports as neither files "
+        "with the SEC today. One-offs distort single years (AT&T's 2022 "
+        "impairments, tower-sale gains at Telefonica 2021 and Vodafone "
+        "FY2023) but averages wash most of this out. Only Verizon and BT "
+        "reach the top of the 6 to 8% cost-of-capital band; the sector as a "
+        "whole earned roughly its cost of capital across the 5G buildout. BT "
+        "also shows that the two lenses can diverge: top-of-band ROCE but a "
+        "deeply negative TSR, because the market de-rated the equity. Data "
+        f"as of {DATA_UPDATED}.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())
