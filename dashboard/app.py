@@ -24,44 +24,36 @@ st.set_page_config(
 # --------------------------------------------------------------------------- #
 # Data loading
 # --------------------------------------------------------------------------- #
-@st.cache_data
 def load_capex() -> pd.DataFrame:
     df = pd.read_csv(DATA / "hyperscaler_capex.csv")
     df["capex_usd_b"] = df["capex_usd_m"] / 1000.0
     return df
 
 
-@st.cache_data
 def load_value_chain() -> pd.DataFrame:
     return pd.read_csv(DATA / "value_chain.csv").sort_values("layer_order")
 
 
-@st.cache_data
 def load_guidance() -> pd.DataFrame:
     return pd.read_csv(DATA / "capex_guidance_2026.csv")
 
 
-@st.cache_data
 def load_neoclouds() -> pd.DataFrame:
     return pd.read_csv(DATA / "neoclouds.csv")
 
 
-@st.cache_data
 def load_cowos() -> pd.DataFrame:
     return pd.read_csv(DATA / "cowos_capacity.csv")
 
 
-@st.cache_data
 def load_hbm() -> pd.DataFrame:
     return pd.read_csv(DATA / "hbm_market.csv")
 
 
-@st.cache_data
 def load_gw_projects() -> pd.DataFrame:
     return pd.read_csv(DATA / "gigawatt_projects.csv")
 
 
-@st.cache_data
 def load_csv(name: str) -> pd.DataFrame:
     return pd.read_csv(DATA / name)
 
