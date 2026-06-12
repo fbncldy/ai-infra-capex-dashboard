@@ -1,0 +1,4 @@
+label,value_b,category,note
+Visible AI revenue (2026E),115,visible,Frontier-lab run-rates about $75B plus enterprise AI software about $40B; some overlap between the two
+Depreciation floor,300,needed,Approximate annual depreciation on the 2024-26 capex base at a ~5-year life; the minimum revenue just to recover the assets
+Revenue to earn a return,700,needed,Sequoia / D. Cahn AI-capex framework scaled to about $760B of 2026 capex; covers total cost of ownership plus a margin

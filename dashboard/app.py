@@ -82,6 +82,8 @@ mobile_net = load_csv("mobile_networks.csv")
 mobile_traffic = load_csv("mobile_traffic.csv")
 fixed_traffic = load_csv("fixed_traffic.csv")
 server_margins = load_csv("server_margins.csv")
+hyp_returns = load_csv("hyperscaler_returns.csv")
+payback = load_csv("payback_gap.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -190,13 +192,15 @@ with tab_overview:
         f"sight. Equipment vendors are following the money: Nokia bought "
         f"Infinera for AI data-center optics while Arista quadrupled on "
         f"hyperscaler demand and Ericsson shrank.\n"
-        f"- **Demand is keeping pace, but value capture is an open question.** "
-        f"ChatGPT reached 900M weekly active users in Feb 2026; Anthropic and "
-        f"OpenAI report run-rate revenue of \\$47B and \\$25B. Usage is broad "
-        f"but shallow: only about 5 to 6% of ChatGPT users pay, and frontier "
-        f"capability has converged across labs with no clear network effects, "
-        f"which raises the question of whether value migrates to "
-        f"infrastructure below and applications above the model layer.\n"
+        f"- **Demand is real but far below what the spending implies it "
+        f"needs.** ChatGPT reached 900M weekly active users in Feb 2026 and "
+        f"Anthropic and OpenAI report run-rate revenue of \\$47B and \\$25B, "
+        f"yet visible AI revenue (about \\$115B) sits below even the "
+        f"depreciation floor on the capex base (about \\$300B), let alone the "
+        f"\\$600B-plus a return would require. Usage is broad but shallow "
+        f"(about 5 to 6% of ChatGPT users pay) and frontier capability has "
+        f"converged across labs, so where value settles, in infrastructure "
+        f"below or applications above the model, is the open question.\n"
         f"- **System integrators are quiet winners of the deployment phase.** "
         f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B "
         f"in FY2024, because deploying AI into enterprises remains "
@@ -726,8 +730,11 @@ with tab_hyper:
         "and the group issued \\$121B of bonds in 2025, four times the "
         "five-year average.\n"
         "- **Capex intensity has reached 30 to 75% of revenue** for businesses "
-        "that were asset-light a decade ago, making the durability of cloud "
-        "and AI revenue growth the central question for the whole chain.")
+        "that were asset-light a decade ago, and returns are starting to feel "
+        "it: hyperscaler ROCE is still 3 to 4 times the telecom level but "
+        "ticked down in 2025 as capital employed surged. How far it compresses "
+        "as the 2025-26 capex depreciates is the central question for the "
+        "whole chain.")
     st.markdown("---")
 
     st.caption("All figures are total reported capex. No AI-share is applied.")
@@ -810,6 +817,35 @@ with tab_hyper:
         "Microsoft's fiscal year ends June 30 and Oracle's May 31 (not "
         "calendar-aligned). Amazon capex includes fulfilment and logistics, "
         "not only AWS, which matters when comparing totals across companies.")
+
+    st.markdown("---")
+    st.markdown("#### Does the capex still earn its keep? ROCE over time")
+    st.caption(
+        "Return on capital employed (operating income over total assets minus "
+        "current liabilities), on the same basis as the telecom chart, so the "
+        "two are directly comparable. The shaded band is the 6-8% telecom "
+        "cost-of-capital range from that tab.")
+    fighr = px.line(
+        hyp_returns, x="year", y="roce_pct", color="company", markers=True,
+        color_discrete_map=COMPANY_COLORS,
+        labels={"year": "Year", "roce_pct": "ROCE (%)", "company": ""})
+    fighr.add_hrect(y0=6, y1=8, fillcolor="rgba(154,160,166,0.20)",
+                    line_width=0, annotation_text="telecom WACC band 6-8%",
+                    annotation_position="bottom right")
+    fighr.update_layout(height=380, hovermode="x unified", legend_title="",
+                        yaxis_range=[0, 35])
+    st.plotly_chart(fighr, width="stretch")
+    st.caption(
+        "Hyperscaler returns are still 3 to 4 times the telecom level, which is "
+        "what justifies the spending. The 2025 dip is the signal to watch: "
+        "Alphabet fell from 31% to 26%, Microsoft and Meta also eased, as "
+        "capital employed jumped (Alphabet from \\$361B to \\$493B in one year) "
+        "faster than operating income. Most of the 2025-26 capex has not yet "
+        "started depreciating, so the drag builds from here. The open question "
+        "is how far ROCE compresses toward the telecom band as it does. Amazon "
+        "and Oracle sit lower because their figures include retail and a "
+        "broader software base. Sources: 10-K filings (EDGAR XBRL). Data as of "
+        f"{DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### 2026 forward guidance")
@@ -947,6 +983,10 @@ with tab_labs:
         "- **Frontier capability has converged**, with benchmark leaders "
         "clustered in the low 90s on GPQA-Diamond, Chinese models close "
         "behind, and no clear network effects at the model layer.\n"
+        "- **The revenue is far below what the buildout implies it needs:** "
+        "visible AI revenue is around \\$115B a year, against a depreciation "
+        "floor near \\$300B and a full-return requirement near \\$700B on the "
+        "2026 capex. The bull case rests on this gap closing fast.\n"
         "- **Where the value settles is the open question:** enterprise spend "
         "patterns and startup formation (both charted below) suggest the bet "
         "is being placed on the application layer.")
@@ -1038,6 +1078,36 @@ with tab_labs:
             "2024). Coding tools are the largest single use case at \\$4.2B. "
             "Source: Menlo Ventures, State of Generative AI in the Enterprise "
             "2025.")
+
+    st.markdown("#### The payback gap: AI revenue vs the revenue the capex "
+                "implies (\\$B / year)")
+    st.caption(
+        "Putting the demand side against the buildout. The left bar is visible "
+        "AI revenue; the right two are what the spending implies it needs.")
+    order = payback["label"].tolist()
+    figpb = px.bar(
+        payback, x="label", y="value_b", color="category",
+        color_discrete_map={"visible": GREEN, "needed": GREY},
+        text="value_b", labels={"label": "", "value_b": "$B per year",
+                                 "category": ""})
+    figpb.update_traces(texttemplate="$%{text:.0f}B", textposition="outside")
+    figpb.update_layout(height=360, showlegend=False,
+                        yaxis_range=[0, 820],
+                        xaxis={"categoryorder": "array", "categoryarray": order})
+    st.plotly_chart(figpb, width="stretch")
+    st.caption(
+        "Visible AI revenue (frontier-lab run-rates about \\$75B plus enterprise "
+        "AI software about \\$40B, with some overlap) sits near \\$115B. The "
+        "depreciation floor (about \\$300B) is the minimum revenue just to "
+        "recover the 2024-26 capex base over a roughly 5-year life, before any "
+        "power, staff or return. The full requirement (about \\$700B) applies "
+        "Sequoia's AI-capex framework (David Cahn, the \"$600B question\") to "
+        "the roughly \\$760B of 2026 capex. Visible revenue is below even the "
+        "depreciation floor, so the gap is the bull case's burden of proof: it "
+        "rests on AI revenue compounding several-fold from here. The two "
+        "right-hand bars are analytical estimates from published frameworks, "
+        f"not forecasts. Sources: Epoch AI, Menlo Ventures, Sequoia. Data as "
+        f"of {DATA_UPDATED}.")
 
     st.markdown("#### Y Combinator: AI share of startup batches (%)")
     figyc = go.Figure()
