@@ -822,29 +822,66 @@ with tab_hyper:
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
     st.caption(
         "Return on capital employed (operating income over total assets minus "
-        "current liabilities), on the same basis as the telecom chart, so the "
-        "two are directly comparable. The shaded band is the 6-8% telecom "
-        "cost-of-capital range from that tab.")
+        "current liabilities), the same formula used on the telecom tab so the "
+        "levels are comparable. The shaded band is an estimated 8-10% cost of "
+        "capital for these companies (Damodaran, software and internet "
+        "sectors), which is their own hurdle rate and higher than a telecom's.")
     fighr = px.line(
         hyp_returns, x="year", y="roce_pct", color="company", markers=True,
         color_discrete_map=COMPANY_COLORS,
         labels={"year": "Year", "roce_pct": "ROCE (%)", "company": ""})
-    fighr.add_hrect(y0=6, y1=8, fillcolor="rgba(154,160,166,0.20)",
-                    line_width=0, annotation_text="telecom WACC band 6-8%",
+    fighr.add_hrect(y0=8, y1=10, fillcolor="rgba(154,160,166,0.20)",
+                    line_width=0, annotation_text="hyperscaler WACC ~8-10%",
                     annotation_position="bottom right")
     fighr.update_layout(height=380, hovermode="x unified", legend_title="",
                         yaxis_range=[0, 35])
     st.plotly_chart(fighr, width="stretch")
     st.caption(
-        "Hyperscaler returns are still 3 to 4 times the telecom level, which is "
-        "what justifies the spending. The 2025 dip is the signal to watch: "
-        "Alphabet fell from 31% to 26%, Microsoft and Meta also eased, as "
-        "capital employed jumped (Alphabet from \\$361B to \\$493B in one year) "
-        "faster than operating income. Most of the 2025-26 capex has not yet "
-        "started depreciating, so the drag builds from here. The open question "
-        "is how far ROCE compresses toward the telecom band as it does. Amazon "
-        "and Oracle sit lower because their figures include retail and a "
-        "broader software base. Sources: 10-K filings (EDGAR XBRL). Data as of "
+        "Returns are still comfortably above their own roughly 8-10% cost of "
+        "capital, and 3 to 4 times the level telecoms earn, which is what "
+        "justifies the spending. The 2025 dip is the signal to watch: Alphabet "
+        "fell from 31% to 26%, with Microsoft and Meta also easing, as capital "
+        "employed jumped (Alphabet from \\$361B to \\$493B in one year) faster "
+        "than operating income. Most of the 2025-26 capex has not yet started "
+        "depreciating, so the drag builds from here; the open question is how "
+        "far the spread over cost of capital narrows. Amazon and Oracle sit "
+        "lower because their figures include retail and a broader software "
+        "base. Sources: 10-K filings (EDGAR XBRL). Data as of "
+        f"{DATA_UPDATED}.")
+
+    st.markdown("---")
+    st.markdown("#### Does the buildout pay back? Revenue vs what the capex "
+                "implies (\\$B / year)")
+    st.caption(
+        "The five are spending roughly \\$760B in 2026. This sets that against "
+        "the AI revenue generated across the whole ecosystem (labs, "
+        "applications and the clouds), which is what must ultimately justify "
+        "the buildout, whoever captures it.")
+    order = payback["label"].tolist()
+    figpb = px.bar(
+        payback, x="label", y="value_b", color="category",
+        color_discrete_map={"visible": GREEN, "needed": GREY},
+        text="value_b", labels={"label": "", "value_b": "$B per year",
+                                 "category": ""})
+    figpb.update_traces(texttemplate="$%{text:.0f}B", textposition="outside")
+    figpb.update_layout(height=360, showlegend=False,
+                        yaxis_range=[0, 820],
+                        xaxis={"categoryorder": "array", "categoryarray": order})
+    st.plotly_chart(figpb, width="stretch")
+    st.caption(
+        "Visible AI revenue across the ecosystem (frontier-lab run-rates about "
+        "\\$75B plus enterprise AI software about \\$40B, with some overlap) "
+        "sits near \\$115B. The depreciation floor (about \\$300B) is the "
+        "minimum revenue just to recover the 2024-26 capex base over a roughly "
+        "5-year life, before any power, staff or return. The full requirement "
+        "(about \\$700B) applies Sequoia's AI-capex framework (David Cahn, the "
+        "\"$600B question\") to the roughly \\$760B of 2026 capex. Visible "
+        "revenue is below even the depreciation floor, so the gap is the bull "
+        "case's burden of proof: it rests on AI revenue compounding "
+        "several-fold from here. The capex is predominantly the Big-5's; the "
+        "revenue accrues across the ecosystem, not only to them. The two "
+        "right-hand bars are analytical estimates from published frameworks, "
+        "not forecasts. Sources: Epoch AI, Menlo Ventures, Sequoia. Data as of "
         f"{DATA_UPDATED}.")
 
     st.markdown("---")
@@ -983,10 +1020,10 @@ with tab_labs:
         "- **Frontier capability has converged**, with benchmark leaders "
         "clustered in the low 90s on GPQA-Diamond, Chinese models close "
         "behind, and no clear network effects at the model layer.\n"
-        "- **The revenue is far below what the buildout implies it needs:** "
-        "visible AI revenue is around \\$115B a year, against a depreciation "
-        "floor near \\$300B and a full-return requirement near \\$700B on the "
-        "2026 capex. The bull case rests on this gap closing fast.\n"
+        "- **Lab and application revenue is the demand that must justify the "
+        "buildout upstream:** at roughly \\$115B across labs and enterprise "
+        "software, it is still far below what the capex implies (see the "
+        "payback chart in the Hyperscalers tab).\n"
         "- **Where the value settles is the open question:** enterprise spend "
         "patterns and startup formation (both charted below) suggest the bet "
         "is being placed on the application layer.")
@@ -1078,36 +1115,6 @@ with tab_labs:
             "2024). Coding tools are the largest single use case at \\$4.2B. "
             "Source: Menlo Ventures, State of Generative AI in the Enterprise "
             "2025.")
-
-    st.markdown("#### The payback gap: AI revenue vs the revenue the capex "
-                "implies (\\$B / year)")
-    st.caption(
-        "Putting the demand side against the buildout. The left bar is visible "
-        "AI revenue; the right two are what the spending implies it needs.")
-    order = payback["label"].tolist()
-    figpb = px.bar(
-        payback, x="label", y="value_b", color="category",
-        color_discrete_map={"visible": GREEN, "needed": GREY},
-        text="value_b", labels={"label": "", "value_b": "$B per year",
-                                 "category": ""})
-    figpb.update_traces(texttemplate="$%{text:.0f}B", textposition="outside")
-    figpb.update_layout(height=360, showlegend=False,
-                        yaxis_range=[0, 820],
-                        xaxis={"categoryorder": "array", "categoryarray": order})
-    st.plotly_chart(figpb, width="stretch")
-    st.caption(
-        "Visible AI revenue (frontier-lab run-rates about \\$75B plus enterprise "
-        "AI software about \\$40B, with some overlap) sits near \\$115B. The "
-        "depreciation floor (about \\$300B) is the minimum revenue just to "
-        "recover the 2024-26 capex base over a roughly 5-year life, before any "
-        "power, staff or return. The full requirement (about \\$700B) applies "
-        "Sequoia's AI-capex framework (David Cahn, the \"$600B question\") to "
-        "the roughly \\$760B of 2026 capex. Visible revenue is below even the "
-        "depreciation floor, so the gap is the bull case's burden of proof: it "
-        "rests on AI revenue compounding several-fold from here. The two "
-        "right-hand bars are analytical estimates from published frameworks, "
-        f"not forecasts. Sources: Epoch AI, Menlo Ventures, Sequoia. Data as "
-        f"of {DATA_UPDATED}.")
 
     st.markdown("#### Y Combinator: AI share of startup batches (%)")
     figyc = go.Figure()
