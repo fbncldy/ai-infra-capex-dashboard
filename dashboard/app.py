@@ -822,10 +822,9 @@ with tab_hyper:
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
     st.caption(
         "Return on capital employed (operating income over total assets minus "
-        "current liabilities), the same formula used on the telecom tab so the "
-        "levels are comparable. The shaded band is an estimated 8-10% cost of "
+        "current liabilities). The shaded band is an estimated 8-10% cost of "
         "capital for these companies (Damodaran, software and internet "
-        "sectors), which is their own hurdle rate and higher than a telecom's.")
+        "sectors).")
     fighr = px.line(
         hyp_returns, x="year", y="roce_pct", color="company", markers=True,
         color_discrete_map=COMPANY_COLORS,
