@@ -83,7 +83,6 @@ mobile_traffic = load_csv("mobile_traffic.csv")
 fixed_traffic = load_csv("fixed_traffic.csv")
 server_margins = load_csv("server_margins.csv")
 hyp_returns = load_csv("hyperscaler_returns.csv")
-payback = load_csv("payback_gap.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -192,15 +191,13 @@ with tab_overview:
         f"sight. Equipment vendors are following the money: Nokia bought "
         f"Infinera for AI data-center optics while Arista quadrupled on "
         f"hyperscaler demand and Ericsson shrank.\n"
-        f"- **Demand is real but far below what the spending implies it "
-        f"needs.** ChatGPT reached 900M weekly active users in Feb 2026 and "
-        f"Anthropic and OpenAI report run-rate revenue of \\$47B and \\$25B, "
-        f"yet visible AI revenue (about \\$115B) sits below even the "
-        f"depreciation floor on the capex base (about \\$300B), let alone the "
-        f"\\$600B-plus a return would require. Usage is broad but shallow "
-        f"(about 5 to 6% of ChatGPT users pay) and frontier capability has "
-        f"converged across labs, so where value settles, in infrastructure "
-        f"below or applications above the model, is the open question.\n"
+        f"- **Demand is keeping pace, but value capture is an open question.** "
+        f"ChatGPT reached 900M weekly active users in Feb 2026; Anthropic and "
+        f"OpenAI report run-rate revenue of \\$47B and \\$25B. Usage is broad "
+        f"but shallow: only about 5 to 6% of ChatGPT users pay, and frontier "
+        f"capability has converged across labs with no clear network effects, "
+        f"which raises the question of whether value migrates to "
+        f"infrastructure below and applications above the model layer.\n"
         f"- **System integrators are quiet winners of the deployment phase.** "
         f"Accenture booked \\$5.9B of GenAI work in FY2025, up from about \\$3B "
         f"in FY2024, because deploying AI into enterprises remains "
@@ -849,41 +846,6 @@ with tab_hyper:
         f"{DATA_UPDATED}.")
 
     st.markdown("---")
-    st.markdown("#### Does the buildout pay back? Revenue vs what the capex "
-                "implies (\\$B / year)")
-    st.caption(
-        "The five are spending roughly \\$760B in 2026. This sets that against "
-        "the AI revenue generated across the whole ecosystem (labs, "
-        "applications and the clouds), which is what must ultimately justify "
-        "the buildout, whoever captures it.")
-    order = payback["label"].tolist()
-    figpb = px.bar(
-        payback, x="label", y="value_b", color="category",
-        color_discrete_map={"visible": GREEN, "needed": GREY},
-        text="value_b", labels={"label": "", "value_b": "$B per year",
-                                 "category": ""})
-    figpb.update_traces(texttemplate="$%{text:.0f}B", textposition="outside")
-    figpb.update_layout(height=360, showlegend=False,
-                        yaxis_range=[0, 820],
-                        xaxis={"categoryorder": "array", "categoryarray": order})
-    st.plotly_chart(figpb, width="stretch")
-    st.caption(
-        "Visible AI revenue across the ecosystem (frontier-lab run-rates about "
-        "\\$75B plus enterprise AI software about \\$40B, with some overlap) "
-        "sits near \\$115B. The depreciation floor (about \\$300B) is the "
-        "minimum revenue just to recover the 2024-26 capex base over a roughly "
-        "5-year life, before any power, staff or return. The full requirement "
-        "(about \\$700B) applies Sequoia's AI-capex framework (David Cahn, the "
-        "\"$600B question\") to the roughly \\$760B of 2026 capex. Visible "
-        "revenue is below even the depreciation floor, so the gap is the bull "
-        "case's burden of proof: it rests on AI revenue compounding "
-        "several-fold from here. The capex is predominantly the Big-5's; the "
-        "revenue accrues across the ecosystem, not only to them. The two "
-        "right-hand bars are analytical estimates from published frameworks, "
-        "not forecasts. Sources: Epoch AI, Menlo Ventures, Sequoia. Data as of "
-        f"{DATA_UPDATED}.")
-
-    st.markdown("---")
     st.markdown("#### 2026 forward guidance")
     st.caption(
         "Guidance is reported on a broader basis (total capex including finance "
@@ -1019,10 +981,6 @@ with tab_labs:
         "- **Frontier capability has converged**, with benchmark leaders "
         "clustered in the low 90s on GPQA-Diamond, Chinese models close "
         "behind, and no clear network effects at the model layer.\n"
-        "- **Lab and application revenue is the demand that must justify the "
-        "buildout upstream:** at roughly \\$115B across labs and enterprise "
-        "software, it is still far below what the capex implies (see the "
-        "payback chart in the Hyperscalers tab).\n"
         "- **Where the value settles is the open question:** enterprise spend "
         "patterns and startup formation (both charted below) suggest the bet "
         "is being placed on the application layer.")
