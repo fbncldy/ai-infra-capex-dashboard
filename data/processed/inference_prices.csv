@@ -1,0 +1,10 @@
+date,capability_class,model,price_per_m,source_type,note
+2021-11,GPT-3 class,GPT-3 (davinci),60,reported,OpenAI list price; a16z LLMflation series start
+2023-03,GPT-3 class,GPT-3.5 Turbo,1.6,reported,Blended 3:1 input:output list price
+2024-07,GPT-3 class,GPT-4o mini,0.26,reported,$0.15 in / $0.60 out
+2024-12,GPT-3 class,Llama 3.2 3B (hosted),0.06,reported,a16z LLMflation endpoint; 1000x below GPT-3 in 3 years
+2023-03,GPT-4 class,GPT-4,37.5,reported,$30 in / $60 out blended 3:1
+2023-11,GPT-4 class,GPT-4 Turbo,15,reported,$10 in / $30 out
+2024-05,GPT-4 class,GPT-4o,7.5,reported,$5 in / $15 out
+2024-12,GPT-4 class,DeepSeek V3,0.48,reported,$0.27 in / $1.10 out
+2025-06,GPT-4 class,Llama 4 Maverick (hosted),0.27,estimate,Typical hosted list price; blended 3:1

@@ -83,6 +83,8 @@ mobile_traffic = load_csv("mobile_traffic.csv")
 fixed_traffic = load_csv("fixed_traffic.csv")
 server_margins = load_csv("server_margins.csv")
 hyp_returns = load_csv("hyperscaler_returns.csv")
+vint = load_csv("vertical_integration.csv")
+inference_prices = load_csv("inference_prices.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -332,6 +334,47 @@ with tab_overview:
             "</tr>")
     vc_html.append("</tbody></table>")
     st.markdown("".join(vc_html), unsafe_allow_html=True)
+
+    st.markdown("#### Who is integrating across the chain")
+    st.caption(
+        "Where the major players sit and where they are pushing. The striking "
+        "pattern is that almost everyone is integrating: NVIDIA pushing down "
+        "from silicon into systems and cloud, the hyperscalers building their "
+        "own chips, OpenAI building data centers, and Google spanning the most "
+        "of the chain. The focused players (TSMC in foundry, Broadcom in "
+        "silicon) are the exception.")
+    layer_cols = [("silicon", "Silicon"), ("foundry", "Foundry"),
+                  ("servers", "Servers"), ("networking", "Network"),
+                  ("datacenters", "Data ctr"), ("cloud", "Cloud"),
+                  ("neoclouds", "NeoCloud"), ("labs", "Labs"),
+                  ("integrators", "Integr."), ("telecoms", "Telco")]
+    cell = {"core": ("●", "background:#4285F4;color:#fff;"),
+            "expanding": ("◐", "background:#c6dafc;color:#1a3a6b;"),
+            "": ("", "")}
+    vi_html = ["<table style='width:100%;border-collapse:collapse;"
+               "font-size:0.8rem;text-align:center;'>",
+               "<thead><tr><th style='text-align:left;padding:6px 8px;"
+               "border-bottom:2px solid #c8ccd0;'>Player</th>"]
+    for _, label in layer_cols:
+        vi_html.append("<th style='padding:6px 4px;border-bottom:2px solid "
+                       f"#c8ccd0;font-weight:600;'>{label}</th>")
+    vi_html.append("</tr></thead><tbody>")
+    for _, r in vint.iterrows():
+        vi_html.append("<tr><td style='text-align:left;padding:6px 8px;"
+                       "border-bottom:1px solid #ebedf0;font-weight:600;'>"
+                       f"{r['player']}</td>")
+        for col, _ in layer_cols:
+            val = r[col] if isinstance(r[col], str) else ""
+            sym, style = cell.get(val, ("", ""))
+            vi_html.append(f"<td style='padding:6px 4px;border-bottom:1px "
+                           f"solid #ebedf0;{style}'>{sym}</td>")
+        vi_html.append("</tr>")
+    vi_html.append("</tbody></table>")
+    st.markdown("".join(vi_html), unsafe_allow_html=True)
+    st.caption(
+        "● core business · ◐ expanding into. Telco stays empty: no AI-stack "
+        "player has moved into carrier networks, the one layer still left to "
+        "others. Assessment based on disclosed products and announced projects.")
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
@@ -1024,6 +1067,29 @@ with tab_labs:
             "Gemini 2.5 Pro 84.0, DeepSeek R1 71.5); two points are estimates, "
             "flagged in the data file. Chinese labs have closed most of the "
             f"gap. Data as of {DATA_UPDATED}.")
+
+    st.markdown("#### Inference price collapse ($ per million tokens, log scale)")
+    ip = inference_prices.copy()
+    ip["date"] = pd.to_datetime(ip["date"])
+    figip = px.line(
+        ip.sort_values("date"), x="date", y="price_per_m",
+        color="capability_class", markers=True, log_y=True,
+        color_discrete_map={"GPT-3 class": GREY, "GPT-4 class": BLUE},
+        hover_data=["model"],
+        labels={"date": "", "price_per_m": "$ / million tokens (log)",
+                "capability_class": ""})
+    figip.update_layout(height=320, hovermode="x unified", legend_title="")
+    st.plotly_chart(figip, width="stretch")
+    st.caption(
+        "Blended list price (3:1 input:output) for a fixed capability level "
+        "over time. The price of GPT-3-class capability fell from \\$60 to "
+        "about \\$0.06 per million tokens in three years, roughly 1000x, and "
+        "GPT-4-class capability has fallen about 100x since 2023. As capability "
+        "converges across labs and price falls about 10x a year, the model "
+        "layer struggles to hold value, which pushes it toward the "
+        "infrastructure below and the applications above. Sources: a16z "
+        "(\"LLMflation\"), company price lists. Data as of "
+        f"{DATA_UPDATED}.")
 
     st.markdown("#### ChatGPT weekly active users (millions)")
     figw = px.area(chatgpt, x="date", y="wau_m",
