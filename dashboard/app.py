@@ -211,8 +211,8 @@ with tab_overview:
         f"getting AI into production is still services-heavy.\n"
         f"- **Bottom line.** Value accrues to whoever owns what AI cannot "
         f"manufacture: distribution, data, trust and customer lock-in, which is "
-        f"why the whole stack is racing to integrate (matrix below). The "
-        f"telecom precedent rhymes, but the incumbents here produce the "
+        f"why the whole stack is racing to integrate. The telecom build-out is "
+        f"the closest precedent, but the incumbents here produce the "
         f"intelligence itself and already span the stack, so disruption from "
         f"outside is harder than the wave that commoditized carriers."
     )
