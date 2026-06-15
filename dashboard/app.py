@@ -158,8 +158,8 @@ with tab_overview:
 
     st.markdown("#### Executive summary")
     st.markdown(
-        f"- **The build-out is redistributing value across the chain, not just "
-        f"growing it.** The scarcities AI created are all easing at once: "
+        f"- **The build-out is redistributing value across the chain.** The "
+        f"scarcities AI created are all easing at once: "
         f"compute is getting cheaper, frontier models are converging, and the "
         f"cost of building software has collapsed. As those rents compress, "
         f"value flows toward what was already scarce before AI, namely "
@@ -202,11 +202,10 @@ with tab_overview:
         f"near zero. The labs that stay more than low-margin utilities will be "
         f"the ones that own distribution, compound proprietary data, or move "
         f"up into applications before application companies move down.\n"
-        f"- **In software, cheap building reranks the moats rather than "
-        f"removing them.** When anyone can generate code, advantages built on "
-        f"engineering complexity erode, while the structurally scarce ones "
-        f"hold: workflow embedding, switching costs, proprietary data and "
-        f"regulatory position. Mid-market horizontal SaaS is the most exposed, "
+        f"- **In software, cheap building changes which moats matter.** When "
+        f"anyone can generate code, advantages built on engineering complexity "
+        f"erode, while the structurally scarce ones hold: workflow embedding, "
+        f"switching costs, proprietary data and regulatory position. Mid-market horizontal SaaS is the most exposed, "
         f"while vertical depth and data flywheels move up the defensibility "
         f"stack. The integrators (Accenture and peers) are early winners "
         f"because getting AI into production is still services-heavy.\n"
