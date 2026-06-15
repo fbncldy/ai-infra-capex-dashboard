@@ -159,13 +159,12 @@ with tab_overview:
     st.markdown("#### Executive summary")
     st.markdown(
         f"- **The build-out is redistributing value across the chain.** The "
-        f"scarcities AI created are all easing at once: "
-        f"compute is getting cheaper, frontier models are converging, and the "
-        f"cost of building software has collapsed. As those rents compress, "
-        f"value flows toward what was already scarce before AI, namely "
+        f"scarcities AI created are easing at once: compute is getting cheaper, "
+        f"frontier models are converging, and the cost of building software has "
+        f"collapsed. As each becomes abundant, the pricing power it gave its "
+        f"layer erodes, and value accrues to what was already scarce before AI: "
         f"distribution, proprietary data, regulatory position and customer "
-        f"switching costs. The rest of this summary traces where it is moving, "
-        f"layer by layer.\n"
+        f"switching costs.\n"
         f"- **The spend has reached a scale with few precedents, and it now "
         f"leans on debt.** Big-5 capex (Microsoft, Alphabet, Amazon, Meta, "
         f"Oracle) hit about **\\${total_now:,.0f}B** in FY2025 and is guided "
