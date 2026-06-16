@@ -1,8 +1,8 @@
 player,silicon,foundry,servers,networking,datacenters,cloud,neoclouds,labs,integrators,telecoms
-Google,core,,expanding,expanding,core,core,,core,expanding,
-Microsoft,expanding,,expanding,expanding,core,core,expanding,expanding,expanding,
-Amazon,core,,expanding,expanding,core,core,,expanding,expanding,
-Meta,expanding,,expanding,expanding,core,,expanding,core,,
+Google,core,,expanding,expanding,core,core,,core,expanding,expanding
+Microsoft,expanding,,expanding,expanding,core,core,expanding,expanding,expanding,expanding
+Amazon,core,,expanding,expanding,core,core,,expanding,expanding,expanding
+Meta,expanding,,expanding,expanding,core,,expanding,core,,expanding
 NVIDIA,core,,expanding,core,expanding,expanding,expanding,,,
 OpenAI,expanding,,,,expanding,expanding,expanding,core,,
 Oracle,,,expanding,,core,core,expanding,,expanding,

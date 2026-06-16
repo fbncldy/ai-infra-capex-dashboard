@@ -1,0 +1,11 @@
+layer,order,roce_pct,players,source_type,note
+Silicon & IP,1,32,"NVIDIA, AMD, Broadcom",computed,NVIDIA 75 / AMD 6 / Broadcom 17; fabless and asset-light; memory makers excluded and cyclical
+Foundry,2,14,"TSMC, GlobalFoundries, UMC",estimate,TSMC about 26 (computed approx); GlobalFoundries and UMC lower; capital-heavy
+Servers,3,13,"Dell, Supermicro, HPE",computed,Dell 21 / Supermicro 11 / HPE about 8; Dell flattered by low book equity
+Networking,4,15,"Arista, Cisco, Ciena",computed,Arista 27 / Cisco 14 / Ciena 4
+Data Centers,5,5,"Equinix, Digital Realty",computed,Colocation REITs; capital-heavy so low ROCE
+Hyperscale cloud,6,22,"Alphabet, Microsoft, Amazon",computed,Group ROCE; cloud-segment returns are higher but segment capital is not disclosed
+NeoClouds,7,0,"CoreWeave, Nebius",computed,Near zero to negative; leveraged and pre-scale on a returns basis
+AI Labs,8,-30,"OpenAI, Anthropic",estimate,Pre-profit; ROCE is deeply negative and not meaningfully measurable
+System Integrators,9,30,"Accenture, TCS, Infosys",computed,Accenture 23 (computed); TCS and Infosys higher and asset-light
+Telecoms,10,7,"AT&T, Verizon, Deutsche Telekom",computed,4 to 9% range; at or below cost of capital

@@ -85,7 +85,7 @@ server_margins = load_csv("server_margins.csv")
 hyp_returns = load_csv("hyperscaler_returns.csv")
 vint = load_csv("vertical_integration.csv")
 inference_prices = load_csv("inference_prices.csv")
-value_capture = load_csv("value_capture.csv")
+roce_layer = load_csv("roce_by_layer.csv")
 semis_segments = load_csv("semis_segments.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
@@ -238,44 +238,45 @@ with tab_overview:
     s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
               f"{len(gw)} flagship projects")
 
-    st.markdown("#### Where value sits across the chain")
+    st.markdown("#### Where value is captured: return on capital by layer")
     st.caption(
-        "Each layer placed by the annual revenue and operating margin of its "
-        "bellwether. It maps the redistribution thesis in one frame: where the "
-        "money is, and where it converts to profit.")
-    vc = value_capture.copy()
+        "Average ROCE of three representative players per layer, against a "
+        "typical cost-of-capital band. It maps the redistribution thesis in one "
+        "frame: returns concentrate in the asset-light layers and thin out "
+        "wherever the capital sits.")
+    rl = roce_layer.sort_values("order")
 
-    def _band(m):
-        if m < 0:
-            return "Loss-making"
-        return "Margin above 30%" if m >= 30 else "Margin 0 to 30%"
-    vc["band"] = vc["op_margin_pct"].apply(_band)
-    figvc = px.scatter(
-        vc, x="revenue_b", y="op_margin_pct", text="layer", color="band",
-        log_x=True, custom_data=["bellwether"],
-        color_discrete_map={"Margin above 30%": GREEN, "Margin 0 to 30%": GREY,
-                            "Loss-making": RED},
-        labels={"revenue_b": "Annual revenue ($B, log scale)",
-                "op_margin_pct": "Operating margin (%)", "band": ""})
-    figvc.update_traces(textposition="top center", marker=dict(size=13),
-                        hovertemplate="%{text} (%{customdata[0]})<br>revenue "
-                                      "$%{x:.0f}B, margin %{y:.0f}%<extra></extra>")
-    figvc.add_hline(y=0, line_dash="dot", line_color=GREY)
-    figvc.update_layout(height=460, legend_title="",
-                        yaxis_range=[-65, 75])
-    st.plotly_chart(figvc, width="stretch")
+    def _band(v):
+        if v < 0:
+            return "Below zero"
+        return "Above cost of capital" if v >= 12 else "At or below cost of capital"
+    rl = rl.assign(band=rl["roce_pct"].apply(_band))
+    figrl = px.bar(
+        rl, x="layer", y="roce_pct", color="band", text="roce_pct",
+        color_discrete_map={"Above cost of capital": GREEN,
+                            "At or below cost of capital": GREY,
+                            "Below zero": RED},
+        labels={"layer": "", "roce_pct": "Average ROCE (%)", "band": ""})
+    figrl.update_traces(texttemplate="%{text:.0f}%", textposition="outside",
+                        cliponaxis=False)
+    figrl.add_hrect(y0=8, y1=11, fillcolor="rgba(154,160,166,0.20)",
+                    line_width=0, annotation_text="typical cost of capital "
+                    "(8 to 11%)", annotation_position="top right")
+    figrl.update_layout(height=440, legend_title="", yaxis_range=[-40, 80],
+                        xaxis_tickangle=-30)
+    st.plotly_chart(figrl, width="stretch")
     st.caption(
-        "Margin is fat at chip design, foundry, networking IP and cloud, thin "
-        "where hardware is assembled, and negative at the AI labs that are "
-        "still buying scale ahead of revenue. The incumbents carry the "
-        "revenue: telecoms and hyperscale cloud sit far right, but telecom's "
-        "healthy margin masks a ROCE near 6%, below its cost of capital. "
-        "Operating margin is the most comparable cross-layer metric available; "
-        "it does not capture capital intensity (telecoms, data centers) and the "
-        "labs are pre-profit. Each point is one bellwether (NVIDIA, TSMC, Dell "
-        "ISG, Arista, Equinix, AWS, CoreWeave, OpenAI, Accenture, Verizon), so "
-        "it shows the layer's character, not its total size. Sources: company "
-        f"filings. Data as of {DATA_UPDATED}.")
+        "Returns are highest in the asset-light layers (chip design, hyperscale "
+        "cloud, system integration) and thin in the capital-heavy ones "
+        "(foundry, data centers, telecoms), which earn at or below their cost "
+        "of capital. NeoClouds sit near zero on a leveraged, pre-scale base, "
+        "and the AI labs are pre-profit. Each bar is the average of the three "
+        "players shown in the data, computed as operating income over capital "
+        "employed from filings, the same basis as the telecom and hyperscaler "
+        "tabs. Cost of capital varies by layer (telecoms nearer 7%, tech "
+        "higher); the band is a common reference. TSMC, the foreign system "
+        "integrators and the labs are estimates, flagged in the data. Sources: "
+        f"company filings (EDGAR XBRL). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
     st.caption("The ten steps, upstream to downstream, and what each one does.")
@@ -379,9 +380,12 @@ with tab_overview:
     vi_html.append("</tbody></table>")
     st.markdown("".join(vi_html), unsafe_allow_html=True)
     st.caption(
-        "● core business · ◐ expanding into. Telco stays empty: no AI-stack "
-        "player has moved into carrier networks, the one layer still left to "
-        "others. Assessment based on disclosed products and announced projects.")
+        "● core business · ◐ expanding into. The hyperscalers have even pushed "
+        "into connectivity: Google (Fiber, Fi, subsea cables), Meta and "
+        "Microsoft (subsea cables) and Amazon (Project Kuiper satellite "
+        "broadband), though as infrastructure owners rather than retail "
+        "carriers. Assessment based on disclosed products and announced "
+        "projects.")
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
