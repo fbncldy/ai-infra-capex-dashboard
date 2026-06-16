@@ -1,0 +1,22 @@
+year,segment,sales_b,source_type,note
+2020,Logic (compute),118,reported,WSTS/SIA approximate segment split
+2020,Memory (storage),120,reported,
+2020,Other (analog/micro/discrete),202,reported,
+2021,Logic (compute),155,reported,
+2021,Memory (storage),155,reported,
+2021,Other (analog/micro/discrete),246,reported,
+2022,Logic (compute),180,reported,
+2022,Memory (storage),130,reported,
+2022,Other (analog/micro/discrete),264,reported,
+2023,Logic (compute),180,reported,
+2023,Memory (storage),92,reported,Memory downturn
+2023,Other (analog/micro/discrete),255,reported,
+2024,Logic (compute),215,reported,
+2024,Memory (storage),165,reported,
+2024,Other (analog/micro/discrete),250,reported,
+2025,Logic (compute),290,reported,AI accelerator surge
+2025,Memory (storage),220,reported,HBM ramp
+2025,Other (analog/micro/discrete),282,reported,
+2026,Logic (compute),380,forecast,
+2026,Memory (storage),300,forecast,
+2026,Other (analog/micro/discrete),320,forecast,

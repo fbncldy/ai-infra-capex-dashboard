@@ -85,6 +85,8 @@ server_margins = load_csv("server_margins.csv")
 hyp_returns = load_csv("hyperscaler_returns.csv")
 vint = load_csv("vertical_integration.csv")
 inference_prices = load_csv("inference_prices.csv")
+value_capture = load_csv("value_capture.csv")
+semis_segments = load_csv("semis_segments.csv")
 telco_tsr = load_csv("telco_tsr.csv")
 telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
@@ -236,48 +238,44 @@ with tab_overview:
     s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
               f"{len(gw)} flagship projects")
 
-    st.markdown("#### Hyperscaler capex by company (\\$B, absolute)")
-    color_map = COMPANY_COLORS
-    comp_order = ["Alphabet", "Amazon", "Meta", "Microsoft", "Oracle"]
-    act = view.pivot_table(index="company", columns="fiscal_year",
-                           values="capex_usd_b", aggfunc="sum")
-    gmid = guidance.set_index("company")["capex_mid_b"]
-    hist_years = sorted(view["fiscal_year"].unique())
-    years = hist_years + [2026]
-    xcat = [str(y) for y in years]
-
-    figo = go.Figure()
-    for comp in comp_order:
-        yvals = [float(act.loc[comp, y]) if y in act.columns else 0.0
-                 for y in hist_years] + [float(gmid.get(comp, 0))]
-        figo.add_trace(go.Bar(
-            name=comp, x=xcat, y=yvals, marker_color=color_map[comp],
-            marker_pattern_shape=[""] * len(hist_years) + ["/"]))
-    figo.update_layout(barmode="stack", height=440, legend_title="",
-                       yaxis_title="Capex ($B)", xaxis_title="Fiscal year",
-                       hovermode="x unified")
-
-    totals = {y: float(sum(act.loc[c, y] for c in comp_order
-                           if y in act.columns)) for y in hist_years}
-    totals[2026] = float(gmid.reindex(comp_order).sum())
-    for y in years:
-        label = f"${totals[y]:,.0f}B" + ("E" if y == 2026 else "")
-        figo.add_annotation(x=str(y), y=totals[y], text=f"<b>{label}</b>",
-                            showarrow=False, yshift=12,
-                            font=dict(size=12, color="#202124"))
-    figo.update_yaxes(range=[0, max(totals.values()) * 1.12])
-    st.plotly_chart(figo, width="stretch")
+    st.markdown("#### Where value sits across the chain")
     st.caption(
-        "Figures are total reported capex; companies do not disclose an "
-        "AI-only split. Totals are shown above each bar. Bars for "
-        "2018 to 2025 are reported cash PP&E; the hatched 2026E bar is the "
-        "guidance midpoint, which is reported on a broader basis (total capex "
-        "including finance leases). Microsoft's fiscal year ends in June and "
-        "Oracle's in May, so their years are not calendar-aligned.")
+        "Each layer placed by the annual revenue and operating margin of its "
+        "bellwether. It maps the redistribution thesis in one frame: where the "
+        "money is, and where it converts to profit.")
+    vc = value_capture.copy()
+
+    def _band(m):
+        if m < 0:
+            return "Loss-making"
+        return "Margin above 30%" if m >= 30 else "Margin 0 to 30%"
+    vc["band"] = vc["op_margin_pct"].apply(_band)
+    figvc = px.scatter(
+        vc, x="revenue_b", y="op_margin_pct", text="layer", color="band",
+        log_x=True, custom_data=["bellwether"],
+        color_discrete_map={"Margin above 30%": GREEN, "Margin 0 to 30%": GREY,
+                            "Loss-making": RED},
+        labels={"revenue_b": "Annual revenue ($B, log scale)",
+                "op_margin_pct": "Operating margin (%)", "band": ""})
+    figvc.update_traces(textposition="top center", marker=dict(size=13),
+                        hovertemplate="%{text} (%{customdata[0]})<br>revenue "
+                                      "$%{x:.0f}B, margin %{y:.0f}%<extra></extra>")
+    figvc.add_hline(y=0, line_dash="dot", line_color=GREY)
+    figvc.update_layout(height=460, legend_title="",
+                        yaxis_range=[-65, 75])
+    st.plotly_chart(figvc, width="stretch")
     st.caption(
-        f"FY24 to FY25, the five companies went from \\${total_prev:,.0f}B to "
-        f"\\${total_now:,.0f}B. Guidance points to about \\${totals[2026]:,.0f}B in "
-        "2026.")
+        "Margin is fat at chip design, foundry, networking IP and cloud, thin "
+        "where hardware is assembled, and negative at the AI labs that are "
+        "still buying scale ahead of revenue. The incumbents carry the "
+        "revenue: telecoms and hyperscale cloud sit far right, but telecom's "
+        "healthy margin masks a ROCE near 6%, below its cost of capital. "
+        "Operating margin is the most comparable cross-layer metric available; "
+        "it does not capture capital intensity (telecoms, data centers) and the "
+        "labs are pre-profit. Each point is one bellwether (NVIDIA, TSMC, Dell "
+        "ISG, Arista, Equinix, AWS, CoreWeave, OpenAI, Accenture, Verizon), so "
+        "it shows the layer's character, not its total size. Sources: company "
+        f"filings. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
     st.caption("The ten steps, upstream to downstream, and what each one does.")
@@ -396,6 +394,12 @@ with tab_silicon:
         "jump in 2025 and a forecast first one-trillion-dollar year in 2026; "
         "the open question is whether this is the steepest cycle yet or a "
         "structural break.\n"
+        "- **The market splits into compute, memory and a stable base.** Logic "
+        "(compute, where AI accelerators sit) and memory (storage, the home of "
+        "HBM) are the AI-exposed segments and the most cyclical; analog, "
+        "microcontrollers and discrete chips are the steadier base. The 2025-26 "
+        "surge is concentrated in logic and memory. Cloud sits downstream as "
+        "the buyer of this silicon and is covered in the Hyperscalers tab.\n"
         "- **NVIDIA dominates the accelerator layer**, with about \\$115B of "
         "data-center revenue in FY2025; AMD is a distant second, and the "
         "hyperscalers are building in-house alternatives (Google TPU, Amazon "
@@ -425,6 +429,25 @@ with tab_silicon:
         "peaked higher. The current AI-driven leg (+26% in 2025, about "
         "\\$1T forecast for 2026) is the steepest rise since the dot-com era. "
         f"Sources: WSTS, SIA. Data as of {DATA_UPDATED}.")
+
+    st.markdown("#### Market by segment: compute, memory and the base (\\$B)")
+    figseg = px.bar(
+        semis_segments, x="year", y="sales_b", color="segment", barmode="stack",
+        color_discrete_map={"Logic (compute)": BLUE,
+                            "Memory (storage)": GREEN,
+                            "Other (analog/micro/discrete)": GREY},
+        labels={"year": "Year", "sales_b": "Sales ($B)", "segment": ""})
+    figseg.update_layout(height=380, legend_title="", hovermode="x unified")
+    st.plotly_chart(figseg, width="stretch")
+    st.caption(
+        "Logic (compute) is the largest segment and where AI accelerators sit; "
+        "memory (storage) is the most cyclical, swinging from a \\$92B trough in "
+        "the 2023 downturn to a forecast \\$300B in 2026 as HBM ramps. The base "
+        "of analog, microcontrollers and discrete chips grows steadily with the "
+        "broader economy. The AI surge concentrates in logic and memory, which "
+        "is why those two segments set the supply constraints for the rest of "
+        "the chain. Segment splits are WSTS-based and approximate; 2026 is a "
+        f"forecast. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Revenue by key player (\\$B)")
     figsi = px.bar(

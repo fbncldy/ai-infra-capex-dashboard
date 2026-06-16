@@ -1,0 +1,11 @@
+layer,bellwether,revenue_b,op_margin_pct,note
+Silicon & IP,NVIDIA,130,62,Layer leader; AMD and the memory makers run lower and more cyclical
+Foundry,TSMC,122,45,Pure-play foundry operating margin
+Servers,Dell ISG,61,11,ODMs (Foxconn and Quanta) run 3 to 8%
+Networking,Arista,9,40,Pure-play leader; Cisco is larger at a lower margin
+Data Centers,Equinix,9,16,Colocation operating margin
+Hyperscale cloud,AWS,115,35,Amazon cloud segment; whole-company margin is lower
+NeoClouds,CoreWeave,5,5,Thin operating margin and net losses after interest and depreciation
+AI Labs,OpenAI,13,-50,Pre-profit; heavy compute and R&D burn; revenue and margin approximate
+System Integrators,Accenture,70,15,
+Telecoms,Verizon,135,18,Operating margin healthy but ROCE about 6% (below cost of capital)
