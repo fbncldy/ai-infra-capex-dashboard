@@ -1121,9 +1121,11 @@ with tab_labs:
         "Blended list price (3:1 input:output) for a fixed capability level "
         "over time. The price of GPT-3-class capability fell from \\$60 to "
         "about \\$0.06 per million tokens in three years, roughly 1000x, and "
-        "GPT-4-class capability has fallen about 100x since 2023. As capability "
-        "converges across labs and price falls about 10x a year, the model "
-        "layer struggles to hold value, which pushes it toward the "
+        "GPT-4-class capability has fallen about 100x since 2023. By 2026 the "
+        "cheapest GPT-4-class endpoints sit around \\$0.30 to \\$0.50 and "
+        "GPT-3-class near \\$0.06, with the decline slowing as prices approach "
+        "the underlying compute cost. As capability converges across labs, the "
+        "model layer struggles to hold value, which pushes it toward the "
         "infrastructure below and the applications above. Sources: a16z "
         "(\"LLMflation\"), company price lists. Data as of "
         f"{DATA_UPDATED}.")
@@ -1136,8 +1138,9 @@ with tab_labs:
     figw.update_layout(height=280)
     st.plotly_chart(figw, width="stretch")
     st.caption(
-        "OpenAI disclosures. Weekly active users went from 100M (Aug-23) to 900M "
-        "(Feb-26).")
+        "Weekly active users went from 100M (Aug-23) to 900M (Feb-26, OpenAI "
+        "disclosure), with third-party estimates putting it past 1B by May 2026 "
+        "(flagged as an estimate in the data).")
 
     ud1, ud2 = st.columns(2)
     with ud1:
@@ -1150,14 +1153,16 @@ with tab_labs:
                             texttemplate="%{text:.0f}%",
                             textposition="outside")
         figud.update_layout(height=300,
-                            xaxis_range=[0, 50],
+                            xaxis_range=[0, 60],
                             yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(figud, width="stretch")
         st.caption(
-            "About 40% of US working-age adults have used generative AI, but "
-            "under 10% use it daily. Adoption is broad and shallow. Source: "
-            "Bick, Blandin and Deming, Real-Time Population Survey (NBER), "
-            "late 2024.")
+            "About 55% of US working-age adults have used generative AI as of "
+            "the 2025 survey wave, up from 40% in late 2024, but daily use stays "
+            "low (about 12% every workday). Adoption is broad and shallow. The "
+            "two work/outside-work past-week measures are the latest late-2024 "
+            "readings, flagged in the data. Source: Bick, Blandin and Deming, "
+            "Real-Time Population Survey (NBER / St. Louis Fed / Fed FEDS note).")
     with ud2:
         st.markdown("#### Enterprise AI application spend, 2025 (\\$B)")
         figes = px.bar(ent_spend.sort_values("spend_b"), x="spend_b",
