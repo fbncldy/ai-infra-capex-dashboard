@@ -1225,8 +1225,9 @@ with tab_si:
         "that turns models into production systems**, and enterprises often "
         "pay them before they pay model vendors at scale.\n"
         "- **Accenture's GenAI bookings compounded from \\$0.3B (FY2023) to "
-        "\\$5.9B (FY2025)**, with cumulative bookings past \\$9B, the steepest "
-        "new-offering ramp in the firm's disclosures.\n"
+        "\\$5.9B (FY2025) and \\$2.2B in Q1 FY2026**, about \\$11B cumulative, "
+        "after which Accenture stopped breaking the metric out as advanced AI "
+        "became embedded across its delivery.\n"
         "- **The integrators are also a check on the hype:** overall revenue "
         "grows single digits, so GenAI work has so far been additive for the "
         "services industry itself.")
@@ -1266,8 +1267,11 @@ with tab_si:
     st.caption(
         "GenAI new bookings as disclosed in Accenture's quarterly results: "
         "\\$0.3B in the first two quarters of disclosure (FY2023), \\$3.0B in "
-        "FY2024, \\$5.9B in FY2025. Cumulative bookings since 2023 passed "
-        f"\\$9B. Source: Accenture 8-K filings. Data as of {DATA_UPDATED}.")
+        "FY2024, \\$5.9B in FY2025, and a final \\$2.2B in Q1 FY2026. Accenture "
+        "said Q1 FY2026 (ended November 2025) was the last quarter it would "
+        "report the metric separately, as advanced AI is now embedded across "
+        "its work. Cumulative bookings since 2023 reached about \\$11B. Source: "
+        f"Accenture 8-K filings. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 10 · Telecoms (context)
