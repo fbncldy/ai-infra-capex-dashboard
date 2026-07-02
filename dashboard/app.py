@@ -357,9 +357,9 @@ with tab_overview:
                   ("datacenters", "Data ctr"), ("cloud", "Cloud"),
                   ("neoclouds", "NeoCloud"), ("labs", "Labs"),
                   ("integrators", "Integr."), ("telecoms", "Telco")]
-    cell = {"core": ("●", "background:#4285F4;color:#fff;"),
-            "expanding": ("◐", "background:#c6dafc;color:#1a3a6b;"),
-            "": ("", "")}
+    cell = {"core": "background:#12439e;",
+            "expanding": "background:#c3d9fb;",
+            "": "background:#f4f6f9;"}
     vi_html = ["<table style='width:100%;border-collapse:collapse;"
                "font-size:0.8rem;text-align:center;'>",
                "<thead><tr><th style='text-align:left;padding:6px 8px;"
@@ -370,23 +370,31 @@ with tab_overview:
     vi_html.append("</tr></thead><tbody>")
     for _, r in vint.iterrows():
         vi_html.append("<tr><td style='text-align:left;padding:6px 8px;"
-                       "border-bottom:1px solid #ebedf0;font-weight:600;'>"
+                       "border-bottom:1px solid #fff;font-weight:600;'>"
                        f"{r['player']}</td>")
         for col, _ in layer_cols:
             val = r[col] if isinstance(r[col], str) else ""
-            sym, style = cell.get(val, ("", ""))
-            vi_html.append(f"<td style='padding:6px 4px;border-bottom:1px "
-                           f"solid #ebedf0;{style}'>{sym}</td>")
+            style = cell.get(val, "background:#f4f6f9;")
+            vi_html.append("<td style='padding:6px 4px;border:2px solid #fff;"
+                           f"{style}'>&nbsp;</td>")
         vi_html.append("</tr>")
     vi_html.append("</tbody></table>")
     st.markdown("".join(vi_html), unsafe_allow_html=True)
+    st.markdown(
+        "<div style='font-size:0.8rem;color:#5f6368;margin-top:6px;'>"
+        "<span style='display:inline-block;width:12px;height:12px;"
+        "background:#12439e;vertical-align:middle;margin-right:4px;'></span>"
+        "core business "
+        "<span style='display:inline-block;width:12px;height:12px;"
+        "background:#c3d9fb;vertical-align:middle;margin:0 4px 0 12px;'></span>"
+        "expanding into</div>", unsafe_allow_html=True)
     st.caption(
-        "● core business · ◐ expanding into. The hyperscalers have even pushed "
-        "into connectivity: Google (Fiber, Fi, subsea cables), Meta and "
-        "Microsoft (subsea cables) and Amazon (Project Kuiper satellite "
-        "broadband), though as infrastructure owners rather than retail "
-        "carriers. Assessment based on disclosed products and announced "
-        "projects.")
+        "Deeper blue marks a core business, lighter blue where a player is only "
+        "expanding in. The hyperscalers have even pushed into connectivity: "
+        "Google (Fiber, Fi, subsea cables), Meta and Microsoft (subsea cables) "
+        "and Amazon (Project Kuiper satellite broadband), though as "
+        "infrastructure owners rather than retail carriers. Assessment based on "
+        "disclosed products and announced projects.")
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
