@@ -357,8 +357,9 @@ with tab_overview:
                   ("datacenters", "Data ctr"), ("cloud", "Cloud"),
                   ("neoclouds", "NeoCloud"), ("labs", "Labs"),
                   ("integrators", "Integr."), ("telecoms", "Telco")]
-    cell = {"core": "background:#12439e;",
-            "expanding": "background:#c3d9fb;",
+    cell = {"core": "background:#0d3b8c;",
+            "scaled": "background:#4a7fd4;",
+            "emerging": "background:#bcd6f7;",
             "": "background:#f4f6f9;"}
     vi_html = ["<table style='width:100%;border-collapse:collapse;"
                "font-size:0.8rem;text-align:center;'>",
@@ -383,18 +384,23 @@ with tab_overview:
     st.markdown(
         "<div style='font-size:0.8rem;color:#5f6368;margin-top:6px;'>"
         "<span style='display:inline-block;width:12px;height:12px;"
-        "background:#12439e;vertical-align:middle;margin-right:4px;'></span>"
+        "background:#0d3b8c;vertical-align:middle;margin-right:4px;'></span>"
         "core business "
         "<span style='display:inline-block;width:12px;height:12px;"
-        "background:#c3d9fb;vertical-align:middle;margin:0 4px 0 12px;'></span>"
-        "expanding into</div>", unsafe_allow_html=True)
+        "background:#4a7fd4;vertical-align:middle;margin:0 4px 0 12px;'></span>"
+        "at scale "
+        "<span style='display:inline-block;width:12px;height:12px;"
+        "background:#bcd6f7;vertical-align:middle;margin:0 4px 0 12px;'></span>"
+        "emerging</div>", unsafe_allow_html=True)
     st.caption(
-        "Deeper blue marks a core business, lighter blue where a player is only "
-        "expanding in. The hyperscalers have even pushed into connectivity: "
-        "Google (Fiber, Fi, subsea cables), Meta and Microsoft (subsea cables) "
-        "and Amazon (Project Kuiper satellite broadband), though as "
-        "infrastructure owners rather than retail carriers. Assessment based on "
-        "disclosed products and announced projects.")
+        "The shade shows how deep a player sits in each layer: darkest for a "
+        "core business, mid-blue for a material presence operating at scale, "
+        "lightest where the move is still early. The hyperscalers have even "
+        "pushed into connectivity, Google (Fiber, Fi, subsea cables) and Meta "
+        "and Microsoft (subsea cables) at scale, Amazon (Project Kuiper "
+        "satellite broadband) still emerging, though as infrastructure owners "
+        "rather than retail carriers. Assessment based on disclosed products "
+        "and announced projects.")
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)

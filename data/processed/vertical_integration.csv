@@ -1,10 +1,10 @@
 player,silicon,foundry,servers,networking,datacenters,cloud,neoclouds,labs,integrators,telecoms
-Google,core,,expanding,expanding,core,core,,core,expanding,expanding
-Microsoft,expanding,,expanding,expanding,core,core,expanding,expanding,expanding,expanding
-Amazon,core,,expanding,expanding,core,core,,expanding,expanding,expanding
-Meta,expanding,,expanding,expanding,core,,expanding,core,,expanding
-NVIDIA,core,,expanding,core,expanding,expanding,expanding,,,
-OpenAI,expanding,,,,expanding,expanding,expanding,core,,
-Oracle,,,expanding,,core,core,expanding,,expanding,
+Google,core,,scaled,scaled,core,core,,core,emerging,scaled
+Microsoft,emerging,,scaled,scaled,core,core,emerging,emerging,emerging,scaled
+Amazon,core,,scaled,scaled,core,core,,emerging,emerging,emerging
+Meta,emerging,,scaled,scaled,core,,emerging,core,,scaled
+NVIDIA,core,,scaled,core,emerging,emerging,emerging,,,
+OpenAI,emerging,,,,emerging,emerging,emerging,core,,
+Oracle,,,emerging,,core,core,emerging,,scaled,
 Broadcom,core,,,core,,,,,,
 TSMC,,core,,,,,,,,
