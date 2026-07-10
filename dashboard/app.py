@@ -238,7 +238,8 @@ with tab_overview:
     st.markdown("##### Supply & constraint (upstream)")
     s1, s2, s3, s4 = st.columns(4)
     s1.metric("CoWoS capacity 2025", f"{cowos25:.0f}k wpm", "~2× vs 2024")
-    s2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}-{cowos26_hi:.0f}k wpm", "sold out")
+    s2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}-{cowos26_hi:.0f}k wpm",
+              f"~{cowos26_lo/cowos25:.1f} to {cowos26_hi/cowos25:.1f}× vs 2025")
     s3.metric("TSMC revenue 2025", f"${tsmc25:.0f}B", "~70% foundry share")
     s4.metric("Named GW-scale pipeline", f"{gw['capacity_gw'].sum():.0f} GW",
               f"{len(gw)} flagship projects")
