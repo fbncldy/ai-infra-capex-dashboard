@@ -246,10 +246,10 @@ with tab_overview:
 
     st.markdown("#### Where value is captured: return on capital by layer")
     st.caption(
-        "Average ROCE of three representative players per layer, against a "
-        "typical cost-of-capital band. It maps the redistribution thesis in one "
-        "frame: returns concentrate in the asset-light layers and thin out "
-        "wherever the capital sits.")
+        "Average ROCE of three representative players per layer against a "
+        "typical cost-of-capital band, with annual revenue growth for the same "
+        "baskets shown above each bar. Returns show who captures value today "
+        "and growth shows which layers are still early.")
     rl = roce_layer.sort_values("order")
 
     def _band(v):
@@ -268,8 +268,15 @@ with tab_overview:
     figrl.add_hrect(y0=8, y1=11, fillcolor="rgba(154,160,166,0.20)",
                     line_width=0, annotation_text="typical cost of capital "
                     "(8 to 11%)", annotation_position="top right")
-    figrl.update_layout(height=440, legend_title="", yaxis_range=[-40, 80],
-                        xaxis_tickangle=-30)
+    figrl.add_annotation(xref="paper", x=0, y=1.13, yref="paper",
+                         text="<b>Revenue growth p.a.</b>", showarrow=False,
+                         xanchor="left", font=dict(size=11, color="#5f6368"))
+    for _, gr in rl.iterrows():
+        figrl.add_annotation(x=gr["layer"], y=1.04, yref="paper",
+                             text=f"+{gr['growth_pct']:.0f}%", showarrow=False,
+                             font=dict(size=11, color=BLUE))
+    figrl.update_layout(height=460, legend_title="", yaxis_range=[-40, 80],
+                        xaxis_tickangle=-30, margin=dict(t=80))
     st.plotly_chart(figrl, width="stretch")
     st.caption(
         "Returns are highest in the asset-light layers (chip design, hyperscale "
@@ -281,7 +288,17 @@ with tab_overview:
         "employed from filings, the same basis as the telecom and hyperscaler "
         "tabs. Cost of capital varies by layer (telecoms nearer 7%, tech "
         "higher); the band is a common reference. TSMC, the foreign system "
-        "integrators and the labs are estimates, flagged in the data. Sources: "
+        "integrators and the labs are estimates, flagged in the data. The "
+        "growth row separates layers that sit below the band because they are "
+        "young from those that are simply mature: NeoClouds and the labs are "
+        "compounding in triple digits, while telecoms grow about 1% a year and "
+        "system integrators about 5%. Growth only builds value where the return "
+        "clears the cost of capital, so the open question is which of the "
+        "fast-growing layers below the band move above it. Growth is a 3-year "
+        "revenue CAGR (2022-2025) for the established layers, a 2-year CAGR for "
+        "NeoClouds (CoreWeave) and a one-year run-rate step for the labs "
+        "(Anthropic \\$1B to \\$9B); the last two come off a small base and do "
+        "not compare directly with the rest. Sources: "
         f"company filings (EDGAR XBRL). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
