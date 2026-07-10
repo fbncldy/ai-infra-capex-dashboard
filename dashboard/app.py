@@ -192,7 +192,11 @@ with tab_overview:
         f"hyperscaler silicon and inference startups and squeezes margins over "
         f"time, even as cheaper inference widens demand. NVIDIA's training moat "
         f"looks sturdier than its inference one, and the layer drifts toward "
-        f"essential but lower-margin economics, closer to cloud. The financing "
+        f"essential but lower-margin economics, closer to cloud. Fibre earns "
+        f"operating leverage because the cost is fixed once the trenches are "
+        f"dug, but AI capacity scales with usage since serving more tokens "
+        f"means buying more GPUs, so the buildout delivers less of that "
+        f"leverage than it appears. The financing "
         f"is also circular and concentrated: lab compute commitments underwrite "
         f"NeoCloud backlogs that collateralize over \\$20B of GPU-backed debt "
         f"from a single chip vendor, so a stumble at the lab layer would travel "
@@ -1069,6 +1073,10 @@ with tab_labs:
         "- **Lab revenue is large and concentrating:** Anthropic and OpenAI "
         "run-rates total above \\$70B, and their multi-year compute "
         "commitments underwrite NeoCloud backlogs and hyperscaler buildouts.\n"
+        "- **Inference is profitable, the business is not yet:** serving a token "
+        "runs at roughly 40 to 50% gross margin (industry estimates), but "
+        "training the next model still costs more than the labs earn, so the "
+        "loss sits in the model roadmap rather than in unit economics.\n"
         "- **Usage is broad but shallow:** 900M people use ChatGPT weekly, yet "
         "only about 5 to 6% pay and under 10% of US adults use generative AI "
         "daily.\n"
@@ -1140,9 +1148,14 @@ with tab_labs:
         "GPT-3-class near \\$0.06, with the decline slowing as prices approach "
         "the underlying compute cost. As capability converges across labs, the "
         "model layer struggles to hold value, which pushes it toward the "
-        "infrastructure below and the applications above. Sources: a16z "
-        "(\"LLMflation\"), company price lists. Data as of "
-        f"{DATA_UPDATED}.")
+        "infrastructure below and the applications above. A falling price per "
+        "token has not meant falling revenue: usage is growing faster than "
+        "price is dropping, so total spend keeps rising, which is why frontier "
+        "run-rates climb even as the per-token price collapses (Anthropic and "
+        "OpenAI now above \\$70B combined). So far the squeeze lands on price "
+        "per token while the market itself keeps expanding. Sources: a16z "
+        "(\"LLMflation\"), company price lists, Benedict Evans on token "
+        f"pricing. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### ChatGPT weekly active users (millions)")
     figw = px.area(chatgpt, x="date", y="wau_m",
