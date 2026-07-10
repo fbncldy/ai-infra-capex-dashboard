@@ -1,11 +1,11 @@
 layer,order,roce_pct,growth_pct,players,source_type,note,growth_basis
-Silicon & IP,1,32,39,"NVIDIA, AMD, Broadcom",computed,NVIDIA 75 / AMD 6 / Broadcom 17; fabless and asset-light; memory makers excluded and cyclical,3-yr revenue CAGR 2022-2025
-Foundry,2,14,17,"TSMC, GlobalFoundries, UMC",estimate,TSMC about 26 (computed approx); GlobalFoundries and UMC lower; capital-heavy,3-yr revenue CAGR 2022-2025; TSMC only
-Servers,3,13,21,"Dell, Supermicro, HPE",computed,Dell 21 / Supermicro 11 / HPE about 8; Dell flattered by low book equity,3-yr revenue CAGR 2022-2025
-Networking,4,15,6,"Arista, Cisco, Ciena",computed,Arista 27 / Cisco 14 / Ciena 4,3-yr revenue CAGR 2022-2025; Cisco dominates the basket
-Data Centers,5,5,8,"Equinix, Digital Realty",computed,Colocation REITs; capital-heavy so low ROCE,3-yr revenue CAGR 2022-2025
-Hyperscale cloud,6,22,12,"Alphabet, Microsoft, Amazon",computed,Group ROCE; cloud-segment returns are higher but segment capital is not disclosed,3-yr group revenue CAGR 2022-2025; cloud segments grow faster
-NeoClouds,7,0,373,"CoreWeave, Nebius",computed,Near zero to negative; leveraged and pre-scale on a returns basis,2-yr revenue CAGR 2023-2025 (CoreWeave); from a small base
-AI Labs,8,-30,800,"OpenAI, Anthropic",estimate,Pre-profit; ROCE is deeply negative and not meaningfully measurable,Anthropic run-rate $1B (Dec-24) to $9B (Dec-25); from a small base
-System Integrators,9,30,5,"Accenture, TCS, Infosys",computed,Accenture 23 (computed); TCS and Infosys higher and asset-light,3-yr revenue CAGR 2022-2025
-Telecoms,10,7,1,"AT&T, Verizon, Deutsche Telekom",computed,4 to 9% range; at or below cost of capital,3-yr revenue CAGR 2022-2025; AT&T and Verizon; 2025 estimated
+Silicon & IP,1,40.4,39,"NVIDIA, AMD, Broadcom",computed,NVIDIA 75 / AMD 5 / Broadcom 17; fabless and asset-light; memory makers excluded and cyclical,3-yr revenue CAGR 2022-2025
+Foundry,2,22.0,17,"TSMC, GlobalFoundries, UMC",computed,TSMC 25 / GlobalFoundries 5 / UMC 11; capital-heavy but TSMC's scarcity pricing lifts the aggregate; TSMC and UMC via IFRS 20-F tags,3-yr revenue CAGR 2022-2025; TSMC only
+Servers,3,8.9,21,"Dell, Supermicro, HPE",computed,Dell 21 / Supermicro 11 / HPE -1; HPE's operating loss on a large capital base drags the aggregate into the band,3-yr revenue CAGR 2022-2025
+Networking,4,14.9,6,"Arista, Cisco, Ciena",computed,Arista 27 / Cisco 13 / Ciena 4,3-yr revenue CAGR 2022-2025; Cisco dominates the basket
+Data Centers,5,5.1,8,Equinix,computed,Equinix only; Digital Realty excluded because as a REIT it reports an unclassified balance sheet with no current-liabilities tag,3-yr revenue CAGR 2022-2025; Equinix and Digital Realty
+Hyperscale cloud,6,21.5,12,"Alphabet, Microsoft, Amazon",computed,Alphabet 26 / Microsoft 27 / Amazon 13; group ROCE because cloud-segment capital is not disclosed,3-yr group revenue CAGR 2022-2025; cloud segments grow faster
+NeoClouds,7,0.0,373,CoreWeave,computed,CoreWeave -0.1% (effectively zero); leveraged and pre-scale; Nebius excluded (no comparable filings),2-yr revenue CAGR 2023-2025 (CoreWeave); from a small base
+AI Labs,8,-30,800,"OpenAI, Anthropic",estimate,Private companies with no filings; pre-profit and deeply negative; not measurable on the same basis,Anthropic run-rate $1B (Dec-24) to $9B (Dec-25); from a small base
+System Integrators,9,24.9,5,"Accenture, Infosys",computed,Accenture 23 / Infosys 33; TCS excluded (not SEC-registered); asset-light,3-yr revenue CAGR 2022-2025; Accenture and Infosys
+Telecoms,10,7.5,1,"AT&T, Verizon",computed,AT&T 7 / Verizon 9; Deutsche Telekom excluded (no SEC filings); at or below cost of capital,3-yr revenue CAGR 2022-2025; 2025 estimated

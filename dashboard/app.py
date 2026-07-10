@@ -246,7 +246,7 @@ with tab_overview:
 
     st.markdown("#### Where value is captured: return on capital by layer")
     st.caption(
-        "Average ROCE of three representative players per layer against a "
+        "Aggregate ROCE of the representative players in each layer against a "
         "typical cost-of-capital band, with annual revenue growth for the same "
         "baskets shown above each bar. Returns show who captures value today "
         "and growth shows which layers are still early.")
@@ -279,26 +279,36 @@ with tab_overview:
                         xaxis_tickangle=-30, margin=dict(t=80))
     st.plotly_chart(figrl, width="stretch")
     st.caption(
-        "Returns are highest in the asset-light layers (chip design, hyperscale "
-        "cloud, system integration) and thin in the capital-heavy ones "
-        "(foundry, data centers, telecoms), which earn at or below their cost "
-        "of capital. NeoClouds sit near zero on a leveraged, pre-scale base, "
-        "and the AI labs are pre-profit. Each bar is the average of the three "
-        "players shown in the data, computed as operating income over capital "
-        "employed from filings, the same basis as the telecom and hyperscaler "
-        "tabs. Cost of capital varies by layer (telecoms nearer 7%, tech "
-        "higher); the band is a common reference. TSMC, the foreign system "
-        "integrators and the labs are estimates, flagged in the data. The "
+        "Returns are highest in the asset-light layers (chip design at 40%, "
+        "system integration at 25%, hyperscale cloud at 22%) and thinnest where "
+        "the capital sits without the pricing power to earn on it (data centers "
+        "at 5%, telecoms at 8%). Foundry is the exception: it is the most "
+        "capital-heavy layer in the chain yet still earns 22%, "
+        "because TSMC's scarcity pricing carries the aggregate (TSMC 25% "
+        "against GlobalFoundries 5% and UMC 11%). Servers sit inside the band "
+        "at 9%, held down by HPE's operating loss on a large capital base. "
+        "NeoClouds are at about zero on a leveraged, pre-scale base, and the AI "
+        "labs are pre-profit. Each bar is an aggregate ROCE, combined operating "
+        "income over combined capital employed (total assets less current "
+        "liabilities) from filings, so the larger players carry proportionate "
+        "weight, the same basis as the telecom and hyperscaler tabs. Cost of "
+        "capital varies by layer (telecoms nearer 7%, tech higher); the band is "
+        "a common reference. Only the labs are estimated (private, no filings); "
+        "every other layer is computed, with Digital Realty, TCS, Deutsche "
+        "Telekom and Nebius excluded from their baskets for lack of comparable "
+        "filings, all flagged in the data. The "
         "growth row separates layers that sit below the band because they are "
         "young from those that are simply mature: NeoClouds and the labs are "
         "compounding in triple digits, while telecoms grow about 1% a year and "
         "system integrators about 5%. Growth only builds value where the return "
         "clears the cost of capital, so the open question is which of the "
-        "fast-growing layers below the band move above it. Growth is a 3-year "
-        "revenue CAGR (2022-2025) for the established layers, a 2-year CAGR for "
-        "NeoClouds (CoreWeave) and a one-year run-rate step for the labs "
-        "(Anthropic \\$1B to \\$9B); the last two come off a small base and do "
-        "not compare directly with the rest. Sources: "
+        "fast-growing layers below the band move above it. Growth is computed on "
+        "the basket's combined revenue, so both measures weight the larger "
+        "players the same way: a 3-year revenue CAGR (2022-2025) for the "
+        "established layers, a 2-year CAGR for NeoClouds (CoreWeave) and a "
+        "one-year run-rate step for the labs (Anthropic \\$1B to \\$9B); the "
+        "last two come off a small base and do not compare directly with the "
+        "rest. Sources: "
         f"company filings (EDGAR XBRL). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
@@ -844,7 +854,7 @@ with tab_hyper:
         "five-year average.\n"
         "- **Capex intensity has reached 30 to 75% of revenue** for businesses "
         "that were asset-light a decade ago, and returns are starting to feel "
-        "it: hyperscaler ROCE is still 3 to 4 times the telecom level but "
+        "it: hyperscaler ROCE is still about three times the telecom level but "
         "ticked down in 2025 as capital employed surged. How far it compresses "
         "as the 2025-26 capex depreciates is the central question for the "
         "whole chain.")
