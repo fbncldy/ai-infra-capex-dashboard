@@ -279,37 +279,19 @@ with tab_overview:
                         xaxis_tickangle=-30, margin=dict(t=80))
     st.plotly_chart(figrl, width="stretch")
     st.caption(
-        "Returns are highest in the asset-light layers (chip design at 40%, "
-        "system integration at 25%, hyperscale cloud at 22%) and thinnest where "
-        "the capital sits without the pricing power to earn on it (data centers "
-        "at 5%, telecoms at 8%). Foundry is the exception: it is the most "
-        "capital-heavy layer in the chain yet still earns 22%, "
-        "because TSMC's scarcity pricing carries the aggregate (TSMC 25% "
-        "against GlobalFoundries 5% and UMC 11%). Servers sit inside the band "
-        "at 9%, held down by HPE's operating loss on a large capital base. "
-        "NeoClouds are at about zero on a leveraged, pre-scale base, and the AI "
-        "labs are pre-profit. Each bar is an aggregate ROCE, combined operating "
-        "income over combined capital employed (total assets less current "
-        "liabilities) from filings, so the larger players carry proportionate "
-        "weight, the same basis as the telecom and hyperscaler tabs. Cost of "
-        "capital varies by layer (telecoms nearer 7%, tech higher); the band is "
-        "a common reference. Only the labs are estimated (private, no filings); "
-        "every other layer is computed, with Digital Realty, TCS, Deutsche "
-        "Telekom and Nebius excluded from their baskets for lack of comparable "
-        "filings, all flagged in the data. The "
-        "growth row separates layers that sit below the band because they are "
-        "young from those that are simply mature: NeoClouds and the labs are "
-        "compounding in triple digits, while telecoms grow about 1% a year and "
-        "system integrators about 5%. Growth only builds value where the return "
-        "clears the cost of capital, so the open question is which of the "
-        "fast-growing layers below the band move above it. Growth is computed on "
-        "the basket's combined revenue, so both measures weight the larger "
-        "players the same way: a 3-year revenue CAGR (2022-2025) for the "
-        "established layers, a 2-year CAGR for NeoClouds (CoreWeave) and a "
-        "one-year run-rate step for the labs (Anthropic \\$1B to \\$9B); the "
-        "last two come off a small base and do not compare directly with the "
-        "rest. Sources: "
-        f"company filings (EDGAR XBRL). Data as of {DATA_UPDATED}.")
+        "Sources: company filings (EDGAR XBRL); Anthropic run-rate via Epoch "
+        "AI. Notes: aggregate ROCE (combined operating income over combined "
+        "capital employed), so larger players carry more weight; the 8-11% band "
+        "is a common cost-of-capital reference. Returns concentrate in the "
+        "asset-light layers and thin where capital sits without pricing power; "
+        "foundry is the exception, carried by TSMC's scarcity pricing. The "
+        "growth row (revenue growth, above each bar) separates young sub-band "
+        "layers (NeoClouds, labs, compounding in triple digits) from mature "
+        "ones (telecoms +1%, integrators +5%); growth only builds value where "
+        "the return clears the band. Growth basis: 3-yr revenue CAGR 2022-2025, "
+        "except NeoClouds (2-yr, CoreWeave) and labs (1-yr run-rate step, small "
+        "base). Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
+        f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
     st.caption("The ten steps, upstream to downstream, and what each one does.")
@@ -425,14 +407,12 @@ with tab_overview:
         "background:#bcd6f7;vertical-align:middle;margin:0 4px 0 12px;'></span>"
         "emerging</div>", unsafe_allow_html=True)
     st.caption(
-        "The shade shows how deep a player sits in each layer: darkest for a "
-        "core business, mid-blue for a material presence operating at scale, "
-        "lightest where the move is still early. The hyperscalers have even "
-        "pushed into connectivity, Google (Fiber, Fi, subsea cables) and Meta "
-        "and Microsoft (subsea cables) at scale, Amazon (Project Kuiper "
-        "satellite broadband) still emerging, though as infrastructure owners "
-        "rather than retail carriers. Assessment based on disclosed products "
-        "and announced projects.")
+        "Sources: disclosed products and announced projects. Notes: shade shows "
+        "depth, darkest for a core business, mid-blue at scale, lightest where "
+        "the move is still early. Hyperscalers have pushed into connectivity, "
+        "Google (Fiber, Fi, subsea cables) and Meta and Microsoft (subsea "
+        "cables) at scale, Amazon (Project Kuiper) still emerging, as "
+        "infrastructure owners rather than retail carriers.")
 
 # --------------------------------------------------------------------------- #
 # 1 · Silicon & IP  (accelerator design + HBM memory)
@@ -475,11 +455,10 @@ with tab_silicon:
                          hovermode="x unified")
     st.plotly_chart(figsem, width="stretch")
     st.caption(
-        "WSTS / SIA worldwide semiconductor billings, annual. The industry has "
-        "cycled repeatedly (2001 down 32%, 2009, 2019, 2023) but each cycle has "
-        "peaked higher. The current AI-driven leg (+26% in 2025, about "
-        "\\$1T forecast for 2026) is the steepest rise since the dot-com era. "
-        f"Sources: WSTS, SIA. Data as of {DATA_UPDATED}.")
+        "Sources: WSTS, SIA (worldwide semiconductor billings, annual). Notes: "
+        "the industry cycles (2001 down 32%, 2009, 2019, 2023) but each peak is "
+        "higher; the AI leg (+26% in 2025, about \\$1T forecast for 2026) is "
+        f"the steepest rise since the dot-com era. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Market by segment: compute, memory and the base (\\$B)")
     figseg = px.bar(
@@ -491,14 +470,11 @@ with tab_silicon:
     figseg.update_layout(height=380, legend_title="", hovermode="x unified")
     st.plotly_chart(figseg, width="stretch")
     st.caption(
-        "Logic (compute) is the largest segment and where AI accelerators sit; "
-        "memory (storage) is the most cyclical, swinging from a \\$92B trough in "
-        "the 2023 downturn to a forecast \\$300B in 2026 as HBM ramps. The base "
-        "of analog, microcontrollers and discrete chips grows steadily with the "
-        "broader economy. The AI surge concentrates in logic and memory, which "
-        "is why those two segments set the supply constraints for the rest of "
-        "the chain. Segment splits are WSTS-based and approximate; 2026 is a "
-        f"forecast. Data as of {DATA_UPDATED}.")
+        "Sources: WSTS (segment splits approximate; 2026 forecast). Notes: "
+        "logic (compute) is the largest segment and hosts AI accelerators; "
+        "memory is the most cyclical, swinging from a \\$92B trough (2023) to a "
+        "forecast \\$300B (2026) on HBM. The AI surge concentrates in logic and "
+        f"memory, which set the chain's supply constraints. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Revenue by key player (\\$B)")
     figsi = px.bar(
@@ -509,12 +485,11 @@ with tab_silicon:
     figsi.update_layout(height=400, hovermode="x unified", legend_title="")
     st.plotly_chart(figsi, width="stretch")
     st.caption(
-        "Total company revenue. NVIDIA / Broadcom / Micron fiscal years are "
-        "offset from calendar. NVIDIA's data-center segment alone was about "
-        "\\$115B in FY2025. On memory, SK Hynix is the HBM leader (about 57% "
-        "share) and the key supplier of the constrained input; Micron is the "
-        "US-listed peer. SK Hynix and Micron figures are currency-converted "
-        "and approximate. Sources: company filings.")
+        "Sources: company filings (SK Hynix and Micron currency-converted, "
+        "approximate). Notes: total-company revenue; NVIDIA, Broadcom and "
+        "Micron fiscal years are offset from calendar. NVIDIA's data-center "
+        "segment alone was about \\$115B in FY2025; SK Hynix is the HBM leader "
+        "(about 57% share).")
 
 # --------------------------------------------------------------------------- #
 # 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
@@ -539,11 +514,11 @@ with tab_foundry:
     st.markdown("---")
     st.markdown("#### Revenue & capex by key player (\\$B)")
     st.caption(
-        "TSMC is the pure-play foundry. Samsung Electronics and Intel are IDMs: "
-        "figures are total company (Samsung includes memory, phones and "
-        "displays; Intel includes products), so they overstate the foundry "
-        "businesses but show the relative investment scale. Samsung in "
-        "USD-converted KRW.")
+        "Sources: TSMC, Samsung, Intel results (Samsung USD-converted KRW). "
+        "Notes: TSMC is pure-play; Samsung and Intel are IDMs shown at "
+        "total-company scale (Samsung incl. memory, phones and displays; Intel "
+        "incl. products), so they overstate the foundry business but show "
+        "relative investment scale.")
     fc1, fc2 = st.columns(2)
     fcolors = {"TSMC": BLUE, "Samsung Electronics": GREEN, "Intel": GREY}
     with fc1:
@@ -563,9 +538,9 @@ with tab_foundry:
                             title="Capex")
         st.plotly_chart(figfc, width="stretch")
     st.caption(
-        "Sources: TSMC, Samsung and Intel results. TSMC 2026E "
-        "capex guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue. OSAT "
-        "partners: ASE, Amkor.")
+        "Sources: TSMC, Samsung, Intel results. Notes: TSMC 2026E capex "
+        "guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue, with OSAT "
+        "overflow to ASE and Amkor.")
 
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
     cowos26 = float(cowos.loc[cowos.year == 2026, "cowos_kwpm"].iloc[0])
@@ -589,8 +564,8 @@ with tab_foundry:
     st.plotly_chart(figc, width="stretch")
 
     st.caption(
-        "Source: TrendForce. CoWoS capacity has risen roughly 10x since 2023 and "
-        "remains sold out. CoWoS is about 7 to 9% of TSMC revenue.")
+        "Sources: TrendForce. Notes: CoWoS capacity has risen roughly 10x since "
+        "2023 and remains sold out; it is about 7-9% of TSMC revenue.")
 
 # --------------------------------------------------------------------------- #
 # 3 · Systems
@@ -627,15 +602,13 @@ with tab_systems:
     figsy.update_layout(height=400, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
     st.caption(
-        "Listed OEMs (Dell ISG, Supermicro, HPE) plus the Taiwanese ODMs that "
-        "carry most AI-server volume. Foxconn's Cloud & Networking segment "
-        "alone (about \\$90B in 2025) is larger than any branded OEM, which is "
-        "the point: the visible brands are a minority of the build. ODM figures "
-        "are server/cloud-segment estimates (currency-converted, approximate); "
-        "their group totals are far larger but mostly non-server. Dell fiscal "
-        "years are plotted against the calendar year they mostly cover (FY2026, "
-        "\\$60.8B, appears as 2025); 2026 bars for Supermicro (\\$38.9-40.4B) "
-        "and HPE are guidance. Sources: company filings.")
+        "Sources: company filings (ODM figures are server/cloud-segment "
+        "estimates, currency-converted). Notes: listed OEMs (Dell ISG, "
+        "Supermicro, HPE) plus the Taiwanese ODMs that carry most AI-server "
+        "volume; Foxconn's Cloud & Networking segment alone (about \\$90B in "
+        "2025) tops any branded OEM. Dell fiscal years are plotted on the "
+        "calendar year they mostly cover; 2026 Supermicro and HPE bars are "
+        "guidance.")
 
     st.markdown("#### Operating margin: assembly vs the chip it ships (%)")
     sm = server_margins.sort_values("op_margin_pct")
@@ -650,12 +623,11 @@ with tab_systems:
                         xaxis_range=[0, 70])
     st.plotly_chart(figsm, width="stretch")
     st.caption(
-        "Latest-year segment or group operating margin. The server makers earn "
-        "single digits to low teens because the scarce input, the accelerator, "
-        "is priced by NVIDIA, which itself runs about a 60% operating margin on "
-        "the same box. The ODMs (Foxconn around 3-4%) sit lowest of all. HPE and "
-        "Foxconn figures are estimates; others are reported. Sources: company "
-        f"filings. Data as of {DATA_UPDATED}.")
+        "Sources: company filings (HPE and Foxconn estimated; others reported). "
+        "Notes: latest-year segment or group operating margin. Assemblers earn "
+        "single digits to low teens because NVIDIA prices the scarce input and "
+        "itself runs about 60% on the same box; ODMs (Foxconn about 3-4%) sit "
+        f"lowest. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Networking
@@ -707,10 +679,9 @@ with tab_network:
                             legend_title="", title="Capex")
         st.plotly_chart(fignc, width="stretch")
     st.caption(
-        "Total company figures. Nokia and Ericsson in USD-converted EUR/SEK "
-        "(approximate). Equipment vendors are asset-light: all four run capex "
-        "in the low hundreds of millions, about 1 to 3% of revenue (capex "
-        "values approximate). The growth divergence is the story: Arista has "
+        "Sources: company filings (Nokia and Ericsson USD-converted, capex "
+        "approximate). Notes: total-company figures. All four are asset-light, "
+        "capex about 1-3% of revenue; the divergence is the story, Arista has "
         "roughly quadrupled since 2020 while Nokia and Ericsson have shrunk.")
 
     st.markdown("#### Network infrastructure and data-center networking (\\$B)")
@@ -721,12 +692,11 @@ with tab_network:
     fign4.update_layout(height=340, hovermode="x unified", legend_title="")
     st.plotly_chart(fign4, width="stretch")
     st.caption(
-        "The AI-exposed side. Arista and Ciena are pure-plays (total revenue); "
-        "Nokia is the Network Infrastructure segment only (fixed, IP and "
-        "optical networks, excludes mobile; grew 9% in 2025 and now includes "
-        "Infinera). Cisco's Networking segment (about \\$28-30B) sits inside a "
-        "diversified firm and is left out to keep the comparison clean. "
-        "Sources: company filings.")
+        "Sources: company filings. Notes: the AI-exposed side. Arista and Ciena "
+        "are pure-plays (total revenue); Nokia is Network Infrastructure only "
+        "(fixed, IP and optical, excludes mobile; +9% in 2025, now includes "
+        "Infinera). Cisco's Networking segment (about \\$28-30B) sits in a "
+        "diversified firm and is left out.")
 
     st.markdown("#### Mobile networks (\\$B)")
     figmn = px.bar(
@@ -738,13 +708,11 @@ with tab_network:
     figmn.update_layout(height=340, hovermode="x unified", legend_title="")
     st.plotly_chart(figmn, width="stretch")
     st.caption(
-        "The mobile side, for contrast: flat to declining since the 5G "
-        "buildout peaked. Ericsson Networks and Nokia Mobile Networks are "
-        "segment figures (currency-converted, approximate); Nokia Mobile "
-        "Networks fell sharply after losing the AT&T contract in 2024. Huawei "
-        "is the ICT infrastructure division (carrier-led; segment definitions "
-        "changed over time, approximate). Samsung Networks and ZTE are the "
-        f"other notable vendors, not charted. Data as of {DATA_UPDATED}.")
+        "Sources: company filings (segment figures currency-converted, "
+        "approximate). Notes: the mobile side, flat to declining since the 5G "
+        "peak. Nokia Mobile Networks fell after losing the AT&T contract in "
+        "2024; Huawei is the ICT infrastructure division (definitions changed "
+        f"over time). Samsung and ZTE not charted. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Power & Data Centers
@@ -784,14 +752,11 @@ with tab_dc:
     figdc.update_xaxes(dtick=1, tickangle=-45)
     st.plotly_chart(figdc, width="stretch")
     st.caption(
-        "US Census construction spending. Data center construction was about "
-        "\\$3B a year in 2015 and roughly \\$9-10B through 2020-2022, then "
-        "tripled in three years to about \\$41B (2025). Office construction "
-        "peaked near \\$72B in 2020 and fell to \\$49B, its lowest since 2015. "
-        "On a monthly run-rate the two crossed in Dec 2025. Data center values "
-        "for 2015-2022 are from the Census monthly series (via Our World in "
-        "Data) and 2023-25 from benchmark-revised Census annuals; office "
-        "mid-years are approximate, flagged in the data file. Data as of "
+        "Sources: US Census construction spending (2015-2022 monthly via Our "
+        "World in Data; 2023-25 benchmark-revised annuals; office mid-years "
+        "approximate). Notes: data-center spend went from about \\$3B (2015) to "
+        "about \\$41B (2025); office peaked near \\$72B (2020) and fell to "
+        "\\$49B. On a monthly run-rate the two crossed in Dec 2025. Data as of "
         f"{DATA_UPDATED}.")
 
     st.markdown("---")
@@ -824,17 +789,17 @@ with tab_dc:
             "capacity_gw": "GW", "status_2026": "Status", "note": "Note"}),
         width="stretch", hide_index=True)
     st.caption(
-        "Capacity figures are announced or planned site totals at varying "
-        "horizons (for example, Hyperion's 5 GW scales out to 2030); most of "
-        "this capacity is still under construction. Read it as the build "
+        "Sources: company and project announcements. Notes: announced or "
+        "planned site totals at varying horizons (Hyperion's 5 GW scales to "
+        "2030); most is still under construction, so read it as the build "
         "pipeline.")
 
     st.caption(
-        "Grid context: high-voltage substation lead times run 3 to 5 years, 7 of "
+        "Sources: Goldman Sachs, IEA, NextBigFuture, Introl, Sherwood, Data "
+        "Center Knowledge. Notes: high-voltage substations take 3-5 years, 7 of "
         "13 US grid regions are projected below safety margins by 2030, and "
-        "Goldman estimates about \\$720B of grid spend needed through 2030. Power, "
-        "not capital, is the likely gate on the 2027+ buildout. Sources: Goldman "
-        "Sachs, IEA, NextBigFuture, Introl, Sherwood, Data Center Knowledge.")
+        "about \\$720B of grid spend is needed through 2030. Power, not capital, "
+        "is the likely gate on the 2027+ buildout.")
 
 # --------------------------------------------------------------------------- #
 # 5 · Hyperscalers — capex deep-dive
@@ -860,7 +825,8 @@ with tab_hyper:
         "whole chain.")
     st.markdown("---")
 
-    st.caption("All figures are total reported capex. No AI-share is applied.")
+    st.caption("Notes: all figures are total reported capex; no AI-share is "
+               "applied.")
     g = view.sort_values(["company", "fiscal_year"]).copy()
     g["yoy_%"] = g.groupby("company")["capex_usd_b"].pct_change() * 100
 
@@ -897,19 +863,17 @@ with tab_hyper:
     figq.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figq, width="stretch")
     st.caption(
-        "Quarterly cash purchases of PP&E from 10-Q and 10-K filings (SEC EDGAR "
-        "XBRL). Cash-flow figures in 10-Qs are year-to-date, so quarters are "
-        "derived by differencing; derived quarters sum exactly to the reported "
-        "annual figures. Grouped by the calendar quarter in which each fiscal "
-        "quarter ends (Microsoft and Oracle quarters are offset). Data as of "
-        f"{DATA_UPDATED}.")
+        "Sources: 10-Q and 10-K filings (SEC EDGAR XBRL). Notes: quarterly cash "
+        "purchases of PP&E; 10-Q figures are year-to-date, so quarters are "
+        "derived by differencing and sum exactly to annual totals. Grouped by "
+        "the calendar quarter each fiscal quarter ends (Microsoft and Oracle "
+        f"offset). Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### How the capex is funded: capex vs operating cash flow")
     st.caption(
-        "Capex as a share of operating cash flow, both from 10-K filings. Above "
-        "100%, a company is spending more on capex than its operations "
-        "generate and must fund the difference externally.")
+        "Notes: capex as a share of operating cash flow, both from 10-K "
+        "filings; above 100% a company funds the gap externally.")
     fund = capex.merge(
         ocf, on=["company", "fiscal_year"], suffixes=("", "_ocf"))
     fund = fund[fund["fiscal_year"] >= 2020].copy()
@@ -928,26 +892,23 @@ with tab_hyper:
     ratio_line = ", ".join(
         f"{r.company} {r.capex_pct_ocf:.0f}%" for r in fy25.itertuples())
     st.caption(
-        f"FY2025: {ratio_line}. Oracle already spends more than its operations "
-        "generate and Amazon is close. The funding gap has moved to the bond "
-        "market: hyperscalers issued \\$121B of bonds in 2025, four times the "
-        "five-year average of about \\$28B, including Meta's \\$30B (the largest "
-        "corporate bond since 2023), an Alphabet 100-year bond, and repeated "
-        "Oracle issuance, at sub-5% average rates. Sources: 10-K filings (EDGAR "
-        f"XBRL), Janus Henderson, Wolf Street. Data as of {DATA_UPDATED}.")
+        "Sources: 10-K filings (EDGAR XBRL), Janus Henderson, Wolf Street. "
+        f"Notes: FY2025: {ratio_line}. Oracle already outspends its operations "
+        "and Amazon is close; the group issued \\$121B of bonds in 2025 (4x the "
+        "\\$28B five-year average) incl. Meta's \\$30B and an Alphabet 100-year "
+        f"bond, at sub-5% rates. Data as of {DATA_UPDATED}.")
 
     st.caption(
-        "Microsoft's fiscal year ends June 30 and Oracle's May 31 (not "
-        "calendar-aligned). Amazon capex includes fulfilment and logistics, "
-        "not only AWS, which matters when comparing totals across companies.")
+        "Notes: Microsoft's fiscal year ends June 30 and Oracle's May 31 (not "
+        "calendar-aligned); Amazon capex includes fulfilment and logistics, not "
+        "only AWS.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
     st.caption(
-        "Return on capital employed (operating income over total assets minus "
-        "current liabilities). The shaded band is an estimated 8-10% cost of "
-        "capital for these companies (Damodaran, software and internet "
-        "sectors).")
+        "Notes: return on capital employed (operating income over total assets "
+        "minus current liabilities); the shaded band is an estimated 8-10% cost "
+        "of capital (Damodaran, software and internet sectors).")
     fighr = px.line(
         hyp_returns, x="year", y="roce_pct", color="company", markers=True,
         color_discrete_map=COMPANY_COLORS,
@@ -959,24 +920,19 @@ with tab_hyper:
                         yaxis_range=[0, 35])
     st.plotly_chart(fighr, width="stretch")
     st.caption(
-        "Returns are still comfortably above their own roughly 8-10% cost of "
-        "capital, and 3 to 4 times the level telecoms earn, which is what "
-        "justifies the spending. The 2025 dip is the signal to watch: Alphabet "
-        "fell from 31% to 26%, with Microsoft and Meta also easing, as capital "
-        "employed jumped (Alphabet from \\$361B to \\$493B in one year) faster "
-        "than operating income. Most of the 2025-26 capex has not yet started "
-        "depreciating, so the drag builds from here; the open question is how "
-        "far the spread over cost of capital narrows. Amazon and Oracle sit "
-        "lower because their figures include retail and a broader software "
-        "base. Sources: 10-K filings (EDGAR XBRL). Data as of "
-        f"{DATA_UPDATED}.")
+        "Sources: 10-K filings (EDGAR XBRL). Notes: returns are still above the "
+        "roughly 8-10% cost of capital and 3-4x telecom levels. The 2025 dip is "
+        "the signal: Alphabet fell 31% to 26% as capital employed jumped "
+        "(\\$361B to \\$493B) faster than income; most 2025-26 capex has not "
+        "started depreciating, so the drag builds. Amazon and Oracle sit lower "
+        f"on retail and broader software mix. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### 2026 forward guidance")
     st.caption(
-        "Guidance is reported on a broader basis (total capex including finance "
-        "leases) than the cash PP&E actuals above, so it is shown as a separate "
-        "series. Ranges are company guidance; markers are midpoints.")
+        "Notes: guidance is a broader basis (total capex incl. finance leases) "
+        "than the cash-PP&E actuals above, so it is a separate series; ranges "
+        "are company guidance, markers are midpoints.")
     actual25 = view[view["fiscal_year"] == 2025].set_index("company")["capex_usd_b"]
     gtbl = guidance.copy()
     gtbl["fy2025_actual_b"] = gtbl["company"].map(actual25)
@@ -1008,18 +964,17 @@ with tab_hyper:
             "26E high": "{:.0f}", "Growth %": "{:+.0f}"}),
         width="stretch", hide_index=True)
     st.caption(
-        "Part of the jump is definitional (guidance includes finance leases). "
-        "Microsoft also flagged about \\$25B of its 2026 step-up as memory and "
-        "component cost inflation, so higher capex "
-        "does not map one-to-one to more compute. Oracle guidance covers its "
-        "fiscal year ending May 2026.")
+        "Notes: part of the jump is definitional (guidance includes finance "
+        "leases), and Microsoft flagged about \\$25B of its 2026 step-up as "
+        "memory and component inflation, so higher capex is not one-to-one more "
+        "compute. Oracle guidance covers its fiscal year ending May 2026.")
 
     st.markdown("---")
     st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
     st.caption(
-        "Two reported series: combined Big-5 capex against NVIDIA and AMD "
-        "data-center segment revenue. Shows how much of the capex lands at the "
-        "chip vendors.")
+        "Notes: combined Big-5 capex against NVIDIA and AMD data-center segment "
+        "revenue, both reported; shows how much of the capex lands at the chip "
+        "vendors.")
     cap_by_year = (view.groupby("fiscal_year")["capex_usd_b"].sum()
                    .loc[lambda s: s.index >= 2020])
     av = accel_rev.groupby("calendar_year")["dc_revenue_b"].sum()
@@ -1035,13 +990,11 @@ with tab_hyper:
                        hovermode="x unified")
     st.plotly_chart(figr, width="stretch")
     st.caption(
-        "NVIDIA's fiscal year ends in late January, so its FY2026 (\\$194B "
-        "data-center revenue) is mapped to calendar 2025. AMD's data-center "
-        "segment starts in 2022, when it was first reported. Hyperscaler capex "
-        "also funds land, buildings, power and networking, and accelerator "
-        "vendors sell to buyers beyond these five companies, so the two series "
-        "are not a closed loop. Sources: company filings. Data as of "
-        f"{DATA_UPDATED}.")
+        "Sources: company filings. Notes: NVIDIA's fiscal year ends in late "
+        "January, so FY2026 (\\$194B data-center revenue) maps to calendar "
+        "2025; AMD's data-center segment starts in 2022. Capex also funds land, "
+        "buildings, power and networking, and the vendors sell beyond these "
+        f"five buyers, so the series are not a closed loop. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 6 · NeoClouds
@@ -1082,15 +1035,13 @@ with tab_neo:
                        yaxis_title="$B", hovermode="x unified")
     st.plotly_chart(fign, width="stretch")
     st.caption(
-        "CoreWeave's backlog (about \\$100B as of Q1 2026, up from \\$66.8B "
-        "at end-2025) dwarfs its current revenue and is concentrated (the "
-        "OpenAI deal added \\$11.2B). The Nebius bar is an estimate built "
-        "from its disclosed Microsoft (\\$17-19B) and Meta (\\$27B) "
-        "contracts. Crusoe and Lambda are private and disclose no backlog, "
-        "so they show revenue only. GPUs depreciate on a 4 to 6 year "
-        "schedule while rental pricing can move faster, and over \\$20B of "
-        "sector debt is secured against them. Sources: company filings and "
-        f"press. Data as of {DATA_UPDATED}.")
+        "Sources: company filings and press (Nebius bar estimated from "
+        "disclosed Microsoft \\$17-19B and Meta \\$27B contracts). Notes: "
+        "CoreWeave's backlog (about \\$100B, up from \\$66.8B end-2025) dwarfs "
+        "revenue and is concentrated (OpenAI added \\$11.2B); Crusoe and Lambda "
+        "are private (revenue only). GPUs depreciate over 4-6 years while "
+        "rental pricing can move faster, and over \\$20B of sector debt is "
+        f"secured against them. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 8 · AI Labs (demand)
@@ -1130,9 +1081,10 @@ with tab_labs:
                             xaxis_range=[0, labrev["revenue_b"].max() * 1.2])
         st.plotly_chart(figlr, width="stretch")
         st.caption(
-            "Annualized run-rates at various dates (Anthropic May-26, OpenAI "
-            "Feb-26, xAI Q3-25, Mistral Jan-26). Anthropic has overtaken OpenAI, "
-            "going from \\$1B to \\$47B in about 18 months. Source: Epoch AI.")
+            "Sources: Epoch AI. Notes: annualized run-rates at various dates "
+            "(Anthropic May-26, OpenAI Feb-26, xAI Q3-25, Mistral Jan-26); "
+            "Anthropic overtook OpenAI, going from \\$1B to \\$47B in about 18 "
+            "months.")
     with c2:
         st.markdown("#### Frontier capability by lab (GPQA-Diamond, %)")
         figb = px.line(
@@ -1148,12 +1100,10 @@ with tab_labs:
                            hovermode="x unified")
         st.plotly_chart(figb, width="stretch")
         st.caption(
-            "Best published GPQA-Diamond score per lab at major model releases. "
-            "Scores are taken from model and system cards where published "
-            "(GPT-4 35.7 from the GPQA paper, Claude 3.5 Sonnet 59.4, o1 78.0, "
-            "Gemini 2.5 Pro 84.0, DeepSeek R1 71.5); two points are estimates, "
-            "flagged in the data file. Chinese labs have closed most of the "
-            f"gap. Data as of {DATA_UPDATED}.")
+            "Sources: model and system cards (GPT-4 35.7, Claude 3.5 Sonnet "
+            "59.4, o1 78.0, Gemini 2.5 Pro 84.0, DeepSeek R1 71.5; two points "
+            "estimated). Notes: best published GPQA-Diamond score per lab at "
+            f"major releases; Chinese labs have closed most of the gap. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Inference price collapse ($ per million tokens, log scale)")
     ip = inference_prices.copy()
@@ -1168,22 +1118,14 @@ with tab_labs:
     figip.update_layout(height=320, hovermode="x unified", legend_title="")
     st.plotly_chart(figip, width="stretch")
     st.caption(
-        "Blended list price (3:1 input:output) for a fixed capability level "
-        "over time. The price of GPT-3-class capability fell from \\$60 to "
-        "about \\$0.06 per million tokens in three years, roughly 1000x, and "
-        "GPT-4-class capability has fallen about 100x since 2023. By 2026 the "
-        "cheapest GPT-4-class endpoints sit around \\$0.30 to \\$0.50 and "
-        "GPT-3-class near \\$0.06, with the decline slowing as prices approach "
-        "the underlying compute cost. As capability converges across labs, the "
-        "model layer struggles to hold value, which pushes it toward the "
-        "infrastructure below and the applications above. A falling price per "
-        "token has not meant falling revenue: usage is growing faster than "
-        "price is dropping, so total spend keeps rising, which is why frontier "
-        "run-rates climb even as the per-token price collapses (Anthropic and "
-        "OpenAI now above \\$70B combined). So far the squeeze lands on price "
-        "per token while the market itself keeps expanding. Sources: a16z "
-        "(\"LLMflation\"), company price lists, Benedict Evans on token "
-        f"pricing. Data as of {DATA_UPDATED}.")
+        "Sources: a16z (\"LLMflation\"), company price lists, Benedict Evans on "
+        "token pricing. Notes: blended list price (3:1 input:output) for a "
+        "fixed capability level. GPT-3-class fell from \\$60 to about \\$0.06 "
+        "in three years (about 1000x); GPT-4-class about 100x since 2023 and "
+        "around \\$0.30-0.50 by 2026, the decline slowing toward compute cost. "
+        "Falling price per token has not meant falling revenue: usage outgrows "
+        "price, so total spend and lab run-rates keep rising (Anthropic and "
+        f"OpenAI above \\$70B combined). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### ChatGPT weekly active users (millions)")
     figw = px.area(chatgpt, x="date", y="wau_m",
@@ -1193,9 +1135,9 @@ with tab_labs:
     figw.update_layout(height=280)
     st.plotly_chart(figw, width="stretch")
     st.caption(
-        "Weekly active users went from 100M (Aug-23) to 900M (Feb-26, OpenAI "
-        "disclosure), with third-party estimates putting it past 1B by May 2026 "
-        "(flagged as an estimate in the data).")
+        "Sources: OpenAI disclosures (May-2026 figure a third-party estimate, "
+        "flagged in data). Notes: weekly active users went from 100M (Aug-23) "
+        "to 900M (Feb-26), with estimates past 1B by May 2026.")
 
     ud1, ud2 = st.columns(2)
     with ud1:
@@ -1212,12 +1154,12 @@ with tab_labs:
                             yaxis={"categoryorder": "total ascending"})
         st.plotly_chart(figud, width="stretch")
         st.caption(
-            "About 55% of US working-age adults have used generative AI as of "
-            "the 2025 survey wave, up from 40% in late 2024, but daily use stays "
-            "low (about 12% every workday). Adoption is broad and shallow. The "
-            "two work/outside-work past-week measures are the latest late-2024 "
-            "readings, flagged in the data. Source: Bick, Blandin and Deming, "
-            "Real-Time Population Survey (NBER / St. Louis Fed / Fed FEDS note).")
+            "Sources: Bick, Blandin and Deming, Real-Time Population Survey "
+            "(NBER / St. Louis Fed / Fed FEDS note). Notes: about 55% of US "
+            "working-age adults have used generative AI (2025 wave, up from 40% "
+            "in late 2024), but daily use stays low (about 12% every workday); "
+            "the two past-week measures are late-2024 readings, flagged in "
+            "data.")
     with ud2:
         st.markdown("#### Enterprise AI application spend, 2025 (\\$B)")
         figes = px.bar(ent_spend.sort_values("spend_b"), x="spend_b",
@@ -1230,11 +1172,10 @@ with tab_labs:
                             xaxis_range=[0, ent_spend["spend_b"].max() * 1.25])
         st.plotly_chart(figes, width="stretch")
         st.caption(
-            "Enterprise generative AI application spend reached \\$19B in 2025 "
-            "(of \\$37B total enterprise genAI spend, up from \\$11.5B in "
-            "2024). Coding tools are the largest single use case at \\$4.2B. "
-            "Source: Menlo Ventures, State of Generative AI in the Enterprise "
-            "2025.")
+            "Sources: Menlo Ventures, State of Generative AI in the Enterprise "
+            "2025. Notes: enterprise genAI application spend reached \\$19B in "
+            "2025 (of \\$37B total, up from \\$11.5B in 2024); coding tools are "
+            "the largest single use case at \\$4.2B.")
 
     st.markdown("#### Y Combinator: AI share of startup batches (%)")
     figyc = go.Figure()
@@ -1248,15 +1189,14 @@ with tab_labs:
                         yaxis_range=[0, 100])
     st.plotly_chart(figyc, width="stretch")
     st.caption(
-        "Share of Y Combinator batch companies tagged as AI. Roughly 5 to 15% "
-        "of batches from 2015 to 2022, then 44% (2023), about 70% (2024) and "
-        "about 80% (2025). Startup formation has concentrated almost entirely "
-        "on AI. Compiled from YC directory analyses and press reports; "
-        f"2015-2022 values are approximate. Data as of {DATA_UPDATED}.")
+        "Sources: YC directory analyses and press reports (2015-2022 "
+        "approximate). Notes: AI share of YC batches ran 5-15% (2015-2022), "
+        "then 44% (2023), about 70% (2024) and about 80% (2025); startup "
+        f"formation has concentrated almost entirely on AI. Data as of {DATA_UPDATED}.")
 
     st.caption(
-        "Revenue is concentrating in Anthropic and OpenAI, while frontier "
-        "benchmark scores are converging in the 90s. Lab revenue and multi-year "
+        "Notes: revenue is concentrating in Anthropic and OpenAI while "
+        "benchmark scores converge in the 90s; lab revenue and multi-year "
         "compute commitments are the demand that underwrites the capex stack.")
 
     st.markdown("#### Notable compute-commitment signals")
@@ -1304,11 +1244,10 @@ with tab_si:
     figsi2.update_layout(height=380, hovermode="x unified", legend_title="")
     st.plotly_chart(figsi2, width="stretch")
     st.caption(
-        "Fiscal years differ (Accenture ends August, TCS and Infosys end March, "
-        "Capgemini is calendar-year). Capgemini reports in EUR; USD conversion "
-        "is approximate and flagged in the data. Deloitte and IBM Consulting "
-        "are comparable players but are private or embedded in a larger group. "
-        "Sources: company results.")
+        "Sources: company results (Capgemini EUR-to-USD approximate). Notes: "
+        "fiscal years differ (Accenture ends August, TCS and Infosys March, "
+        "Capgemini calendar). Deloitte and IBM Consulting are comparable but "
+        "private or embedded in a larger group.")
 
     st.markdown("#### Accenture GenAI new bookings since 2023 (\\$B)")
     gb = genai_bookings.copy()
@@ -1325,13 +1264,11 @@ with tab_si:
                         yaxis_title="$B", hovermode="x unified")
     st.plotly_chart(figgb, width="stretch")
     st.caption(
-        "GenAI new bookings as disclosed in Accenture's quarterly results: "
-        "\\$0.3B in the first two quarters of disclosure (FY2023), \\$3.0B in "
-        "FY2024, \\$5.9B in FY2025, and a final \\$2.2B in Q1 FY2026. Accenture "
-        "said Q1 FY2026 (ended November 2025) was the last quarter it would "
-        "report the metric separately, as advanced AI is now embedded across "
-        "its work. Cumulative bookings since 2023 reached about \\$11B. Source: "
-        f"Accenture 8-K filings. Data as of {DATA_UPDATED}.")
+        "Sources: Accenture 8-K filings. Notes: GenAI new bookings ran \\$0.3B "
+        "(FY2023), \\$3.0B (FY2024), \\$5.9B (FY2025) and a final \\$2.2B in Q1 "
+        "FY2026 (about \\$11B cumulative); Accenture said Q1 FY2026 was the last "
+        "quarter it would report the metric separately as advanced AI became "
+        f"embedded across its work. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
 # 10 · Telecoms (context)
@@ -1400,14 +1337,12 @@ with tab_telco:
                             hovermode="x unified")
         st.plotly_chart(figmt, width="stretch")
         st.caption(
-            "Mobile traffic (excluding fixed wireless access) is from "
-            "successive Ericsson Mobility Reports; about 4.4 EB per month in "
-            "2015 to about 126 EB in 2024, with roughly 145 (2025) and 162 "
-            "(2026) on Ericsson's trajectory. Fixed/wireline traffic is an "
-            "estimate compiled from Cisco VNI history and ITU/TeleGeography "
-            "data and carries most of the world's data, roughly 3x mobile. "
-            "Hatched bars are forecasts. AI workloads land mainly on the "
-            "fixed and data-center side; mobile growth is decelerating.")
+            "Sources: Ericsson Mobility Reports (mobile); Cisco VNI, ITU / "
+            "TeleGeography (fixed, estimated). Notes: mobile traffic rose from "
+            "about 4.4 EB/month (2015) to about 126 EB (2024), with about 145 "
+            "(2025) and 162 (2026) on Ericsson's path; fixed carries roughly 3x "
+            "mobile. Hatched bars are forecasts; AI load lands mainly on the "
+            "fixed and data-center side.")
     with tt2:
         st.markdown("#### Total shareholder return, indexed (2015 = 100)")
         ts = telco_tsr.copy()
@@ -1427,14 +1362,12 @@ with tab_telco:
                              legend_title="")
         st.plotly_chart(figts2, width="stretch")
         st.caption(
-            "Total shareholder return: dividend- and split-adjusted prices "
-            "(dividends reinvested), indexed to 100 at the start of 2015 "
-            "(Yahoo Finance adjusted closes). Through early 2026 that is "
-            "roughly +72% for Verizon (about 5% a year), +107% for AT&T "
-            "(about 7%), +175% for Deutsche Telekom (about 10%) and -53% for "
-            "BT Group, versus +235% (about 12% a year) for the MSCI World "
-            "ETF. Price-only comparisons understate telco returns because "
-            "the sector pays out 4 to 7% dividend yields.")
+            "Sources: Yahoo Finance adjusted closes (dividends reinvested, "
+            "indexed to 100 at start-2015). Notes: through early 2026, about "
+            "+72% Verizon (about 5%/yr), +107% AT&T (about 7%), +175% Deutsche "
+            "Telekom (about 10%) and -53% BT, versus +235% (about 12%/yr) for "
+            "the MSCI World ETF. Price-only comparisons understate telco "
+            "returns given 4-7% dividend yields.")
 
     st.markdown("#### Return on capital employed vs cost of capital")
     figroce = go.Figure()
@@ -1455,28 +1388,22 @@ with tab_telco:
                           yaxis_range=[0, 11])
     st.plotly_chart(figroce, width="stretch")
     st.caption(
-        "ROCE is computed as operating income divided by capital employed "
-        "(total assets minus current liabilities), averaged over the years "
-        "shown per company, from 10-K and 20-F filings (SEC EDGAR XBRL); "
-        "Deutsche Telekom and BT are approximated from annual reports as "
-        "neither files with the SEC today. One-offs distort single years "
-        "(AT&T's 2022 impairments, tower-sale gains at Telefonica 2021 and "
-        "Vodafone FY2023) but averages wash most of this out. Only Verizon "
-        "and BT reach the top of the 6 to 8% band; the sector as a whole "
-        "earned roughly its cost of capital across the 5G buildout.")
+        "Sources: 10-K and 20-F filings (SEC EDGAR XBRL); Deutsche Telekom and "
+        "BT approximated from annual reports (neither files with the SEC "
+        "today). Notes: ROCE is operating income over capital employed, "
+        "averaged over the years shown. Only Verizon and BT reach the top of "
+        "the 6-8% band; the sector earned roughly its cost of capital across "
+        "the 5G buildout. One-offs distort single years but averages wash most "
+        "out.")
     st.caption(
-        "**BT note:** ROCE "
-        "measures the return on the whole operating asset base, while TSR is "
-        "the return to the thin slice of equity that sits behind everything "
-        "else. BT carries roughly £15-20B of net debt and a very large pension "
-        "scheme that has absorbed billions in deficit-repair cash, so an "
-        "8% asset return, after interest and pension top-ups, leaves little "
-        "for equity holders. On top of that the market steadily de-rated the "
-        "shares as revenue stalled and Openreach fibre capex ramped. Decent "
-        "asset returns and a destroyed equity coexist because of leverage, "
-        "pension drag and a falling multiple. The gap is the whole point: "
-        "being a sound operating business does not guarantee value for "
-        f"shareholders. Data as of {DATA_UPDATED}.")
+        "**BT note.** ROCE is the return on the whole asset base; TSR is the "
+        "return to the thin equity slice behind it. BT carries roughly £15-20B "
+        "of net debt and a large pension scheme absorbing deficit-repair cash, "
+        "so an 8% asset return leaves little for equity after interest and "
+        "top-ups, and the market de-rated the shares as revenue stalled and "
+        "Openreach capex ramped. Sound operating returns and destroyed equity "
+        "coexist through leverage, pension drag and a falling multiple. Data as "
+        f"of {DATA_UPDATED}.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
     guide_total = float(guidance["capex_mid_b"].sum())
@@ -1514,13 +1441,11 @@ with tab_telco:
                        yaxis_title="Capex ($B)", xaxis_title="Year")
     st.plotly_chart(figt, width="stretch")
     st.caption(
-        "Telecom is global industry capex (MTN Consulting); 2025-26 assumes "
-        "the flat-to-declining trajectory continues, consistent with carrier "
-        "guidance and the absence of a 6G investment cycle. Hyperscaler is "
-        "the Big-5 (Alphabet, Amazon, Meta, Microsoft, Oracle); 2026 is the "
-        "guidance midpoint. Dotted segments are forecasts. The two lines "
-        "crossed in 2025 and the gap roughly doubles in 2026: the world's "
-        "infrastructure capex engine has changed hands.")
+        "Sources: MTN Consulting (telecom); company filings (hyperscaler). "
+        "Notes: telecom is global industry capex, 2025-26 assumes the "
+        "flat-to-declining path continues; hyperscaler is the Big-5, 2026 the "
+        "guidance midpoint. Dotted segments are forecasts. The lines crossed in "
+        "2025 and the gap roughly doubles in 2026.")
 
     st.markdown("#### US carriers: capex and revenue, with 2026 guidance (\\$B)")
     tc1, tc2 = st.columns(2)
@@ -1542,13 +1467,9 @@ with tab_telco:
                             title="Revenue")
         st.plotly_chart(figur, width="stretch")
     st.caption(
-        "2020-2024 are reported figures; 2025 is an approximate full year and "
-        "2026 is company guidance (AT&T \\$23-24B on fiber, Verizon "
-        "\\$16-16.5B cut, T-Mobile about \\$10B; revenue per low-single-digit "
-        "service growth guidance). AT&T revenue includes WarnerMedia until "
-        "its spin-off in April 2022. Verizon's 2022 capex peak reflects the "
-        "C-Band buildout; T-Mobile's 2021-22 peak reflects Sprint "
-        "integration. The shape that emerges is steady-state capex near "
-        "\\$50B combined with no 6G spike: better for carrier free cash flow "
-        "and dividends, flat for the vendors selling into it. Data as of "
-        f"{DATA_UPDATED}.")
+        "Sources: company filings and 2026 guidance (2025 approximate). Notes: "
+        "2026 guidance AT&T \\$23-24B (fiber), Verizon \\$16-16.5B (cut), "
+        "T-Mobile about \\$10B. AT&T revenue includes WarnerMedia until the "
+        "April 2022 spin-off; Verizon's 2022 capex peak is C-Band, T-Mobile's "
+        "2021-22 peak is Sprint integration. Steady-state capex near \\$50B "
+        f"with no 6G spike. Data as of {DATA_UPDATED}.")
