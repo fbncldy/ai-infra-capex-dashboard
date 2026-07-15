@@ -214,8 +214,11 @@ with tab_overview:
         f"embedding, 2/ switching costs, 3/ proprietary data, and 4/ regulatory "
         f"position. Mid-market horizontal SaaS is the most exposed, while "
         f"vertical depth and data flywheels move up the defensibility stack. "
-        f"The integrators (Accenture and peers) are early winners because "
-        f"getting AI into production is still services-heavy.\n"
+        f"The integrators (Accenture and peers) win the near-term deployment "
+        f"work, though their labor-arbitrage model is the engineering-labor "
+        f"scale that AI compresses, and the market began repricing that in "
+        f"mid-2026 as Accenture, IBM and the Indian IT majors sold off on "
+        f"AI-driven guidance cuts.\n"
         f"- **Bottom line.** Value accrues to whoever owns what AI cannot "
         f"manufacture: distribution, data, trust and customer lock-in, which is "
         f"why the whole stack is racing to integrate. The telecom build-out is "
@@ -1228,9 +1231,18 @@ with tab_si:
         "\\$5.9B (FY2025) and \\$2.2B in Q1 FY2026**, about \\$11B cumulative, "
         "after which Accenture stopped breaking the metric out as advanced AI "
         "became embedded across its delivery.\n"
-        "- **The integrators are also a check on the hype:** overall revenue "
-        "grows single digits, so GenAI work has so far been additive for the "
-        "services industry itself.")
+        "- **The bookings-minus-revenue gap is the tell:** Accenture booked "
+        "about \\$11B of cumulative GenAI work while total revenue grew only "
+        "about 5% a year, so the new work is mostly substituting for shrinking "
+        "legacy engagements rather than adding to them.\n"
+        "- **The delivery model is now the risk:** integrators are the "
+        "near-term winners on deployment, yet the labor-arbitrage pyramid is "
+        "the engineering-labor scale that AI compresses. The market began "
+        "pricing this in mid-2026, with Accenture down about 18% on a guidance "
+        "cut (consulting revenue up 1%, bookings down 2%), IBM down about 25% "
+        "as AI hardware crowded out software and services budgets, and TCS and "
+        "Infosys selling off on the shift from labor arbitrage to algorithm "
+        "arbitrage.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
