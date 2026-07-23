@@ -935,13 +935,14 @@ with tab_hyper:
     st.plotly_chart(figft, width="stretch")
     st.caption(
         "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from "
-        "guidance; framing after BofA Global Research.  \n"
+        "guidance, 2027 capex from consensus (Moody's, Goldman, BofA); NVIDIA "
+        "FY2027 from Q1 run-rate; framing after BofA Global Research.  \n"
         "**Notes:** free cash flow (operating cash flow minus capex) per basket "
-        "by fiscal year; solid is reported, dotted is 2026E. Hyperscaler FCF "
-        "peaked at \\$246B (2024), fell to \\$198B (2025) and turns negative in "
-        "2026 as \\$775B of guided capex outruns cash flow (Alphabet already "
-        "negative in Q2), while chipmaker FCF keeps climbing, most of it NVIDIA. "
-        f"Fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
+        "by fiscal year; solid is reported, dotted is 2026-27E. Hyperscaler FCF "
+        "peaked at \\$246B (2024) and turns deeply negative by 2027 as capex "
+        "nears \\$1T (Alphabet already negative in Q2 2026), while chipmaker FCF "
+        "climbs toward \\$265B, most of it NVIDIA. Forward years are estimates; "
+        f"fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
