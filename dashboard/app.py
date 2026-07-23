@@ -934,21 +934,14 @@ with tab_hyper:
                         yaxis_title="Free cash flow ($B)", xaxis_title="Fiscal year")
     st.plotly_chart(figft, width="stretch")
     st.caption(
-        "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from company "
+        "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from "
         "guidance; framing after BofA Global Research.  \n"
-        "**Notes:** free cash flow is operating cash flow minus capex, summed "
-        "per basket by fiscal year (solid = reported, dotted = 2026 forecast). "
-        "Hyperscalers are Amazon, Alphabet, Meta, Microsoft and Oracle; "
-        "semiconductors are NVIDIA, Micron, Broadcom and Applied Materials. "
-        "Reported hyperscaler FCF peaked near \\$246B in 2024 and fell to "
-        "\\$198B in 2025 as capex surged, while chipmaker FCF nearly doubled to "
-        "about \\$95B, most of it NVIDIA. The 2026 forecast crosses: hyperscaler "
-        "FCF turns negative (about \\$680B of operating cash flow, growing ~18% "
-        "off 2025, against \\$775B of guided capex; the result is negative "
-        "across any plausible growth rate, and Alphabet already reported "
-        "negative FCF in Q2), while semiconductor FCF keeps climbing (NVIDIA's "
-        "FY2026 is already reported near \\$97B). Fiscal years are not "
-        f"calendar-aligned across the two baskets. Data as of {DATA_UPDATED}.")
+        "**Notes:** free cash flow (operating cash flow minus capex) per basket "
+        "by fiscal year; solid is reported, dotted is 2026E. Hyperscaler FCF "
+        "peaked at \\$246B (2024), fell to \\$198B (2025) and turns negative in "
+        "2026 as \\$775B of guided capex outruns cash flow (Alphabet already "
+        "negative in Q2), while chipmaker FCF keeps climbing, most of it NVIDIA. "
+        f"Fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
