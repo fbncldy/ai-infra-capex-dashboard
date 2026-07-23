@@ -914,26 +914,41 @@ with tab_hyper:
     st.markdown("---")
     st.markdown("#### The free-cash-flow transfer: hyperscalers to chipmakers")
     ftr = fcf_transfer.copy()
-    figft = px.line(
-        ftr, x="year", y="fcf_b", color="group", markers=True,
-        color_discrete_map={"Hyperscalers": "#4FC3F7", "Semiconductors": BLUE},
-        labels={"year": "Fiscal year", "fcf_b": "Free cash flow ($B)",
-                "group": ""})
+    ftcolors = {"Hyperscalers": "#4FC3F7", "Semiconductors": BLUE}
+    figft = go.Figure()
+    for grp, col in ftcolors.items():
+        g = ftr[ftr["group"] == grp].sort_values("year")
+        rep = g[g["source_type"] == "reported"]
+        figft.add_trace(go.Scatter(
+            x=rep["year"], y=rep["fcf_b"], name=grp, mode="lines+markers",
+            line=dict(color=col, width=3)))
+        # dotted forecast segment, anchored to the last reported point
+        fc = g[(g["source_type"] == "forecast") |
+               (g["year"] == rep["year"].max())].sort_values("year")
+        figft.add_trace(go.Scatter(
+            x=fc["year"], y=fc["fcf_b"], name=f"{grp} (2026E)",
+            mode="lines+markers", line=dict(color=col, width=3, dash="dot"),
+            showlegend=False))
     figft.add_hline(y=0, line_dash="dash", line_color=GREY)
-    figft.update_layout(height=380, hovermode="x unified", legend_title="")
+    figft.update_layout(height=380, hovermode="x unified", legend_title="",
+                        yaxis_title="Free cash flow ($B)", xaxis_title="Fiscal year")
     st.plotly_chart(figft, width="stretch")
     st.caption(
-        "**Sources:** company 10-K filings (EDGAR XBRL); framing after BofA "
-        "Global Research.  \n"
+        "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from company "
+        "guidance; framing after BofA Global Research.  \n"
         "**Notes:** free cash flow is operating cash flow minus capex, summed "
-        "per basket by fiscal year. Hyperscalers are Amazon, Alphabet, Meta, "
-        "Microsoft and Oracle; semiconductors are NVIDIA, Micron, Broadcom and "
-        "Applied Materials. Hyperscaler FCF peaked near \\$246B in 2024 and fell "
-        "to \\$198B in 2025 as capex surged, while chipmaker FCF nearly doubled "
-        "to about \\$95B, most of it NVIDIA. The forward picture extends the "
-        "divergence: Alphabet's FCF turned negative in Q2 2026, and the four "
-        "big hyperscalers guide to more than \\$725B of 2026 capex. Fiscal years "
-        f"are not calendar-aligned across the two baskets. Data as of {DATA_UPDATED}.")
+        "per basket by fiscal year (solid = reported, dotted = 2026 forecast). "
+        "Hyperscalers are Amazon, Alphabet, Meta, Microsoft and Oracle; "
+        "semiconductors are NVIDIA, Micron, Broadcom and Applied Materials. "
+        "Reported hyperscaler FCF peaked near \\$246B in 2024 and fell to "
+        "\\$198B in 2025 as capex surged, while chipmaker FCF nearly doubled to "
+        "about \\$95B, most of it NVIDIA. The 2026 forecast crosses: hyperscaler "
+        "FCF turns negative (about \\$680B of operating cash flow, growing ~18% "
+        "off 2025, against \\$775B of guided capex; the result is negative "
+        "across any plausible growth rate, and Alphabet already reported "
+        "negative FCF in Q2), while semiconductor FCF keeps climbing (NVIDIA's "
+        "FY2026 is already reported near \\$97B). Fiscal years are not "
+        f"calendar-aligned across the two baskets. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
