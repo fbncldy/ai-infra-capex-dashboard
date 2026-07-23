@@ -74,6 +74,7 @@ capex_q = load_csv("hyperscaler_capex_quarterly.csv")
 accel_rev = load_csv("accelerator_dc_revenue.csv")
 telco_us = load_csv("telecom_us_series.csv")
 ocf = load_csv("hyperscaler_ocf.csv")
+fcf_transfer = load_csv("fcf_transfer.csv")
 si = load_csv("system_integrators.csv")
 genai_bookings = load_csv("accenture_genai_bookings.csv")
 semis = load_csv("semis_billings.csv")
@@ -173,7 +174,11 @@ with tab_overview:
         f"near **\\${guide26:,.0f}B** for 2026, more than global upstream oil "
         f"and gas investment (about \\$570B). With capex at 30 to 75% of "
         f"revenue, cash flow no longer covers it: the group issued \\$121B of "
-        f"bonds in 2025, four times its five-year average.\n"
+        f"bonds in 2025, four times its five-year average. Alphabet, long the "
+        f"best-insulated on search cash flow, turned free-cash-flow negative in "
+        f"Q2 2026 for the first time since its 2004 IPO and raised about \\$85B "
+        f"of equity, its first share sale in two decades, on top of roughly "
+        f"\\$100B of new debt.\n"
         f"- **The binding constraint keeps moving downstream, and each shortage "
         f"becomes the next layer's cost.** CoWoS packaging and HBM memory are "
         f"sold out through 2026, which shows up as Microsoft attributing about "
@@ -811,7 +816,7 @@ with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
         "- **Five companies are spending at a scale with few precedents:** "
-        "about \\$379B of capex in FY2025 and roughly \\$760B guided for 2026, "
+        "about \\$379B of capex in FY2025 and roughly \\$775B guided for 2026, "
         "more than global upstream oil and gas investment.\n"
         "- **Microsoft, Alphabet, Amazon, Meta and Oracle are the demand pull "
         "behind every upstream layer:** their orders set accelerator volumes, "
@@ -905,6 +910,30 @@ with tab_hyper:
         "**Notes:** Microsoft's fiscal year ends June 30 and Oracle's May 31 (not "
         "calendar-aligned); Amazon capex includes fulfilment and logistics, not "
         "only AWS.")
+
+    st.markdown("---")
+    st.markdown("#### The free-cash-flow transfer: hyperscalers to chipmakers")
+    ftr = fcf_transfer.copy()
+    figft = px.line(
+        ftr, x="year", y="fcf_b", color="group", markers=True,
+        color_discrete_map={"Hyperscalers": "#4FC3F7", "Semiconductors": BLUE},
+        labels={"year": "Fiscal year", "fcf_b": "Free cash flow ($B)",
+                "group": ""})
+    figft.add_hline(y=0, line_dash="dash", line_color=GREY)
+    figft.update_layout(height=380, hovermode="x unified", legend_title="")
+    st.plotly_chart(figft, width="stretch")
+    st.caption(
+        "**Sources:** company 10-K filings (EDGAR XBRL); framing after BofA "
+        "Global Research.  \n"
+        "**Notes:** free cash flow is operating cash flow minus capex, summed "
+        "per basket by fiscal year. Hyperscalers are Amazon, Alphabet, Meta, "
+        "Microsoft and Oracle; semiconductors are NVIDIA, Micron, Broadcom and "
+        "Applied Materials. Hyperscaler FCF peaked near \\$246B in 2024 and fell "
+        "to \\$198B in 2025 as capex surged, while chipmaker FCF nearly doubled "
+        "to about \\$95B, most of it NVIDIA. The forward picture extends the "
+        "divergence: Alphabet's FCF turned negative in Q2 2026, and the four "
+        "big hyperscalers guide to more than \\$725B of 2026 capex. Fiscal years "
+        f"are not calendar-aligned across the two baskets. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
