@@ -94,7 +94,7 @@ usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
 
-DATA_UPDATED = "June 2026"
+DATA_UPDATED = "August 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
 YR = max(YEARS)  # latest reported fiscal year (2025)
@@ -182,7 +182,9 @@ with tab_overview:
         f"- **The binding constraint keeps moving downstream, and each shortage "
         f"becomes the next layer's cost.** CoWoS packaging and HBM memory are "
         f"sold out through 2026, which shows up as Microsoft attributing about "
-        f"\\$25B of its 2026 guidance to memory and component inflation. Power "
+        f"\\$25B of its 2026 guidance to memory and component inflation and "
+        f"Amazon raising its 2026 capex by \\$20B to \\$220B on memory costs "
+        f"alone, so part of the rising spend buys the same compute. Power "
         f"is next: about {gw['capacity_gw'].sum():.0f} GW of named gigawatt "
         f"projects wait on grid connections that take 3 to 5 years.\n"
         f"- **The capex baton has passed from telecoms to hyperscalers.** "
@@ -817,7 +819,7 @@ with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
         "- **Five companies are spending at a scale with few precedents:** "
-        "about \\$379B of capex in FY2025 and roughly \\$775B guided for 2026, "
+        "about \\$379B of capex in FY2025 and roughly \\$790B guided for 2026, "
         "more than global upstream oil and gas investment.\n"
         "- **Microsoft, Alphabet, Amazon, Meta and Oracle are the demand pull "
         "behind every upstream layer:** their orders set accelerator volumes, "
@@ -966,7 +968,11 @@ with tab_hyper:
         "roughly 8-10% cost of capital and 3-4x telecom levels. The 2025 dip is "
         "the signal: Alphabet fell 31% to 26% as capital employed jumped "
         "(\\$361B to \\$493B) faster than income; most 2025-26 capex has not "
-        "started depreciating, so the drag builds. Amazon and Oracle sit lower "
+        "started depreciating, so the drag builds. Watch the depreciation "
+        "assumptions: Microsoft extended data-center useful life from 15 to 25 "
+        "years from FY2027, which lowers annual depreciation and lifts reported "
+        "returns, though roughly two-thirds of recent capex is short-lived GPUs "
+        "on a much faster replacement cycle. Amazon and Oracle sit lower "
         f"on retail and broader software mix. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
@@ -1007,9 +1013,15 @@ with tab_hyper:
         width="stretch", hide_index=True)
     st.caption(
         "**Notes:** part of the jump is definitional (guidance includes finance "
-        "leases), and Microsoft flagged about \\$25B of its 2026 step-up as "
-        "memory and component inflation, so higher capex is not one-to-one more "
-        "compute. Oracle guidance covers its fiscal year ending May 2026.")
+        "leases), and memory inflation absorbs some of it (Microsoft flagged "
+        "about \\$25B, Amazon raised by \\$20B on memory alone), so higher capex "
+        "is not one-to-one more compute. Microsoft's cut from \\$190B to \\$175B "
+        "is an accounting change rather than a smaller plan: extending the "
+        "useful life of data centers from 15 to 25 years reclassifies more "
+        "leases as operating, which sits outside reported capex; on the prior "
+        "basis the Big-5 total is nearer \\$800B. Oracle is the actual for its "
+        "fiscal year ended May 2026; it guides about \\$70B net cash capex for "
+        "FY2027.")
 
     st.markdown("---")
     st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
