@@ -1,10 +1,10 @@
 company,fy,revenue_b,source_type,note
-NVIDIA,2020,10.9,reported,FY ends ~Jan (offset from calendar)
-NVIDIA,2021,16.7,reported,FY ends ~Jan
-NVIDIA,2022,26.9,reported,FY ends ~Jan
-NVIDIA,2023,27.0,reported,FY ends ~Jan
-NVIDIA,2024,60.9,reported,FY ends ~Jan
-NVIDIA,2025,130.5,reported,FY ends ~Jan; data-center segment $115B
+NVIDIA,2020,16.7,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2021)
+NVIDIA,2021,26.9,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2022)
+NVIDIA,2022,27.0,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2023)
+NVIDIA,2023,60.9,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2024)
+NVIDIA,2024,130.5,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2025)
+NVIDIA,2025,215.9,reported,FY ends ~Jan; plotted against the calendar year it mostly covers (FY2026); data-center segment $194B
 AMD,2020,9.8,reported,Calendar year
 AMD,2021,16.4,reported,
 AMD,2022,23.6,reported,
@@ -16,7 +16,7 @@ Broadcom,2021,27.5,reported,
 Broadcom,2022,33.2,reported,
 Broadcom,2023,35.8,reported,
 Broadcom,2024,51.6,reported,Incl VMware
-Broadcom,2025,60.0,estimate,FY25 ~ approx (Q1 $14.9B run-rate)
+Broadcom,2025,63.9,reported,FY ends ~Nov; FY2025 actual
 Micron,2020,21.4,reported,FY ends ~Aug (memory)
 Micron,2021,27.7,reported,
 Micron,2022,30.8,reported,

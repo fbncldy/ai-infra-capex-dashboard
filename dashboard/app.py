@@ -97,7 +97,11 @@ yc_share = load_csv("yc_ai_share.csv")
 DATA_UPDATED = "August 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
-YR = max(YEARS)  # latest reported fiscal year (2025)
+# Latest fiscal year in which every company has reported. Microsoft (Jun)
+# and Oracle (May) close their years earlier, so the newest year in the
+# file can cover only part of the group; totals must not mix the two.
+_per_year = capex.groupby("fiscal_year")["company"].nunique()
+YR = int(_per_year[_per_year == capex["company"].nunique()].index.max())
 
 BLUE, GREEN, YELLOW, RED, GREY = "#4285F4", "#34A853", "#FBBC04", "#EA4335", "#9aa0a6"
 PURPLE = "#9334E6"
@@ -136,7 +140,7 @@ st.caption(
 ])
 
 # Capex view (all companies, all years), total capex
-view = capex.copy()
+view = capex[capex["fiscal_year"] <= YR].copy()
 latest = view[view["fiscal_year"] == YR]
 prev = view[view["fiscal_year"] == (YR - 1)]
 
@@ -244,7 +248,7 @@ with tab_overview:
               f"+{(guide26/total_now-1)*100:.0f}% vs FY25")
     d3.metric(f"Capex CAGR FY{first_yr}-{YR}", f"{cagr*100:.0f}%/yr",
               "AI-era acceleration")
-    d4.metric("NeoCloud backlog (CoreWeave)", "~$100B", "Q1 2026")
+    d4.metric("NeoCloud backlog (CoreWeave)", "~$104B", "Q2 2026")
 
     st.markdown("##### Supply & constraint (upstream)")
     s1, s2, s3, s4 = st.columns(4)
@@ -497,10 +501,11 @@ with tab_silicon:
     st.plotly_chart(figsi, width="stretch")
     st.caption(
         "**Sources:** company filings (SK Hynix and Micron currency-converted, "
-        "approximate).  \n**Notes:** total-company revenue; NVIDIA, Broadcom and "
-        "Micron fiscal years are offset from calendar. NVIDIA's data-center "
-        "segment alone was about \\$115B in FY2025; SK Hynix is the HBM leader "
-        "(about 57% share).")
+        "approximate).  \n**Notes:** total-company revenue. NVIDIA, Broadcom and "
+        "Micron fiscal years are offset from calendar and plotted against the "
+        "calendar year they mostly cover (NVIDIA FY2026, \\$215.9B, appears as "
+        "2025). NVIDIA's data-center segment was about \\$194B; SK Hynix is the "
+        "HBM leader (about 57% share).")
 
 # --------------------------------------------------------------------------- #
 # 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
@@ -1075,7 +1080,7 @@ with tab_neo:
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("CoreWeave backlog (Q1 2026)", "~$100B", "$66.8B end-2025")
+    c1.metric("CoreWeave backlog (Q2 2026)", "$104.2B", "+246% YoY")
     c2.metric("Nebius 2026E capex", "$20-25B")
     c3.metric("Sector GPU-backed debt", ">$20B")
 
@@ -1091,7 +1096,7 @@ with tab_neo:
     st.caption(
         "**Sources:** company filings and press (Nebius bar estimated from "
         "disclosed Microsoft \\$17-19B and Meta \\$27B contracts).  \n**Notes:** "
-        "CoreWeave's backlog (about \\$100B, up from \\$66.8B end-2025) dwarfs "
+        "CoreWeave's backlog (\\$104.2B at Q2 2026, up 246% YoY from \\$30.1B) dwarfs "
         "revenue and is concentrated (OpenAI added \\$11.2B); Crusoe and Lambda "
         "are private (revenue only). GPUs depreciate over 4-6 years while "
         "rental pricing can move faster, and over \\$20B of sector debt is "

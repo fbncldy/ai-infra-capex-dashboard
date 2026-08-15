@@ -15,6 +15,7 @@ Microsoft,2022,23886,6,10-K (EDGAR XBRL),0001564590-22-026876,,Cash purchases of
 Microsoft,2023,28107,6,10-K (EDGAR XBRL),0000950170-23-035122,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
 Microsoft,2024,44477,6,10-K (EDGAR XBRL),0000950170-24-087843,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
 Microsoft,2025,64551,6,10-K (EDGAR XBRL),0000950170-25-100235,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
+Microsoft,2026,115948,6,10-K (EDGAR XBRL),0001193125-26-323660,,Cash purchases of PP&E (excl. finance leases); FY ends Jun 30 - not calendar-aligned
 Amazon,2018,13427,12,10-K (EDGAR XBRL),0001018724-19-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
 Amazon,2019,16861,12,10-K (EDGAR XBRL),0001018724-20-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
 Amazon,2020,40140,12,10-K (EDGAR XBRL),0001018724-21-000004,,Purchases of PP&E incl. fulfilment/logistics - AWS is a subset; apply AI-share haircut
@@ -39,3 +40,4 @@ Oracle,2022,4511,5,10-K (EDGAR XBRL),0001564590-22-023675,,Capital expenditures 
 Oracle,2023,8695,5,10-K (EDGAR XBRL),0000950170-23-028914,,Capital expenditures (cash); FY ends May 31 - not calendar-aligned
 Oracle,2024,6866,5,10-K (EDGAR XBRL),0000950170-24-075605,,Capital expenditures (cash); FY ends May 31 - not calendar-aligned
 Oracle,2025,21215,5,10-K (EDGAR XBRL),0000950170-25-087926,,Capital expenditures (cash); FY ends May 31 - not calendar-aligned
+Oracle,2026,55663,5,10-K (EDGAR XBRL),0001193125-26-277521,,Capital expenditures (cash); FY ends May 31 - not calendar-aligned
