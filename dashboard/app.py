@@ -198,8 +198,9 @@ with tab_overview:
         f"following the money: Nokia bought Infinera for AI data-center optics "
         f"while Arista quadrupled and Ericsson shrank.\n"
         f"- **Infrastructure captures the value today, but the advantage is "
-        f"time-limited.** Demand is shifting from one-off training runs to "
-        f"always-on inference, which invites competition from AMD, custom "
+        f"time-limited.** Demand is shifting from training (the one-off run "
+        f"that builds a model) to inference (serving that model to users every "
+        f"day), which invites competition from AMD, custom "
         f"hyperscaler silicon and inference startups and squeezes margins over "
         f"time, even as cheaper inference widens demand. NVIDIA's training moat "
         f"looks sturdier than its inference one, and the layer drifts toward "
@@ -313,9 +314,11 @@ with tab_overview:
     st.caption("The ten steps, upstream to downstream, and what each one does.")
     vc_rows = [
         ("1 · Silicon & IP",
-         "Designs the accelerators and the high-bandwidth memory stacked beside "
-         "them. NVIDIA dominates the logic; HBM supply is the first hard limit "
-         "on how many chips can ship."),
+         "Designs the accelerators (the specialised chips, mostly NVIDIA GPUs, "
+         "that train and run AI models) and the high-bandwidth memory (HBM) "
+         "stacked beside them to feed data in fast enough. NVIDIA dominates "
+         "the chip design; HBM supply is the first hard limit on how many "
+         "chips can ship."),
         ("2 · Foundry & Packaging",
          "Manufactures and packages the chips. TSMC makes nearly all of them, "
          "and its CoWoS advanced packaging is the single tightest physical "
@@ -520,10 +523,11 @@ with tab_foundry:
         "- **Samsung Electronics and Intel are the only credible challengers** "
         "and both are spending tens of billions a year on fabs with limited "
         "share gains; both cut capex in 2025 while TSMC raised it.\n"
-        "- **The chokepoint is CoWoS advanced packaging**, the step that "
-        "mounts logic dies and HBM on one interposer: capacity grew roughly "
-        "10x since 2023 and is still fully booked, with OSAT partners (ASE, "
-        "Amkor) absorbing overflow.\n"
+        "- **The chokepoint is CoWoS advanced packaging**, the step that mounts "
+        "the processor and its memory chips side by side on a single base so "
+        "they sit close enough to talk at full speed. Capacity grew roughly "
+        "10x since 2023 and is still fully booked, with overflow going to "
+        "outsourced assembly and test firms (ASE, Amkor).\n"
         "- **Whoever controls packaging allocation decides which AI chips "
         "ship**, which gives this single process step strategic weight far "
         "beyond its 7 to 9% share of TSMC revenue.")
@@ -532,9 +536,10 @@ with tab_foundry:
     st.markdown("#### Revenue & capex by key player (\\$B)")
     st.caption(
         "**Sources:** TSMC, Samsung, Intel results (Samsung USD-converted KRW).  \n"
-        "**Notes:** TSMC is pure-play; Samsung and Intel are IDMs shown at "
+        "**Notes:** TSMC only manufactures chips others design; Samsung and "
+        "Intel both design and make their own, so they are shown at "
         "total-company scale (Samsung incl. memory, phones and displays; Intel "
-        "incl. products), so they overstate the foundry business but show "
+        "incl. products) and overstate the foundry business while showing "
         "relative investment scale.")
     fc1, fc2 = st.columns(2)
     fcolors = {"TSMC": BLUE, "Samsung Electronics": GREEN, "Intel": GREY}
@@ -556,8 +561,8 @@ with tab_foundry:
         st.plotly_chart(figfc, width="stretch")
     st.caption(
         "**Sources:** TSMC, Samsung, Intel results.  \n**Notes:** TSMC 2026E capex "
-        "guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue, with OSAT "
-        "overflow to ASE and Amkor.")
+        "guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue, with packaging "
+        "overflow going to ASE and Amkor.")
 
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
     cowos26 = float(cowos.loc[cowos.year == 2026, "cowos_kwpm"].iloc[0])
@@ -594,9 +599,10 @@ with tab_systems:
         "the first beneficiaries of the AI buildout**, with revenue inflecting "
         "from 2023.\n"
         "- **The listed players are Dell (ISG), Supermicro and HPE**, but the "
-        "largest AI-server volumes flow through Taiwanese ODMs (Foxconn, "
-        "Quanta, Wistron) building directly for hyperscalers, a lower-margin "
-        "and far less disclosed channel.\n"
+        "largest AI-server volumes flow through Taiwanese contract "
+        "manufacturers (Foxconn, Quanta, Wistron) that build unbranded machines "
+        "to a hyperscaler's own design, a lower-margin and far less disclosed "
+        "channel.\n"
         "- **GPU allocation drives value in this layer:** vendors who secured "
         "NVIDIA supply early, like Supermicro, grew from \\$3B revenue toward "
         "a \\$40B guidance in six years, and Dell's ISG jumped 40% in its "
@@ -619,9 +625,10 @@ with tab_systems:
     figsy.update_layout(height=400, hovermode="x unified", legend_title="")
     st.plotly_chart(figsy, width="stretch")
     st.caption(
-        "**Sources:** company filings (ODM figures are server/cloud-segment "
-        "estimates, currency-converted).  \n**Notes:** listed OEMs (Dell ISG, "
-        "Supermicro, HPE) plus the Taiwanese ODMs that carry most AI-server "
+        "**Sources:** company filings (contract-manufacturer figures are "
+        "server/cloud-segment estimates, currency-converted).  \n**Notes:** the "
+        "branded vendors (Dell ISG, Supermicro, HPE) plus the Taiwanese "
+        "contract manufacturers that carry most AI-server "
         "volume; Foxconn's Cloud & Networking segment alone (about \\$90B in "
         "2025) tops any branded OEM. Dell fiscal years are plotted on the "
         "calendar year they mostly cover; 2026 Supermicro and HPE bars are "
@@ -643,7 +650,8 @@ with tab_systems:
         "**Sources:** company filings (HPE and Foxconn estimated; others reported).  \n"
         "**Notes:** latest-year segment or group operating margin. Assemblers earn "
         "single digits to low teens because NVIDIA prices the scarce input and "
-        "itself runs about 60% on the same box; ODMs (Foxconn about 3-4%) sit "
+        "itself runs about 60% on the same box; the contract manufacturers "
+        "(Foxconn about 3-4%) sit "
         f"lowest. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
@@ -742,7 +750,9 @@ with tab_dc:
         "pass it for the full year in 2026, the clearest physical-economy "
         "signal of the AI buildout.\n"
         "- **Capacity comes from hyperscaler self-build, colocation providers "
-        "(Equinix, Digital Realty) and dedicated AI campuses:** the named "
+        "(Equinix, Digital Realty, who own the building and power and rent "
+        "space to tenants who bring their own hardware) and dedicated AI "
+        "campuses:** the named "
         "gigawatt-scale pipeline (Stargate, Hyperion, Colossus and others) "
         "totals about 17 GW of announced capacity.\n"
         "- **The binding constraint is shifting from buildings to "
@@ -1062,14 +1072,19 @@ with tab_hyper:
 with tab_neo:
     st.markdown("### 7 · NeoClouds")
     st.markdown(
-        "- **How the model works:** a NeoCloud buys accelerators, installs them "
-        "in data-center space it usually leases rather than owns, and rents the "
-        "capacity back out on multi-year contracts. The balance sheet is "
-        "thinner than the scale implies: buildings are leased, the chips are "
-        "bought with debt secured against the chips themselves, and suppliers "
-        "often provide the lease guarantees or vendor credit that make the "
-        "buildout possible. What is really being sold is access to scarce "
-        "accelerators, packaged as rent.\n"
+        "- **How the model works:** a NeoCloud buys accelerators (the "
+        "specialised chips, mostly NVIDIA GPUs, that train and run AI models), "
+        "installs them in data-center space it usually leases rather than owns, "
+        "and rents that computing capacity out by the hour or on multi-year "
+        "contracts. The customers are the AI labs (OpenAI, Anthropic, Meta AI), "
+        "enterprises training their own models, and the hyperscalers "
+        "themselves, who rent extra capacity when their own buildout runs "
+        "behind demand: Microsoft has been CoreWeave's largest customer and "
+        "signed \\$17-19B with Nebius. The balance sheet is thinner than the "
+        "scale implies: buildings are leased, the chips are bought with debt "
+        "secured against the chips themselves, and suppliers often provide the "
+        "lease guarantees or credit that make the buildout possible. What is "
+        "really being sold is access to scarce accelerators, packaged as rent.\n"
         "- **The specialists went from niche to well over \\$100B of contracted "
         "backlog in about two years.** CoreWeave and Nebius are listed, Crusoe "
         "and Lambda are private, and Nscale is expected to list after signing a "
