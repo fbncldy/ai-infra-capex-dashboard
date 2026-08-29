@@ -304,8 +304,9 @@ with tab_overview:
         "layers (NeoClouds, labs, compounding in triple digits) from mature "
         "ones (telecoms +1%, integrators +5%); growth only builds value where "
         "the return clears the band. Growth basis: 3-yr revenue CAGR 2022-2025, "
-        "except NeoClouds (2-yr, CoreWeave) and labs (1-yr run-rate step, small "
-        "base). Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
+        "except NeoClouds (2-yr, CoreWeave) and the labs (Anthropic and OpenAI "
+        "combined run-rate \\$29B in Dec-25 to \\$105B in Jul-26, annualized), "
+        "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
         f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Value-chain map")
