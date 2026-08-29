@@ -1109,7 +1109,8 @@ with tab_labs:
     st.markdown("### 8 · AI Labs")
     st.markdown(
         "- **Lab revenue is large and concentrating:** Anthropic and OpenAI "
-        "run-rates total above \\$70B, and their multi-year compute "
+        "run-rates total about \\$105B (Anthropic \\$65B, OpenAI \\$40B), and "
+        "their multi-year compute "
         "commitments underwrite NeoCloud backlogs and hyperscaler buildouts.\n"
         "- **Inference is profitable, the business is not yet:** serving a token "
         "runs at roughly 40 to 50% gross margin (industry estimates), but "
@@ -1147,10 +1148,12 @@ with tab_labs:
                             xaxis_range=[0, labrev["revenue_b"].max() * 1.2])
         st.plotly_chart(figlr, width="stretch")
         st.caption(
-            "**Sources:** Epoch AI.  \n**Notes:** annualized run-rates at various dates "
-            "(Anthropic May-26, OpenAI Feb-26, xAI Q3-25, Mistral Jan-26); "
-            "Anthropic overtook OpenAI, going from \\$1B to \\$47B in about 18 "
-            "months.")
+            "**Sources:** Bloomberg via TechCrunch; Sacra; Epoch AI.  \n"
+            "**Notes:** annualized run-rates at various dates (Anthropic Jul-26, "
+            "OpenAI Aug-26, xAI Dec-25, Mistral Jan-26). Anthropic overtook "
+            "OpenAI, going from \\$1B to \\$65B in about 19 months. The two are "
+            "not strictly comparable: Anthropic reports gross of cloud-reseller "
+            "spend, OpenAI closer to net.")
     with c2:
         st.markdown("#### Frontier capability by lab (GPQA-Diamond, %)")
         figb = px.line(
@@ -1191,7 +1194,7 @@ with tab_labs:
         "around \\$0.30-0.50 by 2026, the decline slowing toward compute cost. "
         "Falling price per token has not meant falling revenue: usage outgrows "
         "price, so total spend and lab run-rates keep rising (Anthropic and "
-        f"OpenAI above \\$70B combined). Data as of {DATA_UPDATED}.")
+        f"OpenAI about \\$105B combined). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### ChatGPT weekly active users (millions)")
     figw = px.area(chatgpt, x="date", y="wau_m",

@@ -1,5 +1,5 @@
 company,revenue_b,as_of,source_url,note
-Anthropic,47,2026-05,https://epoch.ai/data/ai_companies_revenue_reports.csv,Run-rate; overtook OpenAI; $1B (Dec-24) -> $9B (Dec-25) -> $47B (May-26)
-OpenAI,25,2026-02,https://epoch.ai/data/ai_companies_revenue_reports.csv,Annualized; ~$2B/month
-xAI,0.43,2025-Q3,https://epoch.ai/data/ai_companies_revenue_reports.csv,Annualized from $107M Q3-2025 revenue
-Mistral,0.40,2026-01,https://epoch.ai/data/ai_companies_revenue_reports.csv,Run-rate north of $400M
+Anthropic,65,2026-07,https://techcrunch.com/2026/08/17/anthropics-annualized-revenue-surges-to-65b/,Run-rate; $1B (Dec-24) -> $9B (Dec-25) -> $65B (Jul-26); reported gross of cloud-reseller spend
+OpenAI,40,2026-08,https://techcrunch.com/2026/08/17/anthropics-annualized-revenue-surges-to-65b/,Run-rate; doubled from $20B at end-2025; measured closer to net
+xAI,0.50,2025-12,https://sacra.com/c/xai/,Standalone run-rate exiting 2025; excludes X advertising
+Mistral,0.40,2026-01,https://sacra.com/c/mistral/,ARR; targeting above $1B by end-2026
