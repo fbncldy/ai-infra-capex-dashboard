@@ -1062,10 +1062,18 @@ with tab_hyper:
 with tab_neo:
     st.markdown("### 7 · NeoClouds")
     st.markdown(
-        "- **GPU rental specialists went from niche to roughly \\$100B of "
-        "contracted backlog in about two years**, financed largely with "
-        "GPU-backed debt; CoreWeave and Nebius are listed, Crusoe and Lambda "
-        "private.\n"
+        "- **How the model works:** a NeoCloud buys accelerators, installs them "
+        "in data-center space it usually leases rather than owns, and rents the "
+        "capacity back out on multi-year contracts. The balance sheet is "
+        "thinner than the scale implies: buildings are leased, the chips are "
+        "bought with debt secured against the chips themselves, and suppliers "
+        "often provide the lease guarantees or vendor credit that make the "
+        "buildout possible. What is really being sold is access to scarce "
+        "accelerators, packaged as rent.\n"
+        "- **The specialists went from niche to well over \\$100B of contracted "
+        "backlog in about two years.** CoreWeave and Nebius are listed, Crusoe "
+        "and Lambda are private, and Nscale is expected to list after signing a "
+        "six-year Anthropic deal worth about \\$45B.\n"
         "- **Backlogs are concentrated on a few anchor tenants** (the OpenAI "
         "deal added \\$11.2B to CoreWeave's backlog, Meta committed \\$27B to "
         "Nebius). The strength is that a multi-year contract with a "
@@ -1073,9 +1081,23 @@ with tab_neo:
         "debt cheaply and pre-fund its buildout. The risk is the mirror image: "
         "if that one tenant slows, renegotiates or fails, a large share of the "
         "backlog and the debt secured against it is exposed at once.\n"
+        "- **Backlog measures contracted intent rather than guaranteed "
+        "revenue.** Terms vary and some carry short exits: the Anthropic and "
+        "xAI agreement signed in May 2026, priced near \\$38B per gigawatt a "
+        "year, can be cancelled by either side on 90 days' notice according to "
+        "SpaceX's listing prospectus. Headline backlog should be read as a "
+        "pipeline with variable enforceability.\n"
         "- **The sector carries over \\$20B of debt secured against GPUs that "
-        "depreciate over 4 to 6 years**, so durability depends on rental "
-        "pricing holding up through successive accelerator generations.\n"
+        "depreciate over 4 to 6 years**, while rental contracts can run past "
+        "ten years. That mismatch is the core exposure: operators commit to "
+        "long-dated pricing without knowing the reinvestment cost of the "
+        "accelerator generations in between. The industry view is that later "
+        "tenants will take older silicon at lower prices, which is untested.\n"
+        "- **The financing runs in a circle.** NVIDIA is supplier, investor and "
+        "in places guarantor to the same firms buying its chips. Vendor finance "
+        "of this shape preceded the telecom overbuild of 2000, because the "
+        "capital comes from the party that benefits from capacity being built, "
+        "so the discipline that would normally cap supply is weaker.\n"
         "- **NeoClouds are effectively a leveraged bet on sustained AI compute "
         "scarcity.**")
     st.markdown("---")
@@ -1095,11 +1117,15 @@ with tab_neo:
                        yaxis_title="$B", hovermode="x unified")
     st.plotly_chart(fign, width="stretch")
     st.caption(
-        "**Sources:** company filings and press (Nebius bar estimated from "
-        "disclosed Microsoft \\$17-19B and Meta \\$27B contracts).  \n**Notes:** "
+        "**Sources:** company filings and press; FT on Nscale (Nebius bar "
+        "estimated from disclosed Microsoft \\$17-19B and Meta \\$27B "
+        "contracts).  \n**Notes:** "
         "CoreWeave's backlog (\\$104.2B at Q2 2026, up 246% YoY from \\$30.1B) dwarfs "
         "revenue and is concentrated (OpenAI added \\$11.2B); Crusoe and Lambda "
-        "are private (revenue only). GPUs depreciate over 4-6 years while "
+        "are private (revenue only) and Nscale shows its \\$45B Anthropic deal "
+        "ahead of an expected listing. Backlog is contracted intent, not "
+        "guaranteed revenue: terms vary and some carry 90-day termination "
+        "rights. GPUs depreciate over 4-6 years while "
         "rental pricing can move faster, and over \\$20B of sector debt is "
         f"secured against them. Data as of {DATA_UPDATED}.")
 
