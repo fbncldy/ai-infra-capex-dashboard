@@ -94,7 +94,7 @@ usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
 
-DATA_UPDATED = "August 2026"
+DATA_UPDATED = "September 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
 # Latest fiscal year in which every company has reported. Microsoft (Jun)
@@ -450,10 +450,15 @@ with tab_silicon:
         "microcontrollers and discrete chips are the steadier base. The 2025-26 "
         "surge is concentrated in logic and memory. Cloud sits downstream as "
         "the buyer of this silicon and is covered in the Hyperscalers tab.\n"
-        "- **NVIDIA dominates the accelerator layer**, with about \\$115B of "
-        "data-center revenue in FY2025; AMD is a distant second, and the "
-        "hyperscalers are building in-house alternatives (Google TPU, Amazon "
-        "Trainium) with Broadcom and Marvell.\n"
+        "- **NVIDIA dominates the accelerator layer**, with \\$194B of "
+        "data-center revenue in FY2026 and \\$89B in the July 2026 quarter "
+        "alone, about 92% of company revenue. AMD is a distant second.\n"
+        "- **The custom-silicon challenge is now visible in the numbers.** "
+        "Broadcom, which builds the in-house accelerators for Google (TPU) and "
+        "others, reported \\$16.7B of AI semiconductor revenue in its July 2026 "
+        "quarter, up 221% year on year, and guides to about \\$58B for FY2026 "
+        "with a stated line of sight to \\$115B in FY2027. Hyperscaler custom "
+        "chips are the most credible check on NVIDIA's pricing power.\n"
         "- **High-bandwidth memory is the supply-constrained input:** SK Hynix "
         "(about 57% share), Micron and Samsung are sold out through 2026.\n"
         "- **Silicon is the first gate on AI capacity:** shipping more "
@@ -955,12 +960,14 @@ with tab_hyper:
     st.caption(
         "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from "
         "guidance, 2027 capex from consensus (Moody's, Goldman, BofA); NVIDIA "
-        "FY2027 from Q1 run-rate; framing after BofA Global Research.  \n"
+        "FY2027 from H1 actuals, Broadcom from its own FY2027 line of sight; "
+        "framing after BofA Global Research.  \n"
         "**Notes:** free cash flow (operating cash flow minus capex) per basket "
         "by fiscal year; solid is reported, dotted is 2026-27E. Hyperscaler FCF "
         "peaked at \\$246B (2024) and turns deeply negative by 2027 as capex "
-        "nears \\$1T (Alphabet already negative in Q2 2026), while chipmaker FCF "
-        "climbs toward \\$265B, most of it NVIDIA. Forward years are estimates; "
+        "nears \\$1T (Alphabet and Oracle already negative in 2026), while "
+        "chipmaker FCF climbs toward \\$250B, most of it NVIDIA. Forward years "
+        "are estimates; "
         f"fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
@@ -1086,9 +1093,16 @@ with tab_neo:
         "lease guarantees or credit that make the buildout possible. What is "
         "really being sold is access to scarce accelerators, packaged as rent.\n"
         "- **The specialists went from niche to well over \\$100B of contracted "
-        "backlog in about two years.** CoreWeave and Nebius are listed, Crusoe "
-        "and Lambda are private, and Nscale is expected to list after signing a "
-        "six-year Anthropic deal worth about \\$45B.\n"
+        "backlog each in about two years.** CoreWeave and Nebius are listed, "
+        "Crusoe and Lambda are private, and Nscale filed for a New York listing "
+        "in September 2026 at a \\$30-35B target, up from \\$14.6B at its last "
+        "private round, on about \\$103B of total contract value.\n"
+        "- **The economics behind those backlogs are still deeply negative.** "
+        "Nscale's prospectus shows \\$140.6M of revenue in the first half of "
+        "2026 against a \\$1.02B net loss, so the loss ran about seven times "
+        "revenue. Oracle, running the same playbook at far greater scale, "
+        "posted \\$28B of quarterly capex and negative \\$5B free cash flow in "
+        "its Q1 FY2027.\n"
         "- **Backlogs are concentrated on a few anchor tenants** (the OpenAI "
         "deal added \\$11.2B to CoreWeave's backlog, Meta committed \\$27B to "
         "Nebius). The strength is that a multi-year contract with a "
@@ -1137,8 +1151,9 @@ with tab_neo:
         "contracts).  \n**Notes:** "
         "CoreWeave's backlog (\\$104.2B at Q2 2026, up 246% YoY from \\$30.1B) dwarfs "
         "revenue and is concentrated (OpenAI added \\$11.2B); Crusoe and Lambda "
-        "are private (revenue only) and Nscale shows its \\$45B Anthropic deal "
-        "ahead of an expected listing. Backlog is contracted intent, not "
+        "are private (revenue only) and Nscale shows about \\$103B of total "
+        "contract value from its September 2026 IPO filing. Backlog is "
+        "contracted intent, not "
         "guaranteed revenue: terms vary and some carry 90-day termination "
         "rights. GPUs depreciate over 4-6 years while "
         "rental pricing can move faster, and over \\$20B of sector debt is "
