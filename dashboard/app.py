@@ -94,7 +94,7 @@ usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
 
-DATA_UPDATED = "September 2026"
+DATA_UPDATED = "October 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
 # Latest fiscal year in which every company has reported. Microsoft (Jun)
@@ -188,7 +188,9 @@ with tab_overview:
         f"sold out through 2026, which shows up as Microsoft attributing about "
         f"\\$25B of its 2026 guidance to memory and component inflation and "
         f"Amazon raising its 2026 capex by \\$20B to \\$220B on memory costs "
-        f"alone, so part of the rising spend buys the same compute. Power "
+        f"alone, so part of the rising spend buys the same compute. That cost "
+        f"lands as the supplier's windfall: Micron's revenue more than tripled "
+        f"to \\$133B in its year to September 2026 at an 81% gross margin. Power "
         f"is next: about {gw['capacity_gw'].sum():.0f} GW of named gigawatt "
         f"projects wait on grid connections that take 3 to 5 years.\n"
         f"- **The capex baton has passed from telecoms to hyperscalers.** "
@@ -459,8 +461,15 @@ with tab_silicon:
         "quarter, up 221% year on year, and guides to about \\$58B for FY2026 "
         "with a stated line of sight to \\$115B in FY2027. Hyperscaler custom "
         "chips are the most credible check on NVIDIA's pricing power.\n"
-        "- **High-bandwidth memory is the supply-constrained input:** SK Hynix "
-        "(about 57% share), Micron and Samsung are sold out through 2026.\n"
+        "- **High-bandwidth memory is the supply-constrained input, and its "
+        "makers are now the biggest winners per dollar of revenue.** SK Hynix "
+        "(about 57% share), Micron and Samsung are sold out through 2026. "
+        "Micron's revenue went from \\$37B to \\$133B in its fiscal year to "
+        "September 2026, gross margin reached 81%, and it has contracted most "
+        "of its 2027 HBM supply at significantly higher prices. Memory is "
+        "historically the most cyclical part of the industry, so the question "
+        "is how long tight supply holds; management guides to tightness "
+        "through 2028.\n"
         "- **Silicon is the first gate on AI capacity:** shipping more "
         "accelerators requires more HBM and more advanced packaging alongside "
         "fab starts.")
@@ -958,15 +967,18 @@ with tab_hyper:
                         yaxis_title="Free cash flow ($B)", xaxis_title="Fiscal year")
     st.plotly_chart(figft, width="stretch")
     st.caption(
-        "**Sources:** company 10-K filings (EDGAR XBRL); 2026 capex from "
-        "guidance, 2027 capex from consensus (Moody's, Goldman, BofA); NVIDIA "
-        "FY2027 from H1 actuals, Broadcom from its own FY2027 line of sight; "
-        "framing after BofA Global Research.  \n"
+        "**Sources:** company 10-K and 10-Q filings (EDGAR XBRL); 2026 capex "
+        "from guidance, 2027 capex from consensus (Moody's, Goldman, BofA); "
+        "Broadcom 2027 from its own line of sight; framing after BofA Global "
+        "Research.  \n"
         "**Notes:** free cash flow (operating cash flow minus capex) per basket "
         "by fiscal year; solid is reported, dotted is 2026-27E. Hyperscaler FCF "
         "peaked at \\$246B (2024) and turns deeply negative by 2027 as capex "
-        "nears \\$1T (Alphabet and Oracle already negative in 2026), while "
-        "chipmaker FCF climbs toward \\$250B, most of it NVIDIA. Forward years "
+        "nears \\$1T (Alphabet and Oracle already negative in 2026). Chipmaker "
+        "FCF reaches about \\$209B in 2026, a figure now mostly reported "
+        "(NVIDIA and Micron full years, nine months of Broadcom and Applied "
+        "Materials), and about \\$340B in 2027. Memory is the surprise: "
+        "Micron went from \\$2B of FCF to \\$59B in a year. Forward years "
         "are estimates; "
         f"fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
 
@@ -1365,7 +1377,14 @@ with tab_si:
         "cut (consulting revenue up 1%, bookings down 2%), IBM down about 25% "
         "as AI hardware crowded out software and services budgets, and TCS and "
         "Infosys selling off on the shift from labor arbitrage to algorithm "
-        "arbitrage.")
+        "arbitrage.\n"
+        "- **The reported numbers now split by model.** TCS, the purest "
+        "labor-arbitrage business, saw revenue fall 2.4% in constant currency "
+        "in its year to March 2026. Accenture, weighted toward higher-end "
+        "transformation work, beat its fourth-quarter range and grew 5% in "
+        "local currency for the year to August 2026, but guides only 3 to 6% "
+        "for FY2027. The pressure is landing first where the work is most "
+        "standardized.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -1381,8 +1400,9 @@ with tab_si:
     st.caption(
         "**Sources:** company results (Capgemini EUR-to-USD approximate).  \n**Notes:** "
         "fiscal years differ (Accenture ends August, TCS and Infosys March, "
-        "Capgemini calendar). Deloitte and IBM Consulting are comparable but "
-        "private or embedded in a larger group.")
+        "Capgemini calendar), so 2026 has no Capgemini bar until it reports in "
+        "early 2027. Deloitte and IBM Consulting are comparable but private or "
+        "embedded in a larger group.")
 
     st.markdown("#### Accenture GenAI new bookings since 2023 (\\$B)")
     gb = genai_bookings.copy()
