@@ -870,6 +870,12 @@ with tab_hyper:
                "applied.")
     g = view.sort_values(["company", "fiscal_year"]).copy()
     g["yoy_%"] = g.groupby("company")["capex_usd_b"].pct_change() * 100
+    # One stacking order for both capex charts: largest spender in the latest
+    # complete year at the bottom; the legend is reversed so it reads like the
+    # stack, top to bottom.
+    stack_order = (view[view["fiscal_year"] == YR]
+                   .groupby("company")["capex_usd_b"].sum()
+                   .sort_values(ascending=False).index.tolist())
 
     colA, colB = st.columns(2)
     with colA:
@@ -877,6 +883,7 @@ with tab_hyper:
         fig2 = px.bar(
             g, x="fiscal_year", y="capex_usd_b", color="company",
             barmode="stack", color_discrete_map=COMPANY_COLORS,
+            category_orders={"company": stack_order},
             labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)"})
         ann_tot = g.groupby("fiscal_year")["capex_usd_b"].sum()
         fig2.add_trace(go.Scatter(
@@ -884,6 +891,7 @@ with tab_hyper:
             text=[f"${v:,.0f}B" for v in ann_tot.values],
             textposition="top center", showlegend=False, hoverinfo="skip"))
         fig2.update_layout(height=360, hovermode="x unified", legend_title="",
+                           legend_traceorder="reversed",
                            yaxis_range=[0, ann_tot.max() * 1.15])
         st.plotly_chart(fig2, width="stretch")
     with colB:
@@ -907,6 +915,7 @@ with tab_hyper:
     figq = px.bar(
         qv, x="quarter", y="capex_b",
         color="company", barmode="stack", color_discrete_map=COMPANY_COLORS,
+        category_orders={"company": stack_order},
         labels={"quarter": "Calendar quarter of period end",
                 "capex_b": "Capex ($B)"})
     q_tot = qv.groupby("quarter", sort=False)["capex_b"].sum()
@@ -915,6 +924,7 @@ with tab_hyper:
         text=[f"${v:,.0f}B" for v in q_tot.values],
         textposition="top center", showlegend=False, hoverinfo="skip"))
     figq.update_layout(height=380, hovermode="x unified", legend_title="",
+                       legend_traceorder="reversed",
                        yaxis_range=[0, q_tot.max() * 1.15])
     st.plotly_chart(figq, width="stretch")
     st.caption(
