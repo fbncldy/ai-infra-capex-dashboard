@@ -900,8 +900,10 @@ with tab_hyper:
             g[g["fiscal_year"] >= 2021], x="fiscal_year", y="yoy_%",
             color="company", barmode="group",
             color_discrete_map=COMPANY_COLORS,
+            category_orders={"company": stack_order},
             labels={"fiscal_year": "Fiscal year", "yoy_%": "YoY growth (%)"})
-        fig3.update_layout(height=360, hovermode="x unified", legend_title="")
+        fig3.update_layout(height=360, hovermode="x unified", legend_title="",
+                           legend_traceorder="reversed")
         st.plotly_chart(fig3, width="stretch")
 
     st.markdown("**Quarterly capex (\\$B)**")
