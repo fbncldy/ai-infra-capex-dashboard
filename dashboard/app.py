@@ -103,6 +103,19 @@ YEARS = sorted(capex["fiscal_year"].unique())
 _per_year = capex.groupby("fiscal_year")["company"].nunique()
 YR = int(_per_year[_per_year == capex["company"].nunique()].index.max())
 
+# Capex outlook, single source for every chart and sentence that describes the
+# trajectory. Same fiscal-year basis as the reported history: a company whose
+# fiscal 2026 has closed (Microsoft Jun, Oracle May) uses its actual, the rest
+# their guidance midpoint. Company guidance itself sums higher (GUIDE_SUM),
+# because Microsoft guides calendar 2026 including finance leases.
+FC_YEAR = int(guidance["year"].iloc[0])
+_closed = capex[capex["fiscal_year"] == FC_YEAR].set_index("company")["capex_usd_b"]
+CAPEX_FC = float(sum(_closed.get(co, mid) for co, mid
+                     in zip(guidance["company"], guidance["capex_mid_b"])))
+GUIDE_SUM = float(guidance["capex_mid_b"].sum())
+# 2027 aggregate consensus (Moody's, Goldman, BofA all near $1T); no company split
+CAPEX_CONSENSUS_B = 1000.0
+
 BLUE, GREEN, YELLOW, RED, GREY = "#4285F4", "#34A853", "#FBBC04", "#EA4335", "#9aa0a6"
 PURPLE = "#9334E6"
 
@@ -156,7 +169,6 @@ with tab_overview:
     total_first = view[view["fiscal_year"] == first_yr]["capex_usd_b"].sum()
     cagr = (total_now / total_first) ** (1 / (YR - first_yr)) - 1
     yoy = (total_now / total_prev - 1) * 100 if total_prev else 0
-    guide26 = guidance["capex_mid_b"].sum()
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
     cowos26_lo = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_low"].iloc[0])
     cowos26_hi = float(cowos.loc[cowos.year == 2026, "cowos_kwpm_high"].iloc[0])
@@ -174,10 +186,13 @@ with tab_overview:
         f"customer switching costs.\n"
         f"- **The spend has reached a scale with few precedents, and it now "
         f"leans on debt.** Big-5 capex (Microsoft, Alphabet, Amazon, Meta, "
-        f"Oracle) hit about **\\${total_now:,.0f}B** in FY2025 and is guided "
-        f"near **\\${guide26:,.0f}B** for 2026, more than global upstream oil "
-        f"and gas investment (about \\$570B). With capex at 30 to 75% of "
-        f"revenue, cash flow no longer covers it: the group issued \\$121B of "
+        f"Oracle) hit about **\\${total_now:,.0f}B** in FY2025 and is heading "
+        f"to about **\\${CAPEX_FC:,.0f}B** in fiscal 2026 and around "
+        f"**\\${CAPEX_CONSENSUS_B/1000:.0f}T** in 2027, more than global "
+        f"upstream oil and gas investment (about \\$570B). Capex has doubled as "
+        f"a share of revenue since 2023, to 18 to 37% in FY2025, and already "
+        f"absorbs 47 to 102% of operating cash flow. Free cash flow turns "
+        f"negative in 2026, so the group is borrowing: it issued \\$121B of "
         f"bonds in 2025, four times its five-year average. Alphabet, long the "
         f"best-insulated on search cash flow, turned free-cash-flow negative in "
         f"Q2 2026 for the first time since its 2004 IPO and raised about \\$85B "
@@ -215,8 +230,8 @@ with tab_overview:
         f"NeoCloud backlogs that collateralize over \\$20B of GPU-backed debt "
         f"from a single chip vendor, so a stumble at the lab layer would travel "
         f"back through credit.\n"
-        f"- **The labs face real commoditization pressure.** 900M people use "
-        f"ChatGPT weekly but only 5 to 6% pay, frontier scores have converged, "
+        f"- **The labs face real commoditization pressure.** 900M to 1B people "
+        f"use ChatGPT weekly but only 5 to 6% pay, frontier scores have converged, "
         f"cheap Chinese open-weight models (DeepSeek, Qwen, Kimi) are closing "
         f"the gap at a fraction of the price, and switching costs at the API are "
         f"near zero. The labs that stay more than low-margin utilities will be "
@@ -247,8 +262,8 @@ with tab_overview:
     st.markdown("##### Spend & demand (downstream)")
     d1, d2, d3, d4 = st.columns(4)
     d1.metric(f"Big-5 total capex FY{YR}", f"${total_now:,.0f}B", f"{yoy:+.0f}% YoY")
-    d2.metric("Big-5 2026E guidance", f"${guide26:,.0f}B",
-              f"+{(guide26/total_now-1)*100:.0f}% vs FY25")
+    d2.metric("Big-5 capex FY2026E", f"${CAPEX_FC:,.0f}B",
+              f"+{(CAPEX_FC/total_now-1)*100:.0f}% vs FY25")
     d3.metric(f"Capex CAGR FY{first_yr}-{YR}", f"{cagr*100:.0f}%/yr",
               "AI-era acceleration")
     d4.metric("NeoCloud backlog (CoreWeave)", "~$104B", "Q2 2026")
@@ -539,8 +554,9 @@ with tab_foundry:
         "share gains; both cut capex in 2025 while TSMC raised it.\n"
         "- **The chokepoint is CoWoS advanced packaging**, the step that mounts "
         "the processor and its memory chips side by side on a single base so "
-        "they sit close enough to talk at full speed. Capacity grew roughly "
-        "10x since 2023 and is still fully booked, with overflow going to "
+        "they sit close enough to talk at full speed. Capacity grew about 5.5x "
+        "from 2023 to 2025, is set to reach about 9x by end-2026 and is still "
+        "fully booked, with overflow going to "
         "outsourced assembly and test firms (ASE, Amkor).\n"
         "- **Whoever controls packaging allocation decides which AI chips "
         "ship**, which gives this single process step strategic weight far "
@@ -587,7 +603,8 @@ with tab_foundry:
     k1, k2, k3 = st.columns(3)
     k1.metric("CoWoS capacity 2025", f"{cowos25:.0f}k wpm", "~2× vs 2024")
     k2.metric("CoWoS 2026E", f"{cowos26_lo:.0f}-{cowos26_hi:.0f}k wpm", "fully booked")
-    k3.metric("Growth 2023→2026E", "~10×", "still supply-short")
+    cowos23 = float(cowos.loc[cowos.year == 2023, "cowos_kwpm"].iloc[0])
+    k3.metric("Growth 2023→2026E", f"~{cowos26/cowos23:.0f}×", "still supply-short")
 
     st.markdown("#### TSMC CoWoS capacity (k wafers/month)")
     cf = cowos.copy()
@@ -600,8 +617,10 @@ with tab_foundry:
     st.plotly_chart(figc, width="stretch")
 
     st.caption(
-        "**Sources:** TrendForce.  \n**Notes:** CoWoS capacity has risen roughly 10x since "
-        "2023 and remains sold out; it is about 7-9% of TSMC revenue.")
+        "**Sources:** TrendForce.  \n**Notes:** CoWoS capacity rose about 5.5x "
+        "from 2023 to 2025 and reaches about 9x on the 2026 midpoint (the bar "
+        "range spans 6x to 11x); it remains sold out and is about 7-9% of TSMC "
+        "revenue.")
 
 # --------------------------------------------------------------------------- #
 # 3 · Systems
@@ -691,7 +710,8 @@ with tab_network:
         "- **The revenue base is moving from carriers to hyperscalers.** US "
         "carrier capex guidance for 2026 sits near \\$50B with no 6G cycle "
         "ahead, so vendors selling to telecoms face a flat market while "
-        "hyperscaler-facing vendors ride a budget that doubled in two years; "
+        "hyperscaler-facing vendors ride a budget that grew about 2.5x in two "
+        "years; "
         "Arista's quadrupling and Ericsson's decline track that divide.\n"
         "- **Optics and switch-ASIC supply are the layer's bottlenecks** as "
         "training spreads across sites and rack power density rises.")
@@ -849,8 +869,10 @@ with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
         "- **Five companies are spending at a scale with few precedents:** "
-        "about \\$379B of capex in FY2025 and roughly \\$790B guided for 2026, "
-        "more than global upstream oil and gas investment.\n"
+        f"about \\${total_now:,.0f}B of capex in FY2025, about "
+        f"\\${CAPEX_FC:,.0f}B in fiscal 2026 and around "
+        f"\\${CAPEX_CONSENSUS_B/1000:.0f}T expected for 2027, more than global "
+        "upstream oil and gas investment.\n"
         "- **Microsoft, Alphabet, Amazon, Meta and Oracle are the demand pull "
         "behind every upstream layer:** their orders set accelerator volumes, "
         "packaging allocation and the gigawatt pipeline.\n"
@@ -858,16 +880,18 @@ with tab_hyper:
         "cash flow at Oracle (102% in FY2025) and nearly so at Amazon (94%), "
         "and the group issued \\$121B of bonds in 2025, four times the "
         "five-year average.\n"
-        "- **Capex intensity has reached 30 to 75% of revenue** for businesses "
-        "that were asset-light a decade ago, and returns are starting to feel "
+        "- **Capex has doubled as a share of revenue since 2023**, from 9 to "
+        "20% to 18 to 37% in FY2025 (Oracle reached 83% in its year to May "
+        "2026), for businesses that were asset-light a decade ago, and returns "
+        "are starting to feel "
         "it: hyperscaler ROCE is still about three times the telecom level but "
         "ticked down in 2025 as capital employed surged. How far it compresses "
         "as the 2025-26 capex depreciates is the central question for the "
         "whole chain.")
     st.markdown("---")
 
-    st.caption("**Notes:** all figures are total reported capex; no AI-share is "
-               "applied.")
+    st.caption("**Notes:** actuals are total reported capex with no AI share "
+               "applied; hatched bars are forecasts.")
     g = view.sort_values(["company", "fiscal_year"]).copy()
     g["yoy_%"] = g.groupby("company")["capex_usd_b"].pct_change() * 100
     # One stacking order for both capex charts: largest spender in the latest
@@ -880,11 +904,8 @@ with tab_hyper:
     colA, colB = st.columns(2)
     with colA:
         st.markdown("**Annual capex with 2026-27 outlook (\\$B)**")
-        fc_year = int(guidance["year"].iloc[0])          # 2026
-        cons_year = fc_year + 1                          # 2027
-        # Aggregate 2027 consensus (Moody's, Goldman, BofA all near $1T). Shown
-        # as one total bar: no company-level split is published.
-        CAPEX_CONSENSUS_B = 1000.0
+        fc_year = FC_YEAR                                # 2026
+        cons_year = fc_year + 1                          # 2027, aggregate only
         hist = capex[capex["fiscal_year"] <= fc_year]
         fig2 = go.Figure()
         totals = {}
@@ -929,7 +950,8 @@ with tab_hyper:
             "**Notes:** hatched bars are forecasts. Microsoft and Oracle have "
             "already closed fiscal 2026, so their 2026 bars are actuals; "
             "Alphabet, Amazon and Meta show guidance midpoints. That puts 2026 "
-            "near \\$730B, below the \\$788B guidance total, because "
+            f"at about \\${CAPEX_FC:,.0f}B, below the \\${GUIDE_SUM:,.0f}B "
+            "guidance total, because "
             "Microsoft's \\$175B guide is for calendar 2026 and includes "
             "finance leases. 2027 is an aggregate with no company split.")
     with colB:
@@ -1101,7 +1123,7 @@ with tab_hyper:
     figg.update_layout(barmode="group", height=360, legend_title="",
                        yaxis_title="Capex ($B)", hovermode="x unified")
     st.plotly_chart(figg, width="stretch")
-    st.metric("Big-5 2026E capex (sum of midpoints)",
+    st.metric("Big-5 2026 guidance (sum of midpoints)",
               f"${gtbl['capex_mid_b'].sum():,.0f}B",
               f"+{(gtbl['capex_mid_b'].sum()/actual25.sum()-1)*100:.0f}% vs FY25 actual")
     st.dataframe(
@@ -1123,8 +1145,10 @@ with tab_hyper:
         "useful life of data centers from 15 to 25 years reclassifies more "
         "leases as operating, which sits outside reported capex; on the prior "
         "basis the Big-5 total is nearer \\$800B. Oracle is the actual for its "
-        "fiscal year ended May 2026; it guides about \\$70B net cash capex for "
-        "FY2027.")
+        "fiscal year ended May 2026 and guides \\$90-95B for FY2027. The "
+        f"annual chart above shows about \\${CAPEX_FC:,.0f}B for 2026 rather "
+        f"than this \\${GUIDE_SUM:,.0f}B, because it uses Microsoft's reported "
+        "fiscal-2026 actual (year to June) on the same basis as earlier years.")
 
     st.markdown("---")
     st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
@@ -1172,11 +1196,12 @@ with tab_neo:
         "secured against the chips themselves, and suppliers often provide the "
         "lease guarantees or credit that make the buildout possible. What is "
         "really being sold is access to scarce accelerators, packaged as rent.\n"
-        "- **The specialists went from niche to well over \\$100B of contracted "
-        "backlog each in about two years.** CoreWeave and Nebius are listed, "
-        "Crusoe and Lambda are private, and Nscale filed for a New York listing "
-        "in September 2026 at a \\$30-35B target, up from \\$14.6B at its last "
-        "private round, on about \\$103B of total contract value.\n"
+        "- **The specialists went from niche to large contracted backlogs in "
+        "about two years:** about \\$104B at CoreWeave, \\$103B at Nscale and "
+        "\\$45B at Nebius. CoreWeave and Nebius are listed, Crusoe and Lambda "
+        "are private, and Nscale filed for a New York listing in September "
+        "2026 at a \\$30-35B target, up from \\$14.6B at its last private "
+        "round.\n"
         "- **The economics behind those backlogs are still deeply negative.** "
         "Nscale's prospectus shows \\$140.6M of revenue in the first half of "
         "2026 against a \\$1.02B net loss, so the loss ran about seven times "
@@ -1253,11 +1278,12 @@ with tab_labs:
         "runs at roughly 40 to 50% gross margin (industry estimates), but "
         "training the next model still costs more than the labs earn, so the "
         "loss sits in the model roadmap rather than in unit economics.\n"
-        "- **Usage is broad but shallow:** 900M people use ChatGPT weekly, yet "
-        "only about 5 to 6% pay and under 10% of US adults use generative AI "
-        "daily.\n"
-        "- **Frontier capability has converged**, with benchmark leaders "
-        "clustered in the low 90s on GPQA-Diamond and no clear network effects "
+        "- **Usage is broad but shallow:** 900M to 1B people use ChatGPT "
+        "weekly, yet only about 5 to 6% pay, and while about 55% of US adults "
+        "have tried generative AI, only about 12% use it every workday.\n"
+        "- **Frontier capability has converged**, with the leading labs within "
+        "about six points of each other (88 to 94) on GPQA-Diamond and no clear "
+        "network effects "
         "at the model layer.\n"
         "- **Cheap Chinese open-weight models are the sharp edge of "
         "commoditization:** DeepSeek, Alibaba's Qwen, Zhipu's GLM and Moonshot's "
@@ -1402,7 +1428,7 @@ with tab_labs:
 
     st.caption(
         "**Notes:** revenue is concentrating in Anthropic and OpenAI while "
-        "benchmark scores converge in the 90s; lab revenue and multi-year "
+        "benchmark scores converge around 90; lab revenue and multi-year "
         "compute commitments are the demand that underwrites the capex stack.")
 
     st.markdown("#### Notable compute-commitment signals")
@@ -1629,14 +1655,13 @@ with tab_telco:
         f"of {DATA_UPDATED}.")
 
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
-    guide_total = float(guidance["capex_mid_b"].sum())
 
     k1, k2, k3 = st.columns(3)
     k1.metric("Global telecom capex 2024", "~$295B", "lowest since 2011")
     k2.metric("Big-5 hyperscaler capex 2025", f"${hyp_year.loc[2025]:.0f}B",
               "overtook telecom")
-    k3.metric("Big-5 2026E", f"${guide_total:.0f}B",
-              f"~{guide_total/295:.1f}x global telecom")
+    k3.metric("Big-5 FY2026E", f"${CAPEX_FC:.0f}B",
+              f"~{CAPEX_FC/295:.1f}x global telecom")
 
     st.markdown("#### Capex: hyperscalers vs telecoms (\\$B)")
     tc = telco_capex.copy()
@@ -1657,8 +1682,8 @@ with tab_telco:
         name="Big-5 hyperscaler capex", mode="lines+markers",
         line=dict(color=BLUE, width=3)))
     figt.add_trace(go.Scatter(
-        x=[2025, 2026], y=[float(hyp_year.loc[2025]), guide_total],
-        name="Big-5 hyperscaler capex (guidance)", mode="lines+markers",
+        x=[2025, FC_YEAR], y=[float(hyp_year.loc[2025]), CAPEX_FC],
+        name="Big-5 hyperscaler capex (2026E)", mode="lines+markers",
         line=dict(color=BLUE, width=3, dash="dot")))
     figt.update_layout(height=380, hovermode="x unified", legend_title="",
                        yaxis_title="Capex ($B)", xaxis_title="Year")
@@ -1666,9 +1691,10 @@ with tab_telco:
     st.caption(
         "**Sources:** MTN Consulting (telecom); company filings (hyperscaler).  \n"
         "**Notes:** telecom is global industry capex, 2025-26 assumes the "
-        "flat-to-declining path continues; hyperscaler is the Big-5, 2026 the "
-        "guidance midpoint. Dotted segments are forecasts. The lines crossed in "
-        "2025 and the gap roughly doubles in 2026.")
+        "flat-to-declining path continues; hyperscaler is the Big-5 on the same "
+        "2026 basis as the Hyperscalers tab. Dotted segments are forecasts. The "
+        "lines crossed in 2025, and by 2026 hyperscaler capex is about "
+        f"{CAPEX_FC/295:.1f} times global telecom capex.")
 
     st.markdown("#### US carriers: capex and revenue, with 2026 guidance (\\$B)")
     tc1, tc2 = st.columns(2)
