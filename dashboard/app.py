@@ -106,15 +106,16 @@ YR = int(_per_year[_per_year == capex["company"].nunique()].index.max())
 # Capex outlook, single source for every chart and sentence that describes the
 # trajectory. Same fiscal-year basis as the reported history: a company whose
 # fiscal 2026 has closed (Microsoft Jun, Oracle May) uses its actual, the rest
-# their guidance midpoint. Company guidance itself sums higher (GUIDE_SUM),
-# because Microsoft guides calendar 2026 including finance leases.
+# their guidance midpoint.
 FC_YEAR = int(guidance["year"].iloc[0])
 _closed = capex[capex["fiscal_year"] == FC_YEAR].set_index("company")["capex_usd_b"]
 CAPEX_FC = float(sum(_closed.get(co, mid) for co, mid
                      in zip(guidance["company"], guidance["capex_mid_b"])))
-GUIDE_SUM = float(guidance["capex_mid_b"].sum())
 # 2027 aggregate consensus (Moody's, Goldman, BofA all near $1T); no company split
 CAPEX_CONSENSUS_B = 1000.0
+# Free cash flow by basket and year (built by model/build_fcf_transfer.py)
+_fcf = fcf_transfer.pivot(index="year", columns="group", values="fcf_b")
+HYP_FCF, SEMI_FCF = _fcf["Hyperscalers"], _fcf["Semiconductors"]
 
 BLUE, GREEN, YELLOW, RED, GREY = "#4285F4", "#34A853", "#FBBC04", "#EA4335", "#9aa0a6"
 PURPLE = "#9334E6"
@@ -186,9 +187,11 @@ with tab_overview:
         f"capex (Microsoft, Alphabet, Amazon, Meta, Oracle) rises from "
         f"**\\${total_now:,.0f}B** in FY2025 to **\\${CAPEX_FC:,.0f}B** in "
         f"fiscal 2026 and around **\\${CAPEX_CONSENSUS_B/1000:.0f}T** in 2027, "
-        f"above global upstream oil and gas investment (about \\$570B). It "
-        f"already absorbs 47 to 102% of operating cash flow, and free cash flow "
-        f"turns negative in 2026. The group issued \\$121B of bonds in 2025, "
+        f"above global upstream oil and gas investment (about \\$570B). Free "
+        f"cash flow falls from \\${HYP_FCF[2024]:.0f}B in 2024 to about "
+        f"\\${HYP_FCF[2026]:.0f}B in fiscal 2026 and turns negative in 2027; "
+        f"Oracle's capex already reached 174% of its operating cash flow. The "
+        f"group issued \\$121B of bonds in 2025, "
         f"four times its five-year average, and Alphabet raised about \\$85B of "
         f"equity after its first negative free-cash-flow quarter since listing.\n"
         f"- **Each shortage becomes the next layer's cost and its supplier's "
@@ -227,7 +230,7 @@ with tab_overview:
         f"- **Integrators win deployment work while AI shrinks their "
         f"labor-based model.** The market began pricing this in mid-2026, when "
         f"Accenture, IBM and the Indian IT majors fell on AI-related guidance, "
-        f"and TCS revenue fell 2.4% in constant currency in its latest year.\n"
+        f"and TCS revenue declined in its latest fiscal year.\n"
         f"- **Integrated incumbents will be harder to displace than carriers "
         f"were.** Every layer is racing to own distribution, data and customer "
         f"lock-in, and today's leaders produce the intelligence itself and "
@@ -289,9 +292,11 @@ with tab_overview:
                         xaxis_tickangle=-30, margin=dict(t=80))
     st.plotly_chart(figrl, width="stretch")
     st.caption(
-        "**Sources:** company filings (EDGAR XBRL); Anthropic run-rate via Epoch "
-        "AI.  \n**Notes:** aggregate ROCE (combined operating income over combined "
-        "capital employed), so larger players carry more weight; the 8-11% band "
+        "**Sources:** company filings (EDGAR XBRL); lab run-rates via Bloomberg "
+        "and Epoch AI.  \n**Notes:** aggregate ROCE for the latest fiscal year "
+        "(combined operating income over combined capital employed), so larger "
+        "players carry more weight; the Telecoms and Hyperscalers tabs show the "
+        "same measure over time. The 8-11% band "
         "is a common cost-of-capital reference. Returns concentrate in the "
         "asset-light layers and thin where capital sits without pricing power; "
         "foundry is the exception, carried by TSMC's scarcity pricing. The "
@@ -825,10 +830,11 @@ with tab_hyper:
         "fiscal 2026, above global upstream oil and gas investment. These orders "
         "set accelerator volumes, packaging allocation and the gigawatt "
         "pipeline for every layer upstream.\n"
-        "- **They increasingly fund capex with debt and equity.** Capex exceeded "
-        "operating cash flow at Oracle (102% in FY2025) and nearly did at Amazon "
-        "(94%); the group issued \\$121B of bonds in 2025, four times its "
-        "five-year average, and Alphabet raised about \\$85B of equity.\n"
+        "- **They increasingly fund capex with debt and equity.** Capex reached "
+        "174% of operating cash flow at Oracle in its year to May 2026 and 94% "
+        "at Amazon in 2025; the group issued \\$121B of bonds in 2025, four "
+        "times its five-year average, and Alphabet raised about \\$85B of "
+        "equity.\n"
         "- **Capex has doubled as a share of revenue since 2023**, from 9-20% "
         "to 18-37% in FY2025 (Oracle reached 83% in its year to May 2026), for "
         "businesses that were asset-light a decade ago.\n"
@@ -897,11 +903,8 @@ with tab_hyper:
             "consensus (Moody's, Goldman, BofA).  \n"
             "**Notes:** hatched bars are forecasts. Microsoft and Oracle have "
             "already closed fiscal 2026, so their 2026 bars are actuals; "
-            "Alphabet, Amazon and Meta show guidance midpoints. That puts 2026 "
-            f"at about \\${CAPEX_FC:,.0f}B, below the \\${GUIDE_SUM:,.0f}B "
-            "guidance total, because "
-            "Microsoft's \\$175B guide is for calendar 2026 and includes "
-            "finance leases. 2027 is an aggregate with no company split.")
+            "Alphabet, Amazon and Meta show guidance midpoints. 2027 is an "
+            "aggregate with no company split.")
     with colB:
         st.markdown("**YoY capex growth (%)**")
         fig3 = px.bar(
@@ -941,12 +944,15 @@ with tab_hyper:
                        legend_traceorder="reversed",
                        yaxis_range=[0, q_tot.max() * 1.15])
     st.plotly_chart(figq, width="stretch")
+    cal25 = qv.loc[qv["period_end"].dt.year == 2025, "capex_b"].sum()
     st.caption(
-        "**Sources:** 10-Q and 10-K filings (SEC EDGAR XBRL).  \n**Notes:** quarterly cash "
-        "purchases of PP&E; 10-Q figures are year-to-date, so quarters are "
-        "derived by differencing and sum exactly to annual totals. Shown from "
-        "Q1 2023, by the calendar quarter each fiscal quarter ends (Microsoft "
-        f"and Oracle offset). Data as of {DATA_UPDATED}.")
+        "**Sources:** 10-Q and 10-K filings (SEC EDGAR XBRL).  \n**Notes:** "
+        "quarterly cash purchases of PP&E, derived from year-to-date 10-Q "
+        "figures; each company's quarters sum exactly to its fiscal-year total. "
+        "Bars group quarters by the calendar quarter they end in, so calendar "
+        f"2025 sums to \\${cal25:,.0f}B against \\${total_now:,.0f}B for fiscal "
+        "2025 in the annual chart: Microsoft's and Oracle's fiscal years end "
+        f"mid-year. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### How the capex is funded: capex vs operating cash flow")
@@ -970,10 +976,13 @@ with tab_hyper:
         "capex_pct_ocf", ascending=False)
     ratio_line = ", ".join(
         f"{r.company} {r.capex_pct_ocf:.0f}%" for r in fy25.itertuples())
+    fy26 = fund[fund["fiscal_year"] == FC_YEAR]
+    ratio26 = " and ".join(f"{r.company} {r.capex_pct_ocf:.0f}%"
+                           for r in fy26.itertuples())
     st.caption(
         "**Sources:** 10-K filings (EDGAR XBRL), Janus Henderson, Wolf Street.  \n"
-        f"**Notes:** FY2025: {ratio_line}. Oracle already outspends its operations "
-        "and Amazon is close; the group issued \\$121B of bonds in 2025 (4x the "
+        f"**Notes:** FY2025: {ratio_line}. Fiscal 2026, closed so far: "
+        f"{ratio26}. The group issued \\$121B of bonds in 2025 (4x the "
         "\\$28B five-year average) incl. Meta's \\$30B and an Alphabet 100-year "
         f"bond, at sub-5% rates. Data as of {DATA_UPDATED}.")
 
@@ -1005,20 +1014,20 @@ with tab_hyper:
                         yaxis_title="Free cash flow ($B)", xaxis_title="Fiscal year")
     st.plotly_chart(figft, width="stretch")
     st.caption(
-        "**Sources:** company 10-K and 10-Q filings (EDGAR XBRL); 2026 capex "
-        "from guidance, 2027 capex from consensus (Moody's, Goldman, BofA); "
-        "Broadcom 2027 from its own line of sight; framing after BofA Global "
-        "Research.  \n"
-        "**Notes:** free cash flow (operating cash flow minus capex) per basket "
-        "by fiscal year; solid is reported, dotted is 2026-27E. Hyperscaler FCF "
-        "peaked at \\$246B (2024) and turns deeply negative by 2027 as capex "
-        "nears \\$1T (Alphabet and Oracle already negative in 2026). Chipmaker "
-        "FCF reaches about \\$209B in 2026, a figure now mostly reported "
-        "(NVIDIA and Micron full years, nine months of Broadcom and Applied "
-        "Materials), and about \\$340B in 2027. Memory is the surprise: "
-        "Micron went from \\$2B of FCF to \\$59B in a year. Forward years "
-        "are estimates; "
-        f"fiscal years are not calendar-aligned across baskets. Data as of {DATA_UPDATED}.")
+        "**Sources:** company 10-K and 10-Q filings (EDGAR XBRL); 2026 capex as "
+        "in the annual chart; 2027 capex from consensus (Moody's, Goldman, "
+        "BofA); NVIDIA FY2028 from its 70% growth guidance; Broadcom 2027 from "
+        "its own line of sight; framing after BofA Global Research.  \n"
+        "**Notes:** free cash flow is operating cash flow minus capex; solid is "
+        "reported, dotted is 2026-27E. Hyperscaler FCF falls from "
+        f"\\${HYP_FCF[2024]:.0f}B (2024) to about \\${HYP_FCF[2026]:.0f}B in "
+        "fiscal 2026, with Oracle and Amazon negative, and to about "
+        f"\\${HYP_FCF[2027]:.0f}B in 2027 as capex nears \\$1T. Chipmaker FCF "
+        f"rises from \\${SEMI_FCF[2025]:.0f}B (2025) to about "
+        f"\\${SEMI_FCF[2026]:.0f}B in 2026 and \\${SEMI_FCF[2027]:.0f}B in 2027, "
+        "led by NVIDIA and Micron. Hyperscalers use fiscal years; chipmakers "
+        "use the calendar year each fiscal year mostly covers, as in the "
+        f"Silicon tab. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### Does the capex still earn its keep? ROCE over time")
@@ -1049,54 +1058,65 @@ with tab_hyper:
         f"on retail and broader software mix. Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
-    st.markdown("#### 2026 forward guidance")
+    st.markdown("#### 2026 outlook by company")
     st.caption(
-        "**Notes:** guidance is a broader basis (total capex incl. finance leases) "
-        "than the cash-PP&E actuals above, so it is a separate series; ranges "
-        "are company guidance, markers are midpoints.")
+        "**Notes:** same basis as the annual chart: the reported actual where a "
+        "company's fiscal 2026 has closed (Microsoft, Oracle), otherwise the "
+        "guidance midpoint, with the guided range shown as an error bar.")
     actual25 = view[view["fiscal_year"] == 2025].set_index("company")["capex_usd_b"]
+    closed26 = capex[capex["fiscal_year"] == FC_YEAR].set_index("company")["capex_usd_b"]
     gtbl = guidance.copy()
+    is_act = gtbl["company"].isin(closed26.index)
+    for col in ("capex_low_b", "capex_mid_b", "capex_high_b"):
+        gtbl[col] = gtbl[col].where(~is_act, gtbl["company"].map(closed26))
     gtbl["fy2025_actual_b"] = gtbl["company"].map(actual25)
-    gtbl["implied_growth_%"] = (gtbl["capex_mid_b"] / gtbl["fy2025_actual_b"] - 1) * 100
+    gtbl["growth_%"] = (gtbl["capex_mid_b"] / gtbl["fy2025_actual_b"] - 1) * 100
+    gtbl["basis"] = is_act.map({True: "FY2026 actual", False: "Guidance midpoint"})
+    act_note = {
+        "Microsoft": "Year to June 2026; separately guides $175B for calendar "
+                     "2026, incl. finance leases",
+        "Oracle": "Year to May 2026; guides $90-95B for FY2027"}
+    gtbl["note"] = [act_note.get(c, d) for c, d
+                    in zip(gtbl["company"], gtbl["definition"])]
+    gtbl["source"] = gtbl["source"].where(~is_act, "10-K (EDGAR XBRL)")
+    gtbl = gtbl.set_index("company").loc[stack_order].reset_index()
 
     figg = go.Figure()
     figg.add_trace(go.Bar(x=gtbl["company"], y=gtbl["fy2025_actual_b"],
-                          name="FY2025 actual (cash PP&E)", marker_color=GREY))
+                          name="FY2025 actual", marker_color=GREY))
     figg.add_trace(go.Bar(
         x=gtbl["company"], y=gtbl["capex_mid_b"],
-        name="2026E guidance (midpoint, total capex)", marker_color=BLUE,
+        name="FY2026 (hatched = guidance midpoint)", marker_color=BLUE,
+        marker_pattern_shape=["" if b == "FY2026 actual" else "/"
+                              for b in gtbl["basis"]],
         error_y=dict(type="data", symmetric=False,
                      array=gtbl["capex_high_b"] - gtbl["capex_mid_b"],
                      arrayminus=gtbl["capex_mid_b"] - gtbl["capex_low_b"])))
     figg.update_layout(barmode="group", height=360, legend_title="",
                        yaxis_title="Capex ($B)", hovermode="x unified")
     st.plotly_chart(figg, width="stretch")
-    st.metric("Big-5 2026 guidance (sum of midpoints)",
-              f"${gtbl['capex_mid_b'].sum():,.0f}B",
-              f"+{(gtbl['capex_mid_b'].sum()/actual25.sum()-1)*100:.0f}% vs FY25 actual")
+    st.metric("Big-5 capex FY2026E", f"${gtbl['capex_mid_b'].sum():,.0f}B",
+              f"+{(gtbl['capex_mid_b'].sum()/actual25.sum()-1)*100:.0f}% vs FY25")
     st.dataframe(
         gtbl[["company", "fy2025_actual_b", "capex_low_b", "capex_mid_b",
-              "capex_high_b", "implied_growth_%", "definition", "source"]].rename(
-            columns={"company": "Company", "fy2025_actual_b": "FY25 actual $B",
-                     "capex_low_b": "26E low", "capex_mid_b": "26E mid",
-                     "capex_high_b": "26E high", "implied_growth_%": "Growth %",
-                     "definition": "Definition", "source": "Source"}).style.format({
-            "FY25 actual $B": "{:.1f}", "26E low": "{:.0f}", "26E mid": "{:.0f}",
-            "26E high": "{:.0f}", "Growth %": "{:+.0f}"}),
+              "capex_high_b", "growth_%", "basis", "note", "source"]].rename(
+            columns={"company": "Company", "fy2025_actual_b": "FY25 $B",
+                     "capex_low_b": "FY26 low", "capex_mid_b": "FY26 mid",
+                     "capex_high_b": "FY26 high", "growth_%": "Growth %",
+                     "basis": "Basis", "note": "Note",
+                     "source": "Source"}).style.format({
+            "FY25 $B": "{:.1f}", "FY26 low": "{:.0f}", "FY26 mid": "{:.0f}",
+            "FY26 high": "{:.0f}", "Growth %": "{:+.0f}"}),
         width="stretch", hide_index=True)
     st.caption(
-        "**Notes:** part of the jump is definitional (guidance includes finance "
-        "leases), and memory inflation absorbs some of it (Microsoft flagged "
-        "about \\$25B, Amazon raised by \\$20B on memory alone), so higher capex "
-        "is not one-to-one more compute. Microsoft's cut from \\$190B to \\$175B "
-        "is an accounting change rather than a smaller plan: extending the "
-        "useful life of data centers from 15 to 25 years reclassifies more "
-        "leases as operating, which sits outside reported capex; on the prior "
-        "basis the Big-5 total is nearer \\$800B. Oracle is the actual for its "
-        "fiscal year ended May 2026 and guides \\$90-95B for FY2027. The "
-        f"annual chart above shows about \\${CAPEX_FC:,.0f}B for 2026 rather "
-        f"than this \\${GUIDE_SUM:,.0f}B, because it uses Microsoft's reported "
-        "fiscal-2026 actual (year to June) on the same basis as earlier years.")
+        "**Notes:** memory inflation absorbs part of the increase (Microsoft "
+        "flagged about \\$25B, Amazon added \\$20B on memory alone), so higher "
+        "capex is not one-to-one more compute. Meta's guidance includes "
+        "finance-lease payments, a slightly broader basis than the cash actuals. "
+        "Microsoft trimmed its calendar-2026 guide from \\$190B to \\$175B through "
+        "an accounting change, with the plan itself unchanged: a longer useful "
+        "life for data centers (15 to 25 years) moves more leases to operating "
+        "treatment, outside reported capex.")
 
     st.markdown("---")
     st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
@@ -1397,9 +1417,10 @@ with tab_si:
         "crowded out software and services budgets, and TCS and Infosys sold "
         "off.\n"
         "- **The pressure lands first on the most standardized work.** TCS "
-        "revenue fell 2.4% in constant currency in its year to March 2026, while "
-        "Accenture, weighted to higher-end transformation work, grew 5% in its "
-        "year to August 2026 and guides 3 to 6% for FY2027.")
+        "revenue fell 0.5% in dollars (2.4% in constant currency) in its year "
+        "to March 2026, while Accenture, weighted to higher-end transformation "
+        "work, grew 6% in dollars (5% in local currency) in its year to August "
+        "2026 and guides 3 to 6% for FY2027.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -1546,7 +1567,9 @@ with tab_telco:
         "**Sources:** 10-K and 20-F filings (SEC EDGAR XBRL); Deutsche Telekom and "
         "BT approximated from annual reports (neither files with the SEC "
         "today).  \n**Notes:** ROCE is operating income over capital employed, "
-        "averaged over the years shown. Only Verizon and BT reach the top of "
+        "averaged over the years shown, so it can differ from the latest-year "
+        "figure on the Overview (AT&T averages 4% because of 2022 impairments, "
+        "against about 7% in 2025). Only Verizon and BT reach the top of "
         "the 6-8% band; the sector earned roughly its cost of capital across "
         "the 5G buildout. One-offs distort single years but averages wash most "
         "out.")
