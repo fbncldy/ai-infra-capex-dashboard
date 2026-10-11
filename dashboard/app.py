@@ -876,9 +876,15 @@ with tab_hyper:
         st.markdown("**Reported annual capex (\\$B)**")
         fig2 = px.bar(
             g, x="fiscal_year", y="capex_usd_b", color="company",
-            barmode="group", color_discrete_map=COMPANY_COLORS,
+            barmode="stack", color_discrete_map=COMPANY_COLORS,
             labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)"})
-        fig2.update_layout(height=360, hovermode="x unified", legend_title="")
+        ann_tot = g.groupby("fiscal_year")["capex_usd_b"].sum()
+        fig2.add_trace(go.Scatter(
+            x=ann_tot.index, y=ann_tot.values, mode="text",
+            text=[f"${v:,.0f}B" for v in ann_tot.values],
+            textposition="top center", showlegend=False, hoverinfo="skip"))
+        fig2.update_layout(height=360, hovermode="x unified", legend_title="",
+                           yaxis_range=[0, ann_tot.max() * 1.15])
         st.plotly_chart(fig2, width="stretch")
     with colB:
         st.markdown("**YoY capex growth (%)**")
@@ -894,21 +900,29 @@ with tab_hyper:
     qv = capex_q.copy()
     qv["period_end"] = pd.to_datetime(qv["period_end"])
     qv["capex_b"] = qv["capex_usd_m"] / 1000.0
+    qv = qv[qv["period_end"] >= "2023-01-01"]
     qv["quarter"] = (qv["period_end"].dt.year.astype(str) + " Q" +
                      qv["period_end"].dt.quarter.astype(str))
+    qv = qv.sort_values("period_end")
     figq = px.bar(
-        qv.sort_values("period_end"), x="quarter", y="capex_b",
-        color="company", barmode="group", color_discrete_map=COMPANY_COLORS,
+        qv, x="quarter", y="capex_b",
+        color="company", barmode="stack", color_discrete_map=COMPANY_COLORS,
         labels={"quarter": "Calendar quarter of period end",
                 "capex_b": "Capex ($B)"})
-    figq.update_layout(height=380, hovermode="x unified", legend_title="")
+    q_tot = qv.groupby("quarter", sort=False)["capex_b"].sum()
+    figq.add_trace(go.Scatter(
+        x=q_tot.index, y=q_tot.values, mode="text",
+        text=[f"${v:,.0f}B" for v in q_tot.values],
+        textposition="top center", showlegend=False, hoverinfo="skip"))
+    figq.update_layout(height=380, hovermode="x unified", legend_title="",
+                       yaxis_range=[0, q_tot.max() * 1.15])
     st.plotly_chart(figq, width="stretch")
     st.caption(
         "**Sources:** 10-Q and 10-K filings (SEC EDGAR XBRL).  \n**Notes:** quarterly cash "
         "purchases of PP&E; 10-Q figures are year-to-date, so quarters are "
-        "derived by differencing and sum exactly to annual totals. Grouped by "
-        "the calendar quarter each fiscal quarter ends (Microsoft and Oracle "
-        f"offset). Data as of {DATA_UPDATED}.")
+        "derived by differencing and sum exactly to annual totals. Shown from "
+        "Q1 2023, by the calendar quarter each fiscal quarter ends (Microsoft "
+        f"and Oracle offset). Data as of {DATA_UPDATED}.")
 
     st.markdown("---")
     st.markdown("#### How the capex is funded: capex vs operating cash flow")
