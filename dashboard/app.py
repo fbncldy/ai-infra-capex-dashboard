@@ -879,21 +879,59 @@ with tab_hyper:
 
     colA, colB = st.columns(2)
     with colA:
-        st.markdown("**Reported annual capex (\\$B)**")
-        fig2 = px.bar(
-            g, x="fiscal_year", y="capex_usd_b", color="company",
-            barmode="stack", color_discrete_map=COMPANY_COLORS,
-            category_orders={"company": stack_order},
-            labels={"fiscal_year": "Fiscal year", "capex_usd_b": "Capex ($B)"})
-        ann_tot = g.groupby("fiscal_year")["capex_usd_b"].sum()
+        st.markdown("**Annual capex with 2026-27 outlook (\\$B)**")
+        fc_year = int(guidance["year"].iloc[0])          # 2026
+        cons_year = fc_year + 1                          # 2027
+        # Aggregate 2027 consensus (Moody's, Goldman, BofA all near $1T). Shown
+        # as one total bar: no company-level split is published.
+        CAPEX_CONSENSUS_B = 1000.0
+        hist = capex[capex["fiscal_year"] <= fc_year]
+        fig2 = go.Figure()
+        totals = {}
+        for co in stack_order:
+            col = COMPANY_COLORS.get(co, GREY)
+            act = hist[hist["company"] == co].sort_values("fiscal_year")
+            fig2.add_trace(go.Bar(
+                x=act["fiscal_year"], y=act["capex_usd_b"], name=co,
+                marker_color=col, legendgroup=co))
+            for y_, v in zip(act["fiscal_year"], act["capex_usd_b"]):
+                totals[y_] = totals.get(y_, 0) + v
+            # Guidance midpoint only where the fiscal year has not closed yet
+            if fc_year not in set(act["fiscal_year"]):
+                mid = float(guidance.loc[guidance["company"] == co,
+                                         "capex_mid_b"].iloc[0])
+                fig2.add_trace(go.Bar(
+                    x=[fc_year], y=[mid], name=f"{co} (guidance midpoint)",
+                    marker_color=col, marker_pattern_shape="/",
+                    legendgroup=co, showlegend=False))
+                totals[fc_year] = totals.get(fc_year, 0) + mid
+        fig2.add_trace(go.Bar(
+            x=[cons_year], y=[CAPEX_CONSENSUS_B], name="Big-5 (consensus)",
+            marker_color=GREY, marker_pattern_shape="/", showlegend=False))
+        totals[cons_year] = CAPEX_CONSENSUS_B
+        tx = sorted(totals)
         fig2.add_trace(go.Scatter(
-            x=ann_tot.index, y=ann_tot.values, mode="text",
-            text=[f"${v:,.0f}B" for v in ann_tot.values],
+            x=tx, y=[totals[x] for x in tx], mode="text",
+            text=[f"~${totals[x]/1000:.1f}T" if x == cons_year
+                  else f"${totals[x]:,.0f}B" for x in tx],
             textposition="top center", showlegend=False, hoverinfo="skip"))
-        fig2.update_layout(height=360, hovermode="x unified", legend_title="",
-                           legend_traceorder="reversed",
-                           yaxis_range=[0, ann_tot.max() * 1.15])
+        fig2.update_xaxes(
+            tickmode="array", tickvals=tx,
+            ticktext=[f"{x}E" if x >= fc_year else str(x) for x in tx])
+        fig2.update_layout(barmode="stack", height=360, hovermode="x unified",
+                           legend_title="", legend_traceorder="reversed",
+                           yaxis_title="Capex ($B)", xaxis_title="Fiscal year",
+                           yaxis_range=[0, max(totals.values()) * 1.15])
         st.plotly_chart(fig2, width="stretch")
+        st.caption(
+            "**Sources:** 10-K filings (EDGAR XBRL); 2026 company guidance; 2027 "
+            "consensus (Moody's, Goldman, BofA).  \n"
+            "**Notes:** hatched bars are forecasts. Microsoft and Oracle have "
+            "already closed fiscal 2026, so their 2026 bars are actuals; "
+            "Alphabet, Amazon and Meta show guidance midpoints. That puts 2026 "
+            "near \\$730B, below the \\$788B guidance total, because "
+            "Microsoft's \\$175B guide is for calendar 2026 and includes "
+            "finance leases. 2027 is an aggregate with no company split.")
     with colB:
         st.markdown("**YoY capex growth (%)**")
         fig3 = px.bar(
@@ -913,6 +951,10 @@ with tab_hyper:
     qv = qv[qv["period_end"] >= "2023-01-01"]
     qv["quarter"] = (qv["period_end"].dt.year.astype(str) + " Q" +
                      qv["period_end"].dt.quarter.astype(str))
+    # Oracle's quarters close a month early, so a new quarter can briefly hold
+    # only Oracle; show a quarter only once every company has reported it.
+    qv = qv[qv.groupby("quarter")["company"].transform("nunique")
+            == capex_q["company"].nunique()]
     qv = qv.sort_values("period_end")
     figq = px.bar(
         qv, x="quarter", y="capex_b",
