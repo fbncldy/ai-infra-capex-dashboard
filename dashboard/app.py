@@ -516,7 +516,8 @@ with tab_foundry:
         st.plotly_chart(figfc, width="stretch")
     st.caption(
         "**Sources:** TSMC, Samsung, Intel results.  \n**Notes:** TSMC 2026E capex "
-        "guidance \\$52-56B; CoWoS is about 7-9% of TSMC revenue, with packaging "
+        "guidance \\$60-64B (reiterated in October); CoWoS is about 7-9% of TSMC "
+        "revenue, with packaging "
         "overflow going to ASE and Amkor.")
 
     cowos25 = float(cowos.loc[cowos.year == 2025, "cowos_kwpm"].iloc[0])
