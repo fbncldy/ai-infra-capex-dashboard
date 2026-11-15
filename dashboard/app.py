@@ -331,73 +331,6 @@ with tab_overview:
         "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
         f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
 
-    st.markdown("#### Value-chain map")
-    st.caption("The ten steps, upstream to downstream, and what each one does.")
-    vc_rows = [
-        ("1 · Silicon & IP",
-         "Designs the accelerators (the specialized chips, mostly NVIDIA GPUs,"
-         "that train and run AI models) and the high-bandwidth memory (HBM) "
-         "stacked beside them to feed data in fast enough. NVIDIA dominates "
-         "the chip design; HBM supply is the first hard limit on how many "
-         "chips can ship."),
-        ("2 · Foundry & Packaging",
-         "Manufactures and packages the chips. TSMC makes nearly all of them, "
-         "and its CoWoS advanced packaging is the single tightest physical "
-         "bottleneck in the chain."),
-        ("3 · Servers",
-         "Assembles accelerators, memory and networking into deployable racks. "
-         "Margins stay thin because the scarce input is priced by NVIDIA, "
-         "leaving system builders little pricing power."),
-        ("4 · Networking",
-         "Wires servers into clusters and links data centers to each other. The "
-         "one layer that sells into both the AI buildout upstream and the "
-         "carrier networks at the far end of the chain."),
-        ("5 · Data Centers",
-         "Houses, cools and powers the clusters. Power has become the binding "
-         "constraint ahead of capital or land, with grid connections taking 3 "
-         "to 5 years."),
-        ("6 · Hyperscalers",
-         "Operate the data centers and rent compute at scale. They are the "
-         "demand pull of the whole chain, funding the upstream buildout from "
-         "cash flow and, increasingly, debt."),
-        ("7 · NeoClouds",
-         "Specialist providers that rent GPUs alongside the hyperscalers, "
-         "financed largely by debt secured against the GPUs themselves and by "
-         "anchor-tenant backlogs."),
-        ("8 · AI Labs",
-         "Consume compute to train and serve models. Their multi-year compute "
-         "commitments are the contracts that underwrite the buildout below "
-         "them."),
-        ("9 · System Integrators",
-         "Deploy models into enterprises. A services-heavy channel and one of "
-         "the most measurable reads on real, paid adoption."),
-        ("10 · Telecoms",
-         "Distribute model output to users over fixed and mobile networks. "
-         "Essential to delivery, yet a decade of traffic growth shows the layer "
-         "captures little of the value it carries."),
-    ]
-    vc_html = [
-        "<table style='width:100%;border-collapse:collapse;font-size:0.92rem;"
-        "line-height:1.4;'>",
-        "<thead><tr>"
-        "<th style='text-align:left;padding:8px 12px;width:200px;"
-        "border-bottom:2px solid #c8ccd0;'>Step</th>"
-        "<th style='text-align:left;padding:8px 12px;"
-        "border-bottom:2px solid #c8ccd0;'>Role in the value chain</th>"
-        "</tr></thead><tbody>",
-    ]
-    for step, role in vc_rows:
-        vc_html.append(
-            "<tr>"
-            "<td style='padding:8px 12px;vertical-align:top;"
-            "border-bottom:1px solid #ebedf0;font-weight:600;'>"
-            f"{step}</td>"
-            "<td style='padding:8px 12px;vertical-align:top;"
-            f"border-bottom:1px solid #ebedf0;'>{role}</td>"
-            "</tr>")
-    vc_html.append("</tbody></table>")
-    st.markdown("".join(vc_html), unsafe_allow_html=True)
-
     st.markdown("#### Who is integrating across the chain")
     st.caption(
         "Where the major players sit and where they are pushing. The striking "
@@ -464,7 +397,9 @@ with tab_silicon:
         "Sales reached \\$792B in 2025 (+26%) and are forecast to pass \\$1T in "
         "2026. Past cycles turned every 3 to 4 years.\n"
         "- **The surge sits in compute and memory, the two most cyclical "
-        "segments.** Logic (where accelerators sit) and memory (including HBM) "
+        "segments.** Logic (home of accelerators, the specialized chips, mostly "
+        "NVIDIA GPUs, that train and run AI models) and memory (including "
+        "high-bandwidth memory, HBM, stacked beside them) "
         "drive the 2025-26 growth; analog, microcontrollers and discrete chips "
         "grow with the wider economy.\n"
         "- **NVIDIA dominates accelerators.** Data-center revenue was \\$194B "
@@ -475,8 +410,8 @@ with tab_silicon:
         "reported \\$16.7B of AI chip revenue in its July 2026 quarter (+221%), "
         "guides to about \\$58B for FY2026 and sees a path to \\$115B in "
         "FY2027.\n"
-        "- **Memory makers earn the most per dollar of revenue.** High-bandwidth "
-        "memory (HBM) is sold out through 2026 at SK Hynix (about 57% share), "
+        "- **Memory makers earn the most per dollar of revenue.** HBM is sold "
+        "out through 2026 at SK Hynix (about 57% share), "
         "Micron and Samsung. Micron's revenue went from \\$37B to \\$133B in its "
         "year to September 2026 at an 81% gross margin, with most 2027 HBM "
         "supply contracted at higher prices. Memory is the industry's most "
