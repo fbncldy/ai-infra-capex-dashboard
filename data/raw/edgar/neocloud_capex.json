@@ -1,0 +1,13 @@
+{
+ "_source": "stockanalysis.com cash-flow statements (company filings), fetched Nov-2026",
+ "CoreWeave": {
+  "2022": 0.072,
+  "2023": 2.943,
+  "2024": 8.702,
+  "2025": 10.309
+ },
+ "Nebius": {
+  "2024": 0.808,
+  "2025": 4.066
+ }
+}

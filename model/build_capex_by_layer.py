@@ -43,7 +43,8 @@ def neocloud_capex() -> dict[str, dict[int, float]]:
     """CoreWeave and Nebius annual capex, cached after the first fetch."""
     if CACHE.exists():
         return {k: {int(y): v for y, v in d.items()}
-                for k, d in json.loads(CACHE.read_text()).items()}
+                for k, d in json.loads(CACHE.read_text()).items()
+                if not k.startswith("_")}
     out = {"CoreWeave": annual(company_facts(1769628), CAPEX_TAGS)}
     nb = company_facts(1513845)
     out["Nebius"] = (annual(nb, CAPEX_TAGS)

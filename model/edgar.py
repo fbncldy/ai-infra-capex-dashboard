@@ -2,8 +2,9 @@
 
 SEC's fair-access policy requires a User-Agent with a contact. It is read from
 the SEC_USER_AGENT environment variable so no personal address lives in the
-code; set it in your shell profile, e.g.
-    export SEC_USER_AGENT="AI Value Chain research <you@example.com>"
+code. On Windows set it once, in your own terminal:
+    setx SEC_USER_AGENT "AI Value Chain research <your address>"
+(a process environment variable of the same name takes precedence).
 """
 from __future__ import annotations
 
@@ -16,10 +17,23 @@ import urllib.request
 BASE = "https://data.sec.gov/api/xbrl"
 
 
+def _user_env(name: str) -> str:
+    """Windows user-scope environment variable (set via setx), read from the
+    registry so it works in shells started before it was set."""
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as k:
+            return str(winreg.QueryValueEx(k, name)[0])
+    except (ImportError, OSError):
+        return ""
+
+
 def _headers() -> dict[str, str]:
-    ua = os.environ.get("SEC_USER_AGENT", "").strip()
+    ua = (os.environ.get("SEC_USER_AGENT") or _user_env("SEC_USER_AGENT")).strip()
     if not ua:
         raise SystemExit("SEC_USER_AGENT is not set; see model/edgar.py")
+    if "example.com" in ua:
+        raise SystemExit("SEC_USER_AGENT still holds the example address")
     return {"User-Agent": ua}
 
 

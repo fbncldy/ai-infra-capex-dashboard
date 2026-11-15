@@ -75,6 +75,8 @@ accel_rev = load_csv("accelerator_dc_revenue.csv")
 telco_us = load_csv("telecom_us_series.csv")
 ocf = load_csv("hyperscaler_ocf.csv")
 fcf_transfer = load_csv("fcf_transfer.csv")
+capex_layer = load_csv("capex_by_layer.csv")
+funding = load_csv("hyperscaler_funding.csv")
 si = load_csv("system_integrators.csv")
 genai_bookings = load_csv("accenture_genai_bookings.csv")
 semis = load_csv("semis_billings.csv")
@@ -330,6 +332,80 @@ with tab_overview:
         "combined run-rate \\$29B in Dec-25 to \\$131B in Oct-26, annualized), "
         "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
         f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
+
+    # --- Capital spending by layer -------------------------------------- #
+    st.markdown("#### Capital spending across the AI value chain (\\$B)")
+    layers = [("Hyperscalers", BLUE), ("Chipmakers", GREEN), ("NeoClouds", YELLOW)]
+    figcl = go.Figure()
+    for layer, col in layers:
+        d = capex_layer[capex_layer["layer"] == layer].sort_values("year")
+        figcl.add_trace(go.Bar(
+            x=d["year"], y=d["capex_b"], name=layer, marker_color=col,
+            marker_pattern_shape=["/" if s == "forecast" else ""
+                                  for s in d["source_type"]]))
+    cl_tot = capex_layer.groupby("year")["capex_b"].sum()
+    figcl.add_trace(go.Scatter(
+        x=cl_tot.index, y=cl_tot.values, mode="text",
+        text=[f"${v:,.0f}B" for v in cl_tot.values], textposition="top center",
+        showlegend=False, hoverinfo="skip"))
+    figcl.update_xaxes(tickmode="array", tickvals=list(cl_tot.index),
+                       ticktext=[f"{y}E" if y >= FC_YEAR else str(y)
+                                 for y in cl_tot.index])
+    figcl.update_layout(barmode="stack", height=400, hovermode="x unified",
+                        legend_title="", legend_traceorder="reversed",
+                        yaxis_title="Capex ($B)",
+                        yaxis_range=[0, cl_tot.max() * 1.15])
+    st.plotly_chart(figcl, width="stretch")
+    _cl = capex_layer.pivot(index="year", columns="layer", values="capex_b")
+    hyp_share = _cl["Hyperscalers"] / _cl.sum(axis=1) * 100
+    st.caption(
+        "**Sources:** 10-K and 20-F filings (EDGAR XBRL) and company cash-flow "
+        "statements via stockanalysis.com; 2026 company guidance.  \n"
+        "**Notes:** hatched bars are 2026E: actuals where the fiscal year has "
+        "closed (Microsoft, Oracle, Micron), guidance midpoints otherwise (TSMC "
+        "\\$60-64B, CoreWeave \\$37-39B, Nebius \\$20-25B). Hyperscalers carry "
+        f"about {hyp_share[2025]:.0f}% of the spend, and NeoClouds are the "
+        f"fastest-growing layer, from {money(_cl['NeoClouds'][2024])} in 2024 to "
+        f"about {money(_cl['NeoClouds'][FC_YEAR])} in 2026. Chipmakers are "
+        "TSMC and Micron; SK Hynix and Samsung report in won (Samsung's capex "
+        "also mixes in phones and displays), and labs' own builds and telecoms "
+        "are excluded.")
+
+    # --- How the Big-5 pay for it ---------------------------------------- #
+    st.markdown("#### How the Big-5 pay for it: uses of cash vs operating cash "
+                "flow (\\$B)")
+    fd = funding.sort_values("year")
+    hatch = ["/" if s == "forecast" else "" for s in fd["source_type"]]
+    figfd = go.Figure()
+    for colname, name, col in (("capex_b", "Capex", BLUE),
+                               ("buybacks_b", "Buybacks", GREY),
+                               ("dividends_b", "Dividends", "#c7cbd1")):
+        figfd.add_trace(go.Bar(x=fd["year"], y=fd[colname], name=name,
+                               marker_color=col, marker_pattern_shape=hatch))
+    figfd.add_trace(go.Scatter(
+        x=fd["year"], y=fd["ocf_b"], name="Operating cash flow",
+        mode="lines+markers", line=dict(color="#202124", width=3)))
+    figfd.update_xaxes(tickmode="array", tickvals=list(fd["year"]),
+                       ticktext=[f"{y}E" if y >= FC_YEAR else str(y)
+                                 for y in fd["year"]])
+    figfd.update_layout(barmode="stack", height=380, hovermode="x unified",
+                        legend_title="", yaxis_title="$B")
+    st.plotly_chart(figfd, width="stretch")
+    fd = fd.assign(uses=fd["capex_b"] + fd["buybacks_b"] + fd["dividends_b"])
+    gap = fd.set_index("year")["uses"] - fd.set_index("year")["ocf_b"]
+    bb = fd.set_index("year")["buybacks_b"]
+    st.caption(
+        "**Sources:** 10-K filings (EDGAR XBRL) and company cash-flow statements "
+        "via stockanalysis.com.  \n"
+        "**Notes:** where the bars rise above the line, uses of cash exceed "
+        "operating cash flow and the gap is met with debt, equity or cash "
+        f"reserves. That happened in 2022 through buybacks ({money(gap[2022])} "
+        f"over), and again in 2026, about {money(gap[FC_YEAR])} over, driven by "
+        f"capex even though buybacks fell from {money(bb[2022])} to about "
+        f"{money(bb[FC_YEAR])}. The group issued \\$121B of bonds in 2025 and "
+        "Alphabet raised about \\$85B of equity in 2026. 2026E uses the capex "
+        "and cash flow of the FCF chart; payouts are actual for Microsoft and "
+        "Oracle and trailing twelve months to September for the rest.")
 
     st.markdown("#### Who is integrating across the chain")
     st.caption(

@@ -32,7 +32,7 @@ CIK = {"Alphabet": 1652044, "Microsoft": 789019, "Amazon": 1018724,
        "Meta": 1326801, "Oracle": 1341439}
 BUYBACK = ["PaymentsForRepurchaseOfCommonStock"]
 DIVIDEND = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
-YEARS = range(2020, 2026)
+YEARS = range(2022, 2026)      # payout data for all five starts in FY2022
 FC_YEAR = 2026
 YTD_END = "09-30"
 
@@ -92,10 +92,18 @@ def main() -> None:
     hyp_fcf26 = float(fcf[(fcf.group == "Hyperscalers")
                           & (fcf.year == FC_YEAR)].fcf_b.iloc[0])
     ann = 12 / int(YTD_END[:2])
-    bb26 = sum(get(p[c]["buyback"], FC_YEAR) if c in closed
-               else p[c]["ytd"]["buyback"] * ann for c in CIK)
-    dv26 = sum(get(p[c]["dividend"], FC_YEAR) if c in closed
-               else p[c]["ytd"]["dividend"] * ann for c in CIK)
+
+    def est(c: str, kind: str) -> float:
+        """Closed fiscal year: actual. Otherwise trailing twelve months if
+        cached, else the year-to-date figure annualized."""
+        if c in closed:
+            return get(p[c][kind], FC_YEAR)
+        if "ttm" in p[c]:
+            return p[c]["ttm"][kind]
+        return p[c]["ytd"][kind] * ann
+
+    bb26 = sum(est(c, "buyback") for c in CIK)
+    dv26 = sum(est(c, "dividend") for c in CIK)
     rows.append((FC_YEAR, round(capex26, 1), round(bb26, 1), round(dv26, 1),
                  round(hyp_fcf26 + capex26, 1), "forecast"))
 
