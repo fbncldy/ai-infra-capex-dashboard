@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "edgar"
 PROC = ROOT / "data" / "processed"
 OUT = PROC / "fcf_transfer.csv"
+OUT_CO = PROC / "fcf_2026e_by_company.csv"     # per-company hyperscaler 2026E
 
 # --- Estimate inputs (each traceable to a filing or a stated assumption) ------
 # NVIDIA FY2027 (Feb-26..Jan-27): H1 from the Q2 FY27 10-Q (ended 2026-07-26).
@@ -41,9 +42,12 @@ AVGO_FY26 = 31.94 + 13.67
 AMAT_FY26 = 3.58 + 2.33
 AVGO_FY27 = 65.0                       # line of sight to $115B AI revenue
 AMAT_FY27 = 8.0
-# Hyperscalers 2027: FY2026E operating cash flow +20%, capex at ~$1T consensus.
+# Hyperscalers 2026: FY2025 OCF grown at the year-to-date pace (latest 10-Q).
+YTD_END = "09-30"
+# Hyperscalers 2027: FY2026E operating cash flow +20%, capex at the ~$1.1T
+# consensus (Goldman citing the Street, Sep-2026; range $0.9-1.3T).
 HYP_OCF_GROWTH_27 = 0.20
-HYP_CAPEX_27 = 1000.0
+HYP_CAPEX_27 = 1100.0
 NV_EARLY_CAPEX = 0.6e9                 # FY2019-21 capex not tagged; immaterial
 
 
@@ -88,19 +92,26 @@ def hyperscalers() -> dict[int, tuple[float, str]]:
     m["fcf"] = (m["ocf_usd_m"] - m["capex_usd_m"]) / 1000
     out = {y: (float(m.loc[m.fiscal_year == y, "fcf"].sum()), "reported")
            for y in range(2018, 2026)}
-    fcf26, ocf26 = 0.0, 0.0
+    fcf26, ocf26, by_co = 0.0, 0.0, []
     for co in guide.index:
         closed = m[(m.company == co) & (m.fiscal_year == 2026)]
         if len(closed):                      # Microsoft, Oracle: year has closed
-            fcf26 += float(closed["fcf"].iloc[0])
-            ocf26 += float(closed["ocf_usd_m"].iloc[0]) / 1000
-        else:                                # grow FY2025 OCF at its H1-2026 pace
-            g = (ytd_ocf(co, "2026-01-01", "2026-06-30")
-                 / ytd_ocf(co, "2025-01-01", "2025-06-30"))
+            f_co = float(closed["fcf"].iloc[0])
+            o_co = float(closed["ocf_usd_m"].iloc[0]) / 1000
+            basis = "actual"
+        else:                                # grow FY2025 OCF at its 2026 YTD pace
+            g = (ytd_ocf(co, "2026-01-01", f"2026-{YTD_END}")
+                 / ytd_ocf(co, "2025-01-01", f"2025-{YTD_END}"))
             o25 = float(m.loc[(m.company == co) & (m.fiscal_year == 2025),
                               "ocf_usd_m"].iloc[0]) / 1000
-            fcf26 += o25 * g - float(guide.loc[co, "capex_mid_b"])
-            ocf26 += o25 * g
+            o_co = o25 * g
+            f_co = o_co - float(guide.loc[co, "capex_mid_b"])
+            basis = "estimate"
+        fcf26 += f_co
+        ocf26 += o_co
+        by_co.append((co, round(f_co, 1), basis))
+    with OUT_CO.open("w", newline="", encoding="utf-8") as f:
+        csv.writer(f).writerows([("company", "fcf_2026e_b", "basis"), *by_co])
     out[2026] = (fcf26, "forecast")
     out[2027] = (ocf26 * (1 + HYP_OCF_GROWTH_27) - HYP_CAPEX_27, "forecast")
     return out

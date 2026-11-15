@@ -14,3 +14,6 @@ Meta,2025-04,69.8,Llama 4 Maverick,model card,
 DeepSeek (China),2024-12,59.1,DeepSeek V3,model card,
 DeepSeek (China),2025-01,71.5,DeepSeek R1,model card,
 DeepSeek (China),2026-01,88.0,DeepSeek / Qwen frontier,estimate,Best published Chinese-lab score; approximate
+Google,2026-11,96.5,Gemini 4 Argon,leaderboard,"OpenRouter, Nov-2026"
+OpenAI,2026-10,96.1,GPT-6 Astra,leaderboard,Artificial Analysis
+Anthropic,2026-10,93.7,Claude Fable 5.1,leaderboard,Artificial Analysis; self-reported figures run up to 95

@@ -94,7 +94,7 @@ usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
 
-DATA_UPDATED = "October 2026"
+DATA_UPDATED = "November 2026"
 
 YEARS = sorted(capex["fiscal_year"].unique())
 # Latest fiscal year in which every company has reported. Microsoft (Jun)
@@ -111,11 +111,32 @@ FC_YEAR = int(guidance["year"].iloc[0])
 _closed = capex[capex["fiscal_year"] == FC_YEAR].set_index("company")["capex_usd_b"]
 CAPEX_FC = float(sum(_closed.get(co, mid) for co, mid
                      in zip(guidance["company"], guidance["capex_mid_b"])))
-# 2027 aggregate consensus (Moody's, Goldman, BofA all near $1T); no company split
-CAPEX_CONSENSUS_B = 1000.0
+# 2027 aggregate consensus (Goldman citing the Street, Sep-2026: ~$1.1T, range
+# $0.9-1.3T); no company split is published
+CAPEX_CONSENSUS_B = 1100.0
 # Free cash flow by basket and year (built by model/build_fcf_transfer.py)
 _fcf = fcf_transfer.pivot(index="year", columns="group", values="fcf_b")
 HYP_FCF, SEMI_FCF = _fcf["Hyperscalers"], _fcf["Semiconductors"]
+FCF_CO = load_csv("fcf_2026e_by_company.csv")
+FCF_NEG = [c for c, v in zip(FCF_CO["company"], FCF_CO["fcf_2026e_b"]) if v < -5]
+
+
+LAB_RR = labrev.set_index("company")["revenue_b"]
+_bl = bench_lab[bench_lab["lab"].isin(["OpenAI", "Anthropic", "Google"])]
+GPQA_TOP = _bl.sort_values("date").groupby("lab")["score"].last()
+
+
+def money(v: float) -> str:
+    """$B for markdown, with the minus sign outside the dollar sign."""
+    return f"{'-' if v < 0 else ''}\\${abs(v):,.0f}B"
+
+
+def fcf_level(v: float) -> str:
+    return f"roughly break-even ({money(v)})" if abs(v) < 20 else f"about {money(v)}"
+
+
+def listing(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
 
 BLUE, GREEN, YELLOW, RED, GREY = "#4285F4", "#34A853", "#FBBC04", "#EA4335", "#9aa0a6"
 PURPLE = "#9334E6"
@@ -186,11 +207,11 @@ with tab_overview:
         f"- **Hyperscalers increasingly fund capex with debt and equity.** Big-5 "
         f"capex (Microsoft, Alphabet, Amazon, Meta, Oracle) rises from "
         f"**\\${total_now:,.0f}B** in FY2025 to **\\${CAPEX_FC:,.0f}B** in "
-        f"fiscal 2026 and around **\\${CAPEX_CONSENSUS_B/1000:.0f}T** in 2027, "
+        f"fiscal 2026 and around **\\${CAPEX_CONSENSUS_B/1000:.1f}T** in 2027, "
         f"above global upstream oil and gas investment (about \\$570B). Free "
-        f"cash flow falls from \\${HYP_FCF[2024]:.0f}B in 2024 to about "
-        f"\\${HYP_FCF[2026]:.0f}B in fiscal 2026 and turns negative in 2027; "
-        f"Oracle's capex already reached 174% of its operating cash flow. The "
+        f"cash flow falls from {money(HYP_FCF[2024])} in 2024 to "
+        f"{fcf_level(HYP_FCF[2026])} in fiscal 2026 and about "
+        f"{money(HYP_FCF[2027])} in 2027. The "
         f"group issued \\$121B of bonds in 2025, "
         f"four times its five-year average, and Alphabet raised about \\$85B of "
         f"equity after its first negative free-cash-flow quarter since listing.\n"
@@ -246,7 +267,8 @@ with tab_overview:
               f"+{(CAPEX_FC/total_now-1)*100:.0f}% vs FY25")
     d3.metric(f"Capex CAGR FY{first_yr}-{YR}", f"{cagr*100:.0f}%/yr",
               "AI-era acceleration")
-    d4.metric("NeoCloud backlog (CoreWeave)", "~$104B", "Q2 2026")
+    cw_backlog = float(neo.loc[neo["company"] == "CoreWeave", "backlog_b"].iloc[0])
+    d4.metric("NeoCloud backlog (CoreWeave)", f"${cw_backlog:,.1f}B", "Q3 2026")
 
     st.markdown("##### Supply & constraint (upstream)")
     s1, s2, s3, s4 = st.columns(4)
@@ -292,8 +314,8 @@ with tab_overview:
                         xaxis_tickangle=-30, margin=dict(t=80))
     st.plotly_chart(figrl, width="stretch")
     st.caption(
-        "**Sources:** company filings (EDGAR XBRL); lab run-rates via Bloomberg "
-        "and Epoch AI.  \n**Notes:** aggregate ROCE for the latest fiscal year "
+        "**Sources:** company filings (EDGAR XBRL); lab run-rates from Anthropic's "
+        "S-1, Reuters/FT and Epoch AI.  \n**Notes:** aggregate ROCE for the latest fiscal year "
         "(combined operating income over combined capital employed), so larger "
         "players carry more weight; the Telecoms and Hyperscalers tabs show the "
         "same measure over time. The 8-11% band "
@@ -305,7 +327,7 @@ with tab_overview:
         "ones (telecoms +1%, integrators +5%); growth only builds value where "
         "the return clears the band. Growth basis: 3-yr revenue CAGR 2022-2025, "
         "except NeoClouds (2-yr, CoreWeave) and the labs (Anthropic and OpenAI "
-        "combined run-rate \\$29B in Dec-25 to \\$105B in Jul-26, annualized), "
+        "combined run-rate \\$29B in Dec-25 to \\$131B in Oct-26, annualized), "
         "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
         f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
 
@@ -825,7 +847,8 @@ with tab_dc:
 with tab_hyper:
     st.markdown("### 6 · Hyperscalers")
     st.markdown(
-        "- **Big-5 capex roughly doubles in 2026 and nears \\$1T in 2027.** It "
+        "- **Big-5 capex roughly doubles in 2026 and reaches about "
+        f"\\${CAPEX_CONSENSUS_B/1000:.1f}T in 2027.** It "
         f"rises from \\${total_now:,.0f}B in FY2025 to \\${CAPEX_FC:,.0f}B in "
         "fiscal 2026, above global upstream oil and gas investment. These orders "
         "set accelerator volumes, packaging allocation and the gigawatt "
@@ -1015,17 +1038,19 @@ with tab_hyper:
     st.plotly_chart(figft, width="stretch")
     st.caption(
         "**Sources:** company 10-K and 10-Q filings (EDGAR XBRL); 2026 capex as "
-        "in the annual chart; 2027 capex from consensus (Moody's, Goldman, "
-        "BofA); NVIDIA FY2028 from its 70% growth guidance; Broadcom 2027 from "
-        "its own line of sight; framing after BofA Global Research.  \n"
+        "in the annual chart, with 2026 cash flow grown at its nine-month pace; "
+        "2027 capex from consensus (Goldman citing the Street); NVIDIA FY2028 "
+        "from its 70% growth guidance; Broadcom 2027 from its own line of "
+        "sight; framing after BofA Global Research.  \n"
         "**Notes:** free cash flow is operating cash flow minus capex; solid is "
         "reported, dotted is 2026-27E. Hyperscaler FCF falls from "
-        f"\\${HYP_FCF[2024]:.0f}B (2024) to about \\${HYP_FCF[2026]:.0f}B in "
-        "fiscal 2026, with Oracle and Amazon negative, and to about "
-        f"\\${HYP_FCF[2027]:.0f}B in 2027 as capex nears \\$1T. Chipmaker FCF "
-        f"rises from \\${SEMI_FCF[2025]:.0f}B (2025) to about "
-        f"\\${SEMI_FCF[2026]:.0f}B in 2026 and \\${SEMI_FCF[2027]:.0f}B in 2027, "
-        "led by NVIDIA and Micron. Hyperscalers use fiscal years; chipmakers "
+        f"{money(HYP_FCF[2024])} (2024) to {fcf_level(HYP_FCF[2026])} in fiscal "
+        f"2026, with {listing(FCF_NEG)} negative, and to about "
+        f"{money(HYP_FCF[2027])} in 2027 as capex reaches about "
+        f"\\${CAPEX_CONSENSUS_B/1000:.1f}T. Chipmaker FCF rises from "
+        f"{money(SEMI_FCF[2025])} (2025) to about {money(SEMI_FCF[2026])} in 2026 "
+        f"and {money(SEMI_FCF[2027])} in 2027, led by NVIDIA and Micron. "
+        "Hyperscalers use fiscal years; chipmakers "
         "use the calendar year each fiscal year mostly covers, as in the "
         f"Silicon tab. Data as of {DATA_UPDATED}.")
 
@@ -1072,9 +1097,11 @@ with tab_hyper:
     gtbl["fy2025_actual_b"] = gtbl["company"].map(actual25)
     gtbl["growth_%"] = (gtbl["capex_mid_b"] / gtbl["fy2025_actual_b"] - 1) * 100
     gtbl["basis"] = is_act.map({True: "FY2026 actual", False: "Guidance midpoint"})
+    msft_cy = float(guidance.loc[guidance["company"] == "Microsoft",
+                                 "capex_mid_b"].iloc[0])
     act_note = {
-        "Microsoft": "Year to June 2026; separately guides $175B for calendar "
-                     "2026, incl. finance leases",
+        "Microsoft": f"Year to June 2026; separately guides ${msft_cy:.0f}B for "
+                     "calendar 2026, incl. finance leases",
         "Oracle": "Year to May 2026; guides $90-95B for FY2027"}
     gtbl["note"] = [act_note.get(c, d) for c, d
                     in zip(gtbl["company"], gtbl["definition"])]
@@ -1108,15 +1135,22 @@ with tab_hyper:
             "FY25 $B": "{:.1f}", "FY26 low": "{:.0f}", "FY26 mid": "{:.0f}",
             "FY26 high": "{:.0f}", "Growth %": "{:+.0f}"}),
         width="stretch", hide_index=True)
+    amzn_q = capex_q[(capex_q["company"] == "Amazon")
+                     & (pd.to_datetime(capex_q["period_end"]).dt.year == FC_YEAR)]
+    amzn_ytd = amzn_q["capex_usd_m"].sum() / 1000
+    amzn_mid = float(guidance.loc[guidance["company"] == "Amazon",
+                                  "capex_mid_b"].iloc[0])
     st.caption(
         "**Notes:** memory inflation absorbs part of the increase (Microsoft "
         "flagged about \\$25B, Amazon added \\$20B on memory alone), so higher "
-        "capex is not one-to-one more compute. Meta's guidance includes "
-        "finance-lease payments, a slightly broader basis than the cash actuals. "
-        "Microsoft trimmed its calendar-2026 guide from \\$190B to \\$175B through "
-        "an accounting change, with the plan itself unchanged: a longer useful "
-        "life for data centers (15 to 25 years) moves more leases to operating "
-        "treatment, outside reported capex.")
+        f"capex is not one-to-one more compute. Amazon spent \\${amzn_ytd:,.0f}B "
+        f"in the first {len(amzn_q)} quarters, so its reaffirmed "
+        f"\\${amzn_mid:,.0f}B implies a much smaller final quarter. Meta's "
+        "guidance includes finance-lease payments, a slightly broader basis than "
+        "the cash actuals. Microsoft's calendar-2026 guide fell from \\$190B to "
+        "\\$175B on an accounting change (longer data-center lives move leases "
+        f"outside reported capex) and to \\${msft_cy:.0f}B in October on delayed "
+        "third-party capacity deliveries.")
 
     st.markdown("---")
     st.markdown("#### Hyperscaler capex vs accelerator vendor revenue (\\$B)")
@@ -1160,11 +1194,12 @@ with tab_neo:
         "when their own buildout lags demand: Microsoft has been CoreWeave's "
         "largest customer and signed \\$17-19B with Nebius. Suppliers often "
         "guarantee the leases or extend the credit.\n"
-        "- **The largest players built about \\$100B of backlog in two years.** "
-        "CoreWeave holds about \\$104B, Nscale \\$103B and Nebius \\$45B. "
-        "CoreWeave and Nebius are listed, Crusoe and Lambda private, and Nscale "
-        "filed for a New York listing in September 2026 at a \\$30-35B target, "
-        "up from \\$14.6B privately.\n"
+        "- **The largest players built over \\$100B of backlog in two years.** "
+        f"CoreWeave holds \\${cw_backlog:,.1f}B, Nscale \\$103B and Nebius "
+        "\\$45B. CoreWeave and Nebius are listed and Crusoe and Lambda private; "
+        "Nscale filed for a New York listing in September 2026 but has not yet "
+        "priced, with valuations discussed between \\$16B and \\$35B against "
+        "\\$14.6B privately.\n"
         "- **The economics behind those backlogs are deeply negative.** Nscale "
         "lost \\$1.02B on \\$140.6M of revenue in the first half of 2026, about "
         "seven times revenue; Oracle, running the same model at far greater "
@@ -1185,14 +1220,15 @@ with tab_neo:
         "reinvestment costs they cannot price today. The industry expects later "
         "tenants to accept older chips at lower prices, which is untested.\n"
         "- **NVIDIA finances its own customers.** It is supplier, investor and "
-        "in places guarantor to the firms buying its chips. Vendor finance of "
+        "in places guarantor to the firms buying its chips, and committed \\$1B "
+        "to Nscale's pre-IPO round. Vendor finance of "
         "this kind preceded the 2000 telecom overbuild, because the capital came "
         "from the party that benefited from more capacity.\n"
         "- **NeoClouds are a leveraged bet on sustained compute scarcity.**")
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("CoreWeave backlog (Q2 2026)", "$104.2B", "+246% YoY")
+    c1.metric("CoreWeave backlog (Q3 2026)", f"${cw_backlog:,.1f}B", "from $104.2B in Q2")
     c2.metric("Nebius 2026E capex", "$20-25B")
     c3.metric("Sector GPU-backed debt", ">$20B")
 
@@ -1209,13 +1245,12 @@ with tab_neo:
         "**Sources:** company filings and press; FT on Nscale (Nebius bar "
         "estimated from disclosed Microsoft \\$17-19B and Meta \\$27B "
         "contracts).  \n**Notes:** "
-        "CoreWeave's backlog (\\$104.2B at Q2 2026, up 246% YoY from \\$30.1B) dwarfs "
-        "revenue and is concentrated (OpenAI added \\$11.2B); Crusoe and Lambda "
-        "are private (revenue only) and Nscale shows about \\$103B of total "
-        "contract value from its September 2026 IPO filing. Backlog is "
-        "contracted intent, not "
-        "guaranteed revenue: terms vary and some carry 90-day termination "
-        "rights. GPUs depreciate over 4-6 years while "
+        f"CoreWeave's backlog (\\${cw_backlog:,.1f}B at Q3 2026, up from "
+        "\\$104.2B in Q2) dwarfs revenue and is concentrated (OpenAI added "
+        "\\$11.2B); Crusoe and Lambda are private (revenue only) and Nscale "
+        "shows about \\$103B of total contract value from its IPO filing. "
+        "Backlog measures contracted intent: terms vary and some carry 90-day "
+        "termination rights. GPUs depreciate over 4-6 years while "
         "rental pricing can move faster, and over \\$20B of sector debt is "
         f"secured against them. Data as of {DATA_UPDATED}.")
 
@@ -1225,9 +1260,12 @@ with tab_neo:
 with tab_labs:
     st.markdown("### 8 · AI Labs")
     st.markdown(
-        "- **Revenue is concentrating in two labs.** Anthropic (\\$65B) and "
-        "OpenAI (\\$40B) run at about \\$105B combined, and their compute "
-        "commitments underwrite NeoCloud backlogs and hyperscaler buildouts.\n"
+        f"- **Revenue is concentrating in two labs.** Anthropic "
+        f"(\\${LAB_RR['Anthropic']:.0f}B) and OpenAI (\\${LAB_RR['OpenAI']:.0f}B) "
+        f"run at about \\${LAB_RR['Anthropic'] + LAB_RR['OpenAI']:.0f}B "
+        "combined, and their compute commitments underwrite NeoCloud backlogs "
+        "and hyperscaler buildouts. Anthropic has filed to go public; its S-1 "
+        "puts Q3 2026 revenue at \\$17.0B.\n"
         "- **Serving models is profitable; training the next one is where labs "
         "lose money.** Inference runs at roughly 40 to 50% gross margin "
         "(industry estimates), but each new model costs more to train than the "
@@ -1235,9 +1273,10 @@ with tab_labs:
         "- **Usage is broad but shallow.** 900M to 1B people use ChatGPT weekly "
         "but only 5 to 6% pay, and 55% of US adults have tried generative AI "
         "but only about 12% use it every workday.\n"
-        "- **Frontier capability has converged.** Leading labs score within "
-        "about six points of each other (88 to 94) on GPQA-Diamond, and the "
-        "model layer shows no clear network effects.\n"
+        "- **Frontier capability has converged.** The three US leaders score "
+        f"within about {GPQA_TOP.max() - GPQA_TOP.min():.0f} points of each other "
+        f"({GPQA_TOP.min():.1f} to {GPQA_TOP.max():.1f}) on GPQA-Diamond, and "
+        "the model layer shows no clear network effects.\n"
         "- **Chinese open-weight models set the price floor.** DeepSeek, "
         "Alibaba's Qwen, Zhipu's GLM and Moonshot's Kimi trail the closed "
         "frontier by single digits at one-third to one-tenth of the price "
@@ -1262,12 +1301,13 @@ with tab_labs:
                             xaxis_range=[0, labrev["revenue_b"].max() * 1.2])
         st.plotly_chart(figlr, width="stretch")
         st.caption(
-            "**Sources:** Bloomberg via TechCrunch; Sacra; Epoch AI.  \n"
-            "**Notes:** annualized run-rates at various dates (Anthropic Jul-26, "
-            "OpenAI Aug-26, xAI Dec-25, Mistral Jan-26). Anthropic overtook "
-            "OpenAI, going from \\$1B to \\$65B in about 19 months. The two are "
-            "not strictly comparable: Anthropic reports gross of cloud-reseller "
-            "spend, OpenAI closer to net.")
+            "**Sources:** Anthropic S-1; Reuters/FT; Sacra; Epoch AI.  \n"
+            "**Notes:** annualized run-rates at various dates (Anthropic Oct-26, "
+            "OpenAI Sep-26, xAI Dec-25, Mistral Jan-26); Anthropic went from \\$1B "
+            f"to \\${LAB_RR['Anthropic']:.0f}B in under two years. Run-rates "
+            "overstate realized revenue: Anthropic's is 28 days times 13, while "
+            "its Q3 revenue of \\$17.0B annualizes to about \\$68B. Anthropic also "
+            "reports gross of cloud-reseller spend, OpenAI closer to net.")
     with c2:
         st.markdown("#### Frontier capability by lab (GPQA-Diamond, %)")
         figb = px.line(
@@ -1283,10 +1323,12 @@ with tab_labs:
                            hovermode="x unified")
         st.plotly_chart(figb, width="stretch")
         st.caption(
-            "**Sources:** model and system cards (GPT-4 35.7, Claude 3.5 Sonnet "
-            "59.4, o1 78.0, Gemini 2.5 Pro 84.0, DeepSeek R1 71.5; two points "
-            "estimated).  \n**Notes:** best published GPQA-Diamond score per lab at "
-            f"major releases; Chinese labs have closed most of the gap. Data as of {DATA_UPDATED}.")
+            "**Sources:** model and system cards to early 2026; Artificial "
+            "Analysis and OpenRouter leaderboards since (two early points "
+            "estimated).  \n**Notes:** best published GPQA-Diamond score per lab "
+            "at major releases; leaderboard figures mix independent runs and "
+            "self-reports and can differ by a point or two. The latest Chinese "
+            f"point dates from January 2026. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Inference price collapse ($ per million tokens, log scale)")
     ip = inference_prices.copy()
@@ -1308,7 +1350,8 @@ with tab_labs:
         "around \\$0.30-0.50 by 2026, the decline slowing toward compute cost. "
         "Falling price per token has not meant falling revenue: usage outgrows "
         "price, so total spend and lab run-rates keep rising (Anthropic and "
-        f"OpenAI about \\$105B combined). Data as of {DATA_UPDATED}.")
+        f"OpenAI about \\${LAB_RR['Anthropic'] + LAB_RR['OpenAI']:.0f}B "
+        f"combined). Data as of {DATA_UPDATED}.")
 
     st.markdown("#### ChatGPT weekly active users (millions)")
     figw = px.area(chatgpt, x="date", y="wau_m",
@@ -1379,7 +1422,7 @@ with tab_labs:
 
     st.caption(
         "**Notes:** revenue is concentrating in Anthropic and OpenAI while "
-        "benchmark scores converge around 90; lab revenue and multi-year "
+        "benchmark scores converge in the mid-90s; lab revenue and multi-year "
         "compute commitments are the demand that underwrites the capex stack.")
 
     st.markdown("#### Notable compute-commitment signals")
@@ -1644,7 +1687,8 @@ with tab_telco:
                             title="Revenue")
         st.plotly_chart(figur, width="stretch")
     st.caption(
-        "**Sources:** company filings and 2026 guidance (2025 approximate).  \n**Notes:** "
+        "**Sources:** 10-K filings through 2025 (EDGAR XBRL); 2026 company "
+        "guidance.  \n**Notes:** "
         "2026 guidance AT&T \\$23-24B (fiber), Verizon \\$16-16.5B (cut), "
         "T-Mobile about \\$10B. AT&T revenue includes WarnerMedia until the "
         "April 2022 spin-off; Verizon's 2022 capex peak is C-Band, T-Mobile's "
