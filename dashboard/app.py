@@ -257,7 +257,9 @@ with tab_overview:
         f"- **Each shortage becomes the next layer's cost and its supplier's "
         f"windfall.** Packaging and memory are sold out through 2026: Microsoft "
         f"attributes about \\$25B of its 2026 capex to memory and component "
-        f"inflation, and Amazon added \\$20B on memory alone. Micron's revenue "
+        f"inflation, and Amazon added \\$20B on memory alone. Server makers "
+        f"re-price signed orders by 20 to 45% at delivery to pass memory costs "
+        f"on. Micron's revenue "
         f"more than tripled to \\$133B in its year to September 2026 at an 81% "
         f"gross margin. Power is next: about {gw['capacity_gw'].sum():.0f} GW "
         f"of named projects wait on grid connections that take 3 to 5 years.\n"
@@ -647,7 +649,18 @@ with tab_systems:
         "six years, and Dell's ISG grew 40% in its latest fiscal year.\n"
         "- **Margins stay thin because NVIDIA prices the scarce input.** System "
         "builders earn single digits to low teens while NVIDIA earns about 60% "
-        "on the same box.")
+        "on the same box.\n"
+        "- **Server makers now pass component inflation on to buyers, even on "
+        "signed contracts.** Dell, HPE, Lenovo and Supermicro are re-pricing "
+        "AI servers at delivery by 20 to 45%, mainly to recover memory costs "
+        "that are up more than 400% since early 2024. Dell asked XTX Markets "
+        "for \\$62-70M on top of a \\$549M fixed-price order, which XTX is "
+        "contesting in court.\n"
+        "- **Buyers without hyperscale leverage absorb the increases.** Trading "
+        "firms such as Jane Street, Optiver and Hudson River Trading, among the "
+        "largest buyers after the hyperscalers, are paying. Pass-through "
+        "protects the assemblers' margins; the windfall goes to the memory "
+        "makers.")
 
     st.markdown("---")
     st.markdown("#### Server revenue by vendor (\\$B)")
@@ -691,6 +704,31 @@ with tab_systems:
         "itself runs about 60% on the same box; the contract manufacturers "
         "(Foxconn about 3-4%) sit "
         f"lowest. Data as of {DATA_UPDATED}.")
+
+    st.markdown("#### Memory inflation flows through to server prices "
+                "(reported increase, %)")
+    spi = load_csv("server_price_inflation.csv").iloc[::-1]
+    figspi = go.Figure(go.Bar(
+        x=spi["low_pct"], y=spi["item"], orientation="h",
+        marker_color=[GREEN if i.startswith("Memory") else GREY
+                      for i in spi["item"]],
+        error_x=dict(type="data", symmetric=False,
+                     array=(spi["high_pct"] - spi["low_pct"]).fillna(0),
+                     arrayminus=[0] * len(spi), color="#5f6368"),
+        text=spi["label"], textposition="outside",
+        hovertemplate="%{y}: %{text}<extra></extra>"))
+    figspi.update_layout(height=280, xaxis_title="Price increase (%)",
+                         xaxis_range=[0, spi["low_pct"].max() * 1.25])
+    st.plotly_chart(figspi, width="stretch")
+    st.caption(
+        "**Sources:** Financial Times (Nov-2026), citing JPMorgan research, "
+        "people familiar with the deals and XTX's court filings against Dell.  \n"
+        "**Notes:** the increase scales with memory's share of the bill of "
+        "materials. CPU nodes, where memory is a large part of the cost, have "
+        "tripled; GPU servers, dominated by the GPU, rose 20 to 30%, with some "
+        "re-quotes on signed deals up to 45%. Bars show the lower bound, and "
+        "whiskers the reported range. Most figures come from unnamed sources, "
+        "and the XTX case is ongoing.")
 
 # --------------------------------------------------------------------------- #
 # 4 · Networking

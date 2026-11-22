@@ -1,0 +1,5 @@
+item,low_pct,high_pct,label,source_type,note
+Memory chips (since Jan-2024),400,,400%+,reported,JPMorgan research via FT (Nov-2026)
+CPU server nodes,200,,tripled or more,estimate,Memory is a large share of cost; person familiar via FT (Nov-2026)
+GPU servers,20,30,20-30%+,estimate,Person familiar via FT (Nov-2026); re-quotes on signed deals reported up to 45%
+XTX-Dell fixed-price contract,11.3,12.8,11-13%,reported,Irish court filings via FT: $62-70M added to a $549M fixed price
