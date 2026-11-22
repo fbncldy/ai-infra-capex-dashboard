@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "processed"
@@ -93,6 +94,12 @@ telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
+semis_m = load_csv("semis_monthly.csv")
+adoption = load_csv("cloud_ai_adoption.csv")
+lab_hist = load_csv("lab_revenue_history.csv")
+ant_ue = load_csv("anthropic_unit_economics.csv")
+cves = load_csv("cve_counts.csv")
+dc_power = load_csv("dc_power_by_region.csv")
 
 DATA_UPDATED = "November 2026"
 
@@ -124,6 +131,36 @@ FCF_NEG = [c for c, v in zip(FCF_CO["company"], FCF_CO["fcf_2026e_b"]) if v < -5
 LAB_RR = labrev.set_index("company")["revenue_b"]
 _bl = bench_lab[bench_lab["lab"].isin(["OpenAI", "Anthropic", "Google"])]
 GPQA_TOP = _bl.sort_values("date").groupby("lab")["score"].last()
+
+# Semiconductor cycle (WSTS): annual totals, forecast, monthly growth
+SEMI = semis.set_index("year")["sales_b"]
+SEMI_REP_YR = int(semis.loc[semis["source_type"] == "reported", "year"].max())
+SEMI_FC = semis[semis["source_type"] == "forecast"].set_index("year")["sales_b"]
+SEMI_SEG = semis_segments.set_index(["year", "segment"])["sales_b"]
+_sm = semis_m.dropna(subset=["yoy_pct"])
+SEMI_LAST = _sm.iloc[-1]                              # latest month
+SEMI_LAST_LABEL = pd.Timestamp(SEMI_LAST["month"]).strftime("%B %Y")
+SEMI_YTD = semis_m[semis_m["month"].str[:4] == SEMI_LAST["month"][:4]]
+SEMI_TROUGH = _sm.loc[_sm["yoy_pct"].idxmin()]        # deepest downturn
+SEMI_PREV_PEAK = _sm[_sm["month"] < "2024-01"]["yoy_pct"].max()
+
+# Anthropic prospectus: costs by function as a share of revenue
+UE = ant_ue.set_index("period")
+UE_COST = UE[["inference_m", "training_research_m", "distribution_m",
+              "other_m"]].sum(axis=1)
+UE_PCT = UE[["inference_m", "training_research_m"]].div(UE["revenue_m"],
+                                                         axis=0) * 100
+UE_OPM = (UE["revenue_m"] - UE_COST) / UE["revenue_m"] * 100   # operating margin
+UE_LAST = UE.index[-1]                               # latest period (9M 2026)
+
+# Adoption (Eurostat, EU firms with 10+ employees)
+ADOPT = adoption.pivot(index="year", columns="series", values="share_pct")
+CLOUD, CLOUD_SOPH, AI_USE = (ADOPT["Cloud: any paid service"],
+                             ADOPT["Cloud: sophisticated services"],
+                             ADOPT["AI: any AI technology"].dropna())
+CVE = cves.set_index("year")["cves"]
+CVE_LAST = int(cves["year"].max())
+CVE_FULL = int(cves.loc[cves["source_type"] == "reported", "year"].max())
 
 
 def money(v: float) -> str:
@@ -160,7 +197,8 @@ st.caption(
 )
 
 (tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
- tab_dc, tab_hyper, tab_neo, tab_labs, tab_si, tab_telco) = st.tabs([
+ tab_dc, tab_hyper, tab_neo, tab_labs, tab_si, tab_telco,
+ tab_customer) = st.tabs([
     "📊 Overview",
     "⚙️ 1·Silicon & IP",
     "🏭 2·Foundry & Packaging",
@@ -172,6 +210,7 @@ st.caption(
     "🧠 8·AI Labs",
     "🧩 9·System Integrators",
     "📡 10·Telecoms",
+    "👥 11·Customer",
 ])
 
 # Capex view (all companies, all years), total capex
@@ -251,7 +290,14 @@ with tab_overview:
         f"- **Integrators win deployment work while AI shrinks their "
         f"labor-based model.** The market began pricing this in mid-2026, when "
         f"Accenture, IBM and the Indian IT majors fell on AI-related guidance, "
-        f"and TCS revenue declined in its latest fiscal year.\n"
+        f"and TCS revenue declined in its latest fiscal year. The labs now "
+        f"compete for deployment work: Anthropic launched its own AI services "
+        f"firm in May 2026.\n"
+        f"- **Customers adopt slowly.** Cloud took "
+        f"{int(CLOUD.index.max() - CLOUD.index.min())} years to go from "
+        f"{CLOUD.iloc[0]:.0f}% to {CLOUD.iloc[-1]:.0f}% of EU firms; AI is at "
+        f"{AI_USE.iloc[-1]:.0f}%. Usage is broad but shallow, and AI adds to "
+        f"the security bill as published vulnerabilities hit records.\n"
         f"- **Integrated incumbents will be harder to displace than carriers "
         f"were.** Every layer is racing to own distribution, data and customer "
         f"lock-in, and today's leaders produce the intelligence itself and "
@@ -327,7 +373,8 @@ with tab_overview:
         "ones (telecoms +1%, integrators +5%); growth only builds value where "
         "the return clears the band. Growth basis: 3-yr revenue CAGR 2022-2025, "
         "except NeoClouds (2-yr, CoreWeave) and the labs (Anthropic and OpenAI "
-        "combined run-rate \\$29B in Dec-25 to \\$131B in Oct-26, annualized), "
+        "combined run-rate \\$30B in Dec-25 to \\$131B in Oct-26, annualized, "
+        "per Epoch AI), "
         "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
         f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
 
@@ -375,16 +422,29 @@ with tab_overview:
 # --------------------------------------------------------------------------- #
 with tab_silicon:
     st.markdown("### 1 · Silicon & IP")
+    _m25 = SEMI_SEG[(SEMI_REP_YR, "Memory (storage)")]
+    _m26 = SEMI_SEG[(SEMI_REP_YR + 1, "Memory (storage)")]
     st.markdown(
-        "- **AI has driven the sharpest chip upswing since the dot-com era.** "
-        "Sales reached \\$792B in 2025 (+26%) and are forecast to pass \\$1T in "
-        "2026. Past cycles turned every 3 to 4 years.\n"
+        "- **AI has driven the sharpest chip upswing on record.** Sales reached "
+        f"\\${SEMI[SEMI_REP_YR]:,.0f}B in {SEMI_REP_YR} "
+        f"(+{(SEMI[SEMI_REP_YR] / SEMI[SEMI_REP_YR - 1] - 1) * 100:.0f}%). WSTS "
+        f"forecasts \\${SEMI_FC.iloc[0] / 1000:.2f}T for {SEMI_FC.index[0]} and "
+        f"\\${SEMI_FC.iloc[1] / 1000:.2f}T for {SEMI_FC.index[1]}, and billings "
+        f"through {SEMI_LAST_LABEL} already total "
+        f"\\${SEMI_YTD['billings_b'].sum() / 1000:.2f}T.\n"
+        "- **The industry is deeply cyclical.** Monthly billings swung from "
+        f"{SEMI_TROUGH['yoy_pct']:.0f}% year on year in "
+        f"{pd.Timestamp(SEMI_TROUGH['month']):%Y} to "
+        f"+{SEMI_LAST['yoy_pct']:.0f}% in {SEMI_LAST_LABEL}, far above any "
+        f"earlier peak (+{SEMI_PREV_PEAK:.0f}%). Each boom has so far ended in "
+        "a downturn within 2 to 3 years.\n"
         "- **The surge sits in compute and memory, the two most cyclical "
         "segments.** Logic (home of accelerators, the specialized chips, mostly "
         "NVIDIA GPUs, that train and run AI models) and memory (including "
-        "high-bandwidth memory, HBM, stacked beside them) "
-        "drive the 2025-26 growth; analog, microcontrollers and discrete chips "
-        "grow with the wider economy.\n"
+        "high-bandwidth memory, HBM, stacked beside them) drive the growth. "
+        f"Memory alone rises from \\${_m25:,.0f}B to \\${_m26:,.0f}B in "
+        f"{SEMI_REP_YR + 1} on WSTS's forecast; analog, microcontrollers and "
+        "discrete chips grow with the wider economy.\n"
         "- **NVIDIA dominates accelerators.** Data-center revenue was \\$194B "
         "in FY2026 and \\$89B in the July 2026 quarter alone, about 92% of "
         "company revenue; AMD is a distant second.\n"
@@ -408,32 +468,70 @@ with tab_silicon:
     figsem.add_trace(go.Bar(x=hist["year"], y=hist["sales_b"],
                             marker_color=BLUE, name="Reported"))
     figsem.add_trace(go.Bar(x=fc["year"], y=fc["sales_b"], marker_color=BLUE,
-                            marker_pattern_shape="/", name="2026 forecast"))
+                            marker_pattern_shape="/", name="WSTS forecast"))
     figsem.update_layout(height=380, yaxis_title="Annual sales ($B)",
                          xaxis_title="Year", legend_title="",
                          hovermode="x unified")
     st.plotly_chart(figsem, width="stretch")
     st.caption(
-        "**Sources:** WSTS, SIA (worldwide semiconductor billings, annual).  \n**Notes:** "
-        "the industry cycles (2001 down 32%, 2009, 2019, 2023) but each peak is "
-        "higher; the AI leg (+26% in 2025, about \\$1T forecast for 2026) is "
-        f"the steepest rise since the dot-com era. Data as of {DATA_UPDATED}.")
+        "**Sources:** WSTS Historical Billings Report; WSTS Spring 2026 "
+        "forecast (Jun-2026).  \n**Notes:** the industry cycles (2001 down "
+        f"{(1 - SEMI[2001] / SEMI[2000]) * 100:.0f}%, 2009, 2019, 2023) but each "
+        f"peak is higher. Billings through {SEMI_LAST_LABEL} "
+        f"(\\${SEMI_YTD['billings_b'].sum():,.0f}B) already equal "
+        f"{SEMI_YTD['billings_b'].sum() / SEMI_FC.iloc[0] * 100:.0f}% of the "
+        f"{SEMI_FC.index[0]} forecast; WSTS updates it in December.")
+
+    st.markdown("#### Monthly billings: the cycle in one chart")
+    sm = semis_m.dropna(subset=["yoy_pct"]).copy()
+    sm["month"] = pd.to_datetime(sm["month"])
+    figcyc = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                           vertical_spacing=0.06, row_heights=[0.5, 0.5])
+    figcyc.add_trace(go.Scatter(
+        x=sm["month"], y=sm["billings_3mma_b"], name="Monthly billings ($B)",
+        mode="lines", line=dict(color=BLUE, width=2)), row=1, col=1)
+    figcyc.add_trace(go.Bar(
+        x=sm["month"], y=sm["yoy_pct"], name="Year-on-year growth (%)",
+        marker_color=[GREEN if v >= 0 else RED for v in sm["yoy_pct"]],
+        marker_line_width=0), row=2, col=1)
+    figcyc.update_yaxes(title_text="$B per month (log)", type="log",
+                        row=1, col=1)
+    figcyc.update_yaxes(title_text="YoY %", row=2, col=1)
+    figcyc.update_layout(height=480, showlegend=False, bargap=0,
+                         hovermode="x unified")
+    st.plotly_chart(figcyc, width="stretch")
+    st.caption(
+        "**Sources:** WSTS Historical Billings Report (monthly, 1986 to "
+        f"{SEMI_LAST_LABEL}).  \n**Notes:** worldwide billings as a 3-month "
+        "moving average, the basis WSTS and the SIA report; the top panel uses "
+        "a log scale so earlier cycles stay visible. Red bars mark "
+        "contraction; the 1996-98, 2001, 2009, 2019 and 2023 downturns each "
+        f"followed a boom. Latest month: \\${SEMI_LAST['billings_3mma_b']:.0f}B, "
+        f"+{SEMI_LAST['yoy_pct']:.0f}% year on year.")
 
     st.markdown("#### Market by segment: compute, memory and the base (\\$B)")
-    figseg = px.bar(
-        semis_segments, x="year", y="sales_b", color="segment", barmode="stack",
-        color_discrete_map={"Logic (compute)": BLUE,
-                            "Memory (storage)": GREEN,
-                            "Other (analog/micro/discrete)": GREY},
-        labels={"year": "Year", "sales_b": "Sales ($B)", "segment": ""})
-    figseg.update_layout(height=380, legend_title="", hovermode="x unified")
+    figseg = go.Figure()
+    for seg, color in (("Logic (compute)", BLUE), ("Memory (storage)", GREEN),
+                       ("Other (analog/micro/discrete)", GREY)):
+        s = semis_segments[semis_segments["segment"] == seg]
+        figseg.add_trace(go.Bar(
+            x=s["year"], y=s["sales_b"], name=seg, marker_color=color,
+            marker_pattern_shape=["/" if t == "forecast" else ""
+                                  for t in s["source_type"]]))
+    figseg.update_layout(barmode="stack", height=380, legend_title="",
+                         hovermode="x unified", yaxis_title="Sales ($B)",
+                         xaxis_title="Year")
     st.plotly_chart(figseg, width="stretch")
+    _mem = semis_segments[semis_segments["segment"] == "Memory (storage)"]
+    _mem_tr = _mem[_mem["year"] <= SEMI_REP_YR].nsmallest(1, "sales_b").iloc[0]
     st.caption(
-        "**Sources:** WSTS (segment splits approximate; 2026 forecast).  \n**Notes:** "
-        "logic (compute) is the largest segment and hosts AI accelerators; "
-        "memory is the most cyclical, swinging from a \\$92B trough (2023) to a "
-        "forecast \\$300B (2026) on HBM. The AI surge concentrates in logic and "
-        f"memory, which set the chain's supply constraints. Data as of {DATA_UPDATED}.")
+        "**Sources:** WSTS (2020-24 splits approximate; 2025-27 from the Spring "
+        "2026 release, 2026-27 forecast and hatched).  \n**Notes:** memory is "
+        f"the most cyclical segment, from a \\${_mem_tr['sales_b']:.0f}B trough "
+        f"({_mem_tr['year']}) to a forecast \\${_m26:,.0f}B "
+        f"({SEMI_REP_YR + 1}) on HBM and memory prices, overtaking logic. The AI "
+        "surge concentrates in logic and memory, which set the chain's supply "
+        f"constraints. Data as of {DATA_UPDATED}.")
 
     st.markdown("#### Revenue by key player (\\$B)")
     figsi = px.bar(
@@ -679,10 +777,24 @@ with tab_network:
 # --------------------------------------------------------------------------- #
 with tab_dc:
     st.markdown("### 5 · Data Centers")
+    _con = dc_con[dc_con["source_type"] == "reported"].set_index("year")
+    _rr = dc_con[dc_con["source_type"] == "run-rate"].iloc[0]
+    _cy = int(_con.index.max())
+    _rr_label = _rr["note"].split(", ")[-1]
+    _pw = dc_power.set_index("region")
+    _pw["y2030"] = _pw["installed_2025_gw"] + _pw["added_to_2030_gw"]
     st.markdown(
-        "- **US data-center construction is overtaking office construction.** "
-        "The two crossed on a monthly run-rate in late 2025, and data centers "
-        "are on track to lead for the full year in 2026.\n"
+        "- **US data-center construction now outpaces offices, warehouses and "
+        f"retail.** In {_cy} it drew \\${_con.loc[_cy, 'datacenter_b']:.0f}B, "
+        f"level with offices (\\${_con.loc[_cy, 'office_b']:.0f}B) and retail "
+        f"(\\${_con.loc[_cy, 'retail_b']:.0f}B). By {_rr_label} it ran at "
+        f"\\${_rr['datacenter_b']:.0f}B a year, about twice warehouses "
+        f"(\\${_rr['warehouse_b']:.0f}B), offices or retail.\n"
+        "- **The US leads the capacity race.** Morgan Stanley expects the US to "
+        f"add about {_pw.loc['United States', 'added_to_2030_gw']:.0f} GW by "
+        f"2030, China {_pw.loc['China', 'added_to_2030_gw']:.0f} GW and Europe "
+        f"{_pw.loc['Europe', 'added_to_2030_gw']:.0f} GW, roughly tripling US "
+        "capacity.\n"
         f"- **About {gw['capacity_gw'].sum():.0f} GW of gigawatt-scale capacity "
         "is announced.** It comes from hyperscaler self-build, colocation "
         "providers (Equinix, Digital Realty, who own the building and power and "
@@ -696,27 +808,69 @@ with tab_dc:
         "generation and nuclear deals a competitive edge.")
 
     st.markdown("---")
-    st.markdown("#### Data center vs office construction (US, \\$B/year)")
-    st.caption("Annual spend; the two are converging as offices fall and data "
-               "centers climb.")
+    st.markdown("#### Data centers vs offices, warehouses and retail "
+                "(US construction, \\$B/year)")
     figdc = go.Figure()
-    figdc.add_trace(go.Scatter(
-        x=dc_con["year"], y=dc_con["datacenter_b"], name="Data centers",
-        mode="lines+markers", line=dict(color=BLUE, width=3)))
-    figdc.add_trace(go.Scatter(
-        x=dc_con["year"], y=dc_con["office_b"], name="Offices",
-        mode="lines+markers", line=dict(color=GREY, width=3, dash="dot")))
-    figdc.update_layout(height=320, legend_title="", yaxis_title="$B / year",
-                        xaxis_title="Year", hovermode="x unified")
-    figdc.update_xaxes(dtick=1, tickangle=-45)
+    _rr_x = _cy + 1
+    for col, name, color, dash in (
+            ("datacenter_b", "Data centers", BLUE, "solid"),
+            ("warehouse_b", "Warehouses", YELLOW, "solid"),
+            ("retail_b", "Retail", GREEN, "solid"),
+            ("office_b", "Offices", GREY, "dot")):
+        figdc.add_trace(go.Scatter(
+            x=_con.index, y=_con[col], name=name, legendgroup=name,
+            mode="lines+markers", line=dict(color=color, width=3, dash=dash)))
+        figdc.add_trace(go.Scatter(
+            x=[_cy, _rr_x], y=[_con.loc[_cy, col], _rr[col]], name=name,
+            legendgroup=name, showlegend=False, mode="lines+markers",
+            line=dict(color=color, width=2, dash="dash"),
+            marker=dict(symbol=["circle", "diamond-open"], size=[6, 11])))
+    figdc.update_layout(height=360, legend_title="", yaxis_title="$B / year",
+                        xaxis_title="", hovermode="x unified")
+    figdc.update_xaxes(
+        tickvals=list(_con.index) + [_rr_x],
+        ticktext=[str(y) for y in _con.index] + [f"{_rr_label}<br>run-rate"],
+        tickangle=-45)
     st.plotly_chart(figdc, width="stretch")
+    _wh_pk = _con["warehouse_b"].idxmax()
     st.caption(
-        "**Sources:** US Census construction spending (2015-2022 monthly via Our "
-        "World in Data; 2023-25 benchmark-revised annuals; office mid-years "
-        "approximate).  \n**Notes:** data-center spend went from about \\$3B (2015) to "
-        "about \\$41B (2025); office peaked near \\$72B (2020) and fell to "
-        "\\$49B. On a monthly run-rate the two crossed in Dec 2025. Data as of "
-        f"{DATA_UPDATED}.")
+        "**Sources:** US Census Bureau, Value of Construction Put in Place "
+        f"(private, {_con.index.min()}-{_cy} calendar-year totals; "
+        f"{_rr_label} seasonally adjusted annual rate).  \n**Notes:** offices "
+        "are general offices, which excludes data centers (Census files them "
+        "under office); retail is commercial building excluding warehouses and "
+        f"farms. Data centers grew from \\${_con['datacenter_b'].iloc[0]:.0f}B "
+        f"({_con.index.min()}) to \\${_con.loc[_cy, 'datacenter_b']:.0f}B "
+        f"({_cy}). Warehouses peaked at \\${_con['warehouse_b'].max():.0f}B in "
+        f"{_wh_pk} after the e-commerce boom and have since fallen "
+        f"{(1 - _rr['warehouse_b'] / _con['warehouse_b'].max()) * 100:.0f}%.")
+
+    st.markdown("#### Data center capacity by region, 2025 vs 2030E (GW)")
+    _pwp = _pw.reset_index()
+    figpw = go.Figure()
+    figpw.add_trace(go.Bar(
+        x=_pwp["region"], y=_pwp["installed_2025_gw"], name="2025 installed",
+        marker_color=BLUE, text=_pwp["installed_2025_gw"],
+        texttemplate="%{text:.0f} GW", textposition="outside"))
+    figpw.add_trace(go.Bar(
+        x=_pwp["region"], y=_pwp["y2030"], name="2030E",
+        marker_color=BLUE, marker_pattern_shape="/",
+        text=[f"{v:.0f} GW (+{a:.0f})" for v, a in
+              zip(_pwp["y2030"], _pwp["added_to_2030_gw"])],
+        texttemplate="%{text}", textposition="outside"))
+    figpw.update_layout(height=360, barmode="group", legend_title="",
+                        yaxis_title="IT capacity (GW)",
+                        yaxis_range=[0, _pwp["y2030"].max() * 1.18])
+    st.plotly_chart(figpw, width="stretch")
+    st.caption(
+        "**Sources:** 2025 installed base: DC Market Insights (Nov-2026); "
+        "additions to 2030: Morgan Stanley (Nov-2026), via press coverage.  \n"
+        "**Notes:** IT load, the power available to servers (facility power "
+        "with cooling is about a third higher). 2030E adds Morgan Stanley's "
+        "projected additions to the 2025 base; the two sources differ in method, "
+        "so read the levels as indicative. The implied US figure "
+        f"({_pw.loc['United States', 'y2030']:.0f} GW) is close to Goldman "
+        "Sachs's 152 GW. Europe is the region as each source defines it.")
 
     st.markdown("---")
     st.markdown("#### Gigawatt-scale buildout")
@@ -1185,13 +1339,13 @@ with tab_labs:
         "combined, and their compute commitments underwrite NeoCloud backlogs "
         "and hyperscaler buildouts. Anthropic has filed to go public; its S-1 "
         "puts Q3 2026 revenue at \\$17.0B.\n"
-        "- **Serving models is profitable; training the next one is where labs "
-        "lose money.** Inference runs at roughly 40 to 50% gross margin "
-        "(industry estimates), but each new model costs more to train than the "
-        "labs earn.\n"
-        "- **Usage is broad but shallow.** 900M to 1B people use ChatGPT weekly "
-        "but only 5 to 6% pay, and 55% of US adults have tried generative AI "
-        "but only about 12% use it every workday.\n"
+        "- **Serving models is profitable; training and research absorb the "
+        "margin.** Anthropic's prospectus shows cost of revenue (mostly "
+        f"inference compute) falling from {UE_PCT.loc['FY2024', 'inference_m']:.0f}% "
+        f"of revenue in 2024 to {UE_PCT.loc[UE_LAST, 'inference_m']:.0f}% in "
+        f"the first nine months of 2026. Research and development (mostly "
+        f"compute for training and research) took {UE_PCT.loc[UE_LAST, 'training_research_m']:.0f}% "
+        f"of revenue, leaving an operating margin of {UE_OPM[UE_LAST]:.0f}%.\n"
         "- **Frontier capability has converged.** The three US leaders score "
         f"within about {GPQA_TOP.max() - GPQA_TOP.min():.0f} points of each other "
         f"({GPQA_TOP.min():.1f} to {GPQA_TOP.max():.1f}) on GPQA-Diamond, and "
@@ -1201,9 +1355,9 @@ with tab_labs:
         "frontier by single digits at one-third to one-tenth of the price "
         "(DeepSeek about \\$0.27 per million input tokens). Open weights can be "
         "self-hosted, which pushes API switching costs toward zero.\n"
-        "- **Spending and startups are moving to the application layer.** "
-        "Enterprise AI application spend reached \\$19B in 2025, and about 80% "
-        "of Y Combinator's 2025 companies are AI startups.")
+        "- **Startups are moving to the application layer.** About 80% of Y "
+        "Combinator's 2025 companies are AI startups (customer adoption and "
+        "spend are on the Customer tab).")
 
     st.markdown("---")
     c1, c2 = st.columns(2)
@@ -1272,55 +1426,70 @@ with tab_labs:
         f"OpenAI about \\${LAB_RR['Anthropic'] + LAB_RR['OpenAI']:.0f}B "
         f"combined). Data as of {DATA_UPDATED}.")
 
-    st.markdown("#### ChatGPT weekly active users (millions)")
-    figw = px.area(chatgpt, x="date", y="wau_m",
-                   labels={"date": "", "wau_m": "Weekly active users (M)"})
-    figw.update_traces(line_color="#10A37F",
-                       fillcolor="rgba(16,163,127,0.2)")
-    figw.update_layout(height=280)
-    st.plotly_chart(figw, width="stretch")
+    st.markdown("#### OpenAI vs Anthropic: annualized revenue over time (\\$B)")
+    lh = lab_hist.copy()
+    lh["date"] = pd.to_datetime(lh["date"])
+    figlh = px.line(
+        lh, x="date", y="run_rate_b", color="company", markers=True,
+        color_discrete_map={"Anthropic": "#D2691E", "OpenAI": "#10A37F"},
+        hover_data={"confidence": True, "source_type": True},
+        labels={"date": "", "run_rate_b": "Annualized revenue ($B)",
+                "company": "", "confidence": "Confidence",
+                "source_type": "Source"})
+    figlh.update_layout(height=360, legend_title="", hovermode="x unified")
+    st.plotly_chart(figlh, width="stretch")
+    _lh_last = lh.sort_values("date").groupby("company").last()
     st.caption(
-        "**Sources:** OpenAI disclosures (May-2026 figure a third-party estimate, "
-        "flagged in data).  \n**Notes:** weekly active users went from 100M (Aug-23) "
-        "to 900M (Feb-26), with estimates past 1B by May 2026.")
+        "**Sources:** Epoch AI, AI companies revenue reports (company "
+        "disclosures, Anthropic S-1, press reports).  \n**Notes:** annualized "
+        "run-rates as reported, so the definitions vary. Anthropic reached "
+        f"\\${_lh_last.loc['Anthropic', 'run_rate_b']:.0f}B "
+        f"({_lh_last.loc['Anthropic', 'date']:%b-%y}) and OpenAI "
+        f"\\${_lh_last.loc['OpenAI', 'run_rate_b']:.0f}B "
+        f"({_lh_last.loc['OpenAI', 'date']:%b-%y}); Anthropic passed OpenAI "
+        "around April 2026. Anthropic reports gross of cloud-reseller spend, "
+        "OpenAI closer to net, which flatters the comparison.")
 
-    ud1, ud2 = st.columns(2)
-    with ud1:
-        st.markdown("#### Depth of use: broad but shallow (% of US adults)")
-        figud = px.bar(usage_depth, x="share_pct", y="measure",
-                       orientation="h", text="share_pct",
-                       labels={"share_pct": "% of US adults (18-64)",
-                               "measure": ""})
-        figud.update_traces(marker_color=BLUE,
-                            texttemplate="%{text:.0f}%",
-                            textposition="outside")
-        figud.update_layout(height=300,
-                            xaxis_range=[0, 60],
-                            yaxis={"categoryorder": "total ascending"})
-        st.plotly_chart(figud, width="stretch")
-        st.caption(
-            "**Sources:** Bick, Blandin and Deming, Real-Time Population Survey "
-            "(NBER / St. Louis Fed / Fed FEDS note).  \n**Notes:** about 55% of US "
-            "working-age adults have used generative AI (2025 wave, up from 40% "
-            "in late 2024), but daily use stays low (about 12% every workday); "
-            "the two past-week measures are late-2024 readings, flagged in "
-            "data.")
-    with ud2:
-        st.markdown("#### Enterprise AI application spend, 2025 (\\$B)")
-        figes = px.bar(ent_spend.sort_values("spend_b"), x="spend_b",
-                       y="category", orientation="h", text="spend_b",
-                       labels={"spend_b": "Annual spend ($B)", "category": ""})
-        figes.update_traces(marker_color=GREEN,
-                            texttemplate="$%{text:.1f}B",
-                            textposition="outside")
-        figes.update_layout(height=300,
-                            xaxis_range=[0, ent_spend["spend_b"].max() * 1.25])
-        st.plotly_chart(figes, width="stretch")
-        st.caption(
-            "**Sources:** Menlo Ventures, State of Generative AI in the Enterprise "
-            "2025.  \n**Notes:** enterprise genAI application spend reached \\$19B in "
-            "2025 (of \\$37B total, up from \\$11.5B in 2024); coding tools are "
-            "the largest single use case at \\$4.2B.")
+    st.markdown("#### Anthropic unit economics: costs by function vs revenue "
+                "(\\$B)")
+    ue = ant_ue.copy()
+    ue_cols = [("inference_m", "Inference (cost of revenue)", BLUE),
+               ("training_research_m", "Training and research (R&D)", PURPLE),
+               ("distribution_m", "Distribution (sales and marketing)", YELLOW),
+               ("other_m", "Other (G&A and settlement)", GREY)]
+    figue = go.Figure()
+    for col, name, color in ue_cols:
+        figue.add_trace(go.Bar(
+            x=ue["period"], y=ue[col] / 1000, name=name, marker_color=color,
+            customdata=ue[col] / ue["revenue_m"] * 100,
+            hovertemplate="%{y:$,.1f}B (%{customdata:.0f}% of revenue)"))
+    _ann = ue["period"].str.startswith("FY")
+    for mask, show in ((_ann, True), (~_ann, False)):
+        figue.add_trace(go.Scatter(
+            x=ue.loc[mask, "period"], y=ue.loc[mask, "revenue_m"] / 1000,
+            name="Revenue", legendgroup="rev", showlegend=show,
+            mode="lines+markers+text", line=dict(color="#202124", width=3),
+            marker=dict(size=9), text=ue.loc[mask, "revenue_m"] / 1000,
+            texttemplate="$%{text:.1f}B", textposition="top center",
+            hovertemplate="%{y:$,.1f}B"))
+    figue.add_vline(x=2.5, line_dash="dot", line_color=GREY)
+    figue.update_layout(barmode="stack", height=420, legend_title="",
+                        yaxis_title="$B", hovermode="x unified",
+                        legend=dict(traceorder="reversed"))
+    st.plotly_chart(figue, width="stretch")
+    st.caption(
+        "**Sources:** Anthropic final prospectus (424B4, Nov-2026), "
+        "supplemental operating expense information.  \n**Notes:** full years "
+        "left of the line, nine months to September right of it. Inference is "
+        "cost of revenue, substantially all compute serving customers. Training "
+        "and research is R&D, mostly compute for model development, research "
+        "and internal use plus staff. Distribution is sales and marketing, "
+        "including channel-partner fees and free-tier compute. Other includes a "
+        f"\\${UE.loc['FY2025', 'bartz_settlement_m'] / 1000:.1f}B copyright "
+        "settlement in 2025. Costs include stock-based compensation. Inference "
+        f"cost per dollar of revenue fell from \\${UE.loc['FY2024', 'inference_m'] / UE.loc['FY2024', 'revenue_m']:.2f} "
+        f"(2024) to \\${UE.loc[UE_LAST, 'inference_m'] / UE.loc[UE_LAST, 'revenue_m']:.2f} "
+        f"({UE_LAST}).")
 
     st.markdown("#### Y Combinator: AI share of startup batches (%)")
     figyc = go.Figure()
@@ -1382,7 +1551,16 @@ with tab_si:
         "revenue fell 0.5% in dollars (2.4% in constant currency) in its year "
         "to March 2026, while Accenture, weighted to higher-end transformation "
         "work, grew 6% in dollars (5% in local currency) in its year to August "
-        "2026 and guides 3 to 6% for FY2027.")
+        "2026 and guides 3 to 6% for FY2027.\n"
+        "- **The labs are moving into integrators' market.** In May 2026 "
+        "Anthropic launched an AI services company with Blackstone, Hellman & "
+        "Friedman and Goldman Sachs (about \\$1.5B committed, per the WSJ). "
+        "Anthropic engineers work inside it to deploy Claude at mid-sized "
+        "firms, a segment the large integrators serve less. OpenAI pairs its "
+        "own forward-deployed engineers (staff embedded at the client) with "
+        "McKinsey, BCG, Accenture and Capgemini. The labs still call "
+        "integrators partners, but they now compete for the deployment work "
+        "and the client relationship.")
 
     st.markdown("---")
     st.markdown("#### Revenue by key player (\\$B)")
@@ -1403,18 +1581,15 @@ with tab_si:
         "embedded in a larger group.")
 
     st.markdown("#### Accenture GenAI new bookings since 2023 (\\$B)")
-    gb = genai_bookings.copy()
-    gb["cumulative_b"] = gb["bookings_b"].cumsum()
+    gb = genai_bookings
     figgb = go.Figure()
     figgb.add_trace(go.Bar(x=gb["period"], y=gb["bookings_b"],
                            name="New bookings per period",
-                           marker_color="#A100FF"))
-    figgb.add_trace(go.Scatter(x=gb["period"], y=gb["cumulative_b"],
-                               name="Cumulative since 2023",
-                               mode="lines+markers",
-                               line=dict(color="#202124", width=3)))
-    figgb.update_layout(height=340, legend_title="",
-                        yaxis_title="$B", hovermode="x unified")
+                           marker_color="#A100FF", text=gb["bookings_b"],
+                           texttemplate="$%{text:.1f}B",
+                           textposition="outside"))
+    figgb.update_layout(height=340, showlegend=False, yaxis_title="$B",
+                        yaxis_range=[0, gb["bookings_b"].max() * 1.2])
     st.plotly_chart(figgb, width="stretch")
     st.caption(
         "**Sources:** Accenture 8-K filings.  \n**Notes:** GenAI new bookings ran \\$0.3B "
@@ -1613,3 +1788,142 @@ with tab_telco:
         "April 2022 spin-off; Verizon's 2022 capex peak is C-Band, T-Mobile's "
         "2021-22 peak is Sprint integration. Steady-state capex near \\$50B "
         f"with no 6G spike. Data as of {DATA_UPDATED}.")
+
+# --------------------------------------------------------------------------- #
+# 11 · Customer — adoption, usage depth, spend and security
+# --------------------------------------------------------------------------- #
+with tab_customer:
+    st.markdown("### 11 · Customer")
+    _c0, _c1 = int(CLOUD.index.min()), int(CLOUD.index.max())
+    _a0, _a1 = int(AI_USE.index.min()), int(AI_USE.index.max())
+    _match = int((CLOUD - AI_USE[_a1]).abs().idxmin())   # cloud year at AI's level
+    st.markdown(
+        "- **Enterprise adoption takes more than a decade.** Paid cloud use "
+        f"among EU firms rose from {CLOUD[_c0]:.0f}% in {_c0} to "
+        f"{CLOUD[_c1]:.0f}% in {_c1}, and only {CLOUD_SOPH[_c1]:.0f}% use "
+        "sophisticated services such as cloud databases, security or "
+        "development platforms.\n"
+        "- **AI is early on the same curve.** "
+        f"{AI_USE[_a1]:.0f}% of EU firms used at least one AI technology in "
+        f"{_a1}, up from {AI_USE[_a0]:.0f}% in {_a0}: about where cloud stood "
+        f"in {_match}. In the US, 17 to 20% of firms reported using AI in the "
+        "Census Bureau's survey (Dec 2025 to May 2026).\n"
+        "- **Consumer usage is broad but shallow.** 900M to 1B people use "
+        "ChatGPT weekly but only 5 to 6% pay, and 55% of US adults have tried "
+        "generative AI but only about 12% use it every workday.\n"
+        "- **Enterprise spend is shifting to applications.** Enterprise AI "
+        "application spend reached \\$19B in 2025, led by "
+        + listing([f"{c.lower()} (\\${v:.1f}B)" for c, v in
+                   ent_spend.nlargest(2, "spend_b")[["category", "spend_b"]]
+                   .itertuples(index=False)]) + ".\n"
+        "- **AI raises the security bill.** "
+        f"{CVE[CVE_LAST]:,.0f} software vulnerabilities (CVEs, the public "
+        f"catalog of known flaws) were published in the first nine months of "
+        f"{CVE_LAST}, against {CVE[CVE_FULL]:,.0f} in all of {CVE_FULL}. AI "
+        "tools find flaws faster than vendors can patch them, and AI-written "
+        "code failed security tests in 45% of tasks in Veracode's 2025 "
+        "benchmark.")
+
+    st.markdown("---")
+    st.markdown("#### How long adoption takes: cloud vs AI "
+                "(% of EU enterprises)")
+    _ad = adoption.dropna(subset=["share_pct"])
+    figad = px.line(
+        _ad, x="year", y="share_pct", color="series", markers=True,
+        color_discrete_map={"Cloud: any paid service": BLUE,
+                            "Cloud: sophisticated services": "#0B57D0",
+                            "AI: any AI technology": RED},
+        labels={"year": "", "share_pct": "% of enterprises", "series": ""})
+    figad.update_traces(selector=dict(name="Cloud: sophisticated services"),
+                        line_dash="dot")
+    figad.add_hline(y=50, line_dash="dash", line_color=GREY,
+                    annotation_text="half of firms")
+    figad.update_layout(height=380, legend_title="", yaxis_range=[0, 100],
+                        hovermode="x unified")
+    st.plotly_chart(figad, width="stretch")
+    st.caption(
+        "**Sources:** Eurostat, ICT usage in enterprises (isoc_cicce_use, "
+        "isoc_eb_ai), EU27, firms with 10+ employees.  \n**Notes:** "
+        "sophisticated cloud means security, databases or development "
+        "platforms, measured since 2021. Large firms (250+ staff) adopt faster: "
+        "85% use paid cloud. The survey runs every one or two years, and its "
+        "AI technologies include text and image generation, speech and machine "
+        "learning.")
+
+    st.markdown("#### ChatGPT weekly active users (millions)")
+    figw = px.area(chatgpt, x="date", y="wau_m",
+                   labels={"date": "", "wau_m": "Weekly active users (M)"})
+    figw.update_traces(line_color="#10A37F",
+                       fillcolor="rgba(16,163,127,0.2)")
+    figw.update_layout(height=280)
+    st.plotly_chart(figw, width="stretch")
+    st.caption(
+        "**Sources:** OpenAI disclosures (May-2026 figure a third-party estimate, "
+        "flagged in data).  \n**Notes:** weekly active users went from 100M (Aug-23) "
+        "to 900M (Feb-26), with estimates past 1B by May 2026.")
+
+    ud1, ud2 = st.columns(2)
+    with ud1:
+        st.markdown("#### Depth of use: broad but shallow (% of US adults)")
+        figud = px.bar(usage_depth, x="share_pct", y="measure",
+                       orientation="h", text="share_pct",
+                       labels={"share_pct": "% of US adults (18-64)",
+                               "measure": ""})
+        figud.update_traces(marker_color=BLUE,
+                            texttemplate="%{text:.0f}%",
+                            textposition="outside")
+        figud.update_layout(height=300,
+                            xaxis_range=[0, 60],
+                            yaxis={"categoryorder": "total ascending"})
+        st.plotly_chart(figud, width="stretch")
+        st.caption(
+            "**Sources:** Bick, Blandin and Deming, Real-Time Population Survey "
+            "(NBER / St. Louis Fed / Fed FEDS note).  \n**Notes:** about 55% of US "
+            "working-age adults have used generative AI (2025 wave, up from 40% "
+            "in late 2024), but daily use stays low (about 12% every workday); "
+            "the two past-week measures are late-2024 readings, flagged in "
+            "data.")
+    with ud2:
+        st.markdown("#### Enterprise AI application spend, 2025 (\\$B)")
+        figes = px.bar(ent_spend.sort_values("spend_b"), x="spend_b",
+                       y="category", orientation="h", text="spend_b",
+                       labels={"spend_b": "Annual spend ($B)", "category": ""})
+        figes.update_traces(marker_color=GREEN,
+                            texttemplate="$%{text:.1f}B",
+                            textposition="outside")
+        figes.update_layout(height=300,
+                            xaxis_range=[0, ent_spend["spend_b"].max() * 1.25])
+        st.plotly_chart(figes, width="stretch")
+        st.caption(
+            "**Sources:** Menlo Ventures, State of Generative AI in the Enterprise "
+            "2025.  \n**Notes:** enterprise genAI application spend reached \\$19B in "
+            "2025 (of \\$37B total, up from \\$11.5B in 2024); coding tools are "
+            "the largest single use case at \\$4.2B.")
+
+    st.markdown("#### Software vulnerabilities published per year (CVEs)")
+    figcve = go.Figure()
+    _cr = cves[cves["source_type"] == "reported"]
+    _cy_ = cves[cves["source_type"] == "ytd"]
+    figcve.add_trace(go.Bar(x=_cr["year"], y=_cr["cves"], name="Full year",
+                            marker_color=RED, text=_cr["cves"],
+                            texttemplate="%{text:,.0f}",
+                            textposition="outside"))
+    figcve.add_trace(go.Bar(x=_cy_["year"], y=_cy_["cves"],
+                            name="Jan-Sep (year to date)", marker_color=RED,
+                            marker_pattern_shape="/", text=_cy_["cves"],
+                            texttemplate="%{text:,.0f}",
+                            textposition="outside"))
+    figcve.update_layout(height=360, legend_title="", yaxis_title="CVEs",
+                         yaxis_range=[0, cves["cves"].max() * 1.15])
+    figcve.update_xaxes(dtick=1)
+    st.plotly_chart(figcve, width="stretch")
+    st.caption(
+        "**Sources:** NIST National Vulnerability Database (CVEs by publication "
+        "date, rejected records excluded); Veracode GenAI Code Security Reports "
+        "(2025, 2026).  \n**Notes:** the count measures disclosure, so it "
+        "rises both because AI-written code adds flaws and because AI tools "
+        "find old ones faster (Google, Microsoft and Oracle credit AI for "
+        "record 2026 tallies). Either way, customers face a larger patching "
+        "load. Exploited vulnerabilities have not risen in step. Veracode's "
+        "2026 security pass rate for AI-generated code was 56%, unchanged on "
+        "2025.")

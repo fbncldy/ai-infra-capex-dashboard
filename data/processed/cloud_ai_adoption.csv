@@ -1,0 +1,15 @@
+series,year,share_pct,source_type
+Cloud: any paid service,2014,17.8,reported
+Cloud: any paid service,2016,18.9,reported
+Cloud: any paid service,2018,23.9,reported
+Cloud: any paid service,2020,36.1,reported
+Cloud: any paid service,2021,41.0,reported
+Cloud: any paid service,2023,45.3,reported
+Cloud: any paid service,2025,52.7,reported
+Cloud: sophisticated services,2021,29.8,reported
+Cloud: sophisticated services,2023,34.1,reported
+Cloud: sophisticated services,2025,40.9,reported
+AI: any AI technology,2021,7.7,reported
+AI: any AI technology,2023,8.1,reported
+AI: any AI technology,2024,13.5,reported
+AI: any AI technology,2025,19.9,reported
