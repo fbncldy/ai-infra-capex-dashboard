@@ -1,0 +1,18 @@
+company,year,revenue_b,source_type,note
+GE Vernova,2022,29.65,reported,10-K
+GE Vernova,2023,33.24,reported,10-K
+GE Vernova,2024,34.94,reported,10-K
+GE Vernova,2025,38.07,reported,10-K
+Vertiv,2020,4.37,reported,10-K
+Vertiv,2021,5.0,reported,10-K
+Vertiv,2022,5.69,reported,10-K
+Vertiv,2023,6.86,reported,10-K
+Vertiv,2024,8.01,reported,10-K
+Vertiv,2025,10.23,reported,10-K
+Vertiv,2026,14.65,guidance,2026 guidance $14.45-14.85B (Oct-2026)
+Eaton,2020,17.86,reported,10-K
+Eaton,2021,19.63,reported,10-K
+Eaton,2022,20.75,reported,10-K
+Eaton,2023,23.2,reported,10-K
+Eaton,2024,24.88,reported,10-K
+Eaton,2025,27.45,reported,10-K

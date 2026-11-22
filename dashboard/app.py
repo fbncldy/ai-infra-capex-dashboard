@@ -94,6 +94,8 @@ telco_roce = load_csv("telco_roce.csv")
 usage_depth = load_csv("ai_usage_depth.csv")
 ent_spend = load_csv("enterprise_ai_spend.csv")
 yc_share = load_csv("yc_ai_share.csv")
+equip = load_csv("equipment_vendors.csv")
+power_sup = load_csv("power_suppliers.csv")
 semis_m = load_csv("semis_monthly.csv")
 adoption = load_csv("cloud_ai_adoption.csv")
 lab_hist = load_csv("lab_revenue_history.csv")
@@ -201,26 +203,28 @@ COMPANY_COLORS = {
 st.title("The AI Value Chain")
 st.caption(
     "Who builds, who pays and who earns across the AI buildout: company "
-    "financials, capacity constraints and demand signals from silicon and "
-    "power through hyperscalers and the AI labs to the telecom networks that "
-    "distribute the output. Figures from filings and primary sources."
+    "financials, capacity constraints and demand signals from chipmaking "
+    "tools, materials and silicon through power, hyperscalers and the AI labs "
+    "to the networks and customers that use the output. Figures from filings "
+    "and primary sources."
 )
 
-(tab_overview, tab_silicon, tab_foundry, tab_systems, tab_network,
+(tab_overview, tab_equip, tab_silicon, tab_foundry, tab_systems, tab_network,
  tab_dc, tab_hyper, tab_neo, tab_labs, tab_si, tab_telco,
  tab_customer) = st.tabs([
     "📊 Overview",
-    "⚙️ 1·Silicon & IP",
-    "🏭 2·Foundry & Packaging",
-    "🖥️ 3·Servers",
-    "🔌 4·Networking",
-    "⚡ 5·Data Centers",
-    "☁️ 6·Hyperscalers",
-    "🌩️ 7·NeoClouds",
-    "🧠 8·AI Labs",
-    "🧩 9·System Integrators",
-    "📡 10·Telecoms",
-    "👥 11·Customer",
+    "🔬 1·Equipment & Materials",
+    "⚙️ 2·Silicon & IP",
+    "🏭 3·Foundry & Packaging",
+    "🖥️ 4·Servers",
+    "🔌 5·Networking",
+    "⚡ 6·Data Centers",
+    "☁️ 7·Hyperscalers",
+    "🌩️ 8·NeoClouds",
+    "🧠 9·AI Labs",
+    "🧩 10·System Integrators",
+    "📡 11·Telecoms",
+    "👥 12·Customer",
 ])
 
 # Capex view (all companies, all years), total capex
@@ -271,8 +275,11 @@ with tab_overview:
         f"re-price signed orders by 20 to 45% at delivery to pass memory costs "
         f"on. Micron's revenue "
         f"more than tripled to \\$133B in its year to September 2026 at an 81% "
-        f"gross margin. Power is next: about {gw['capacity_gw'].sum():.0f} GW "
-        f"of named projects wait on grid connections that take 3 to 5 years.\n"
+        f"gross margin. The squeeze reaches materials too: Ajinomoto, which "
+        f"makes about 95% of the film in AI-chip substrates, raised prices "
+        f"about 30%. Power is next: about {gw['capacity_gw'].sum():.0f} GW "
+        f"of named projects wait on grid connections that take 3 to 5 years, "
+        f"and GE Vernova's order backlog has reached \\$197B.\n"
         f"- **Hyperscalers have replaced telecoms as the largest infrastructure "
         f"spenders.** Global telecom capex (about "
         f"\\${TEL_CAPEX[TEL_REP_YR]:.0f}B in {TEL_REP_YR}, a second year below "
@@ -384,7 +391,9 @@ with tab_overview:
         "same measure over time. The 8-11% band "
         "is a common cost-of-capital reference. Returns concentrate in the "
         "asset-light layers and thin where capital sits without pricing power; "
-        "foundry is the exception, carried by TSMC's scarcity pricing. The "
+        "foundry is the exception, carried by TSMC's scarcity pricing, and "
+        "the chip-equipment oligopoly earns returns level with the chip "
+        "designers. The "
         "growth row (revenue growth, above each bar) separates young sub-band "
         "layers (NeoClouds, labs, compounding in triple digits) from mature "
         "ones (telecoms +1%, integrators +5%); growth only builds value where "
@@ -392,8 +401,10 @@ with tab_overview:
         "except NeoClouds (2-yr, CoreWeave) and the labs (Anthropic and OpenAI "
         "combined run-rate \\$30B in Dec-25 to \\$131B in Oct-26, annualized, "
         "per Epoch AI), "
-        "both off a small base. Labs estimated; Digital Realty, TCS, Deutsche Telekom and "
-        f"Nebius excluded for lack of comparable filings. Data as of {DATA_UPDATED}.")
+        "both off a small base. Chip equipment uses fiscal years (ASML "
+        "converted from euros). Labs estimated; Tokyo Electron, Digital Realty, "
+        "TCS, Deutsche Telekom and Nebius excluded for lack of comparable "
+        f"filings. Data as of {DATA_UPDATED}.")
 
     # --- Capital spending by layer -------------------------------------- #
     st.markdown("#### Capital spending across the AI value chain (\\$B)")
@@ -435,10 +446,143 @@ with tab_overview:
 
 
 # --------------------------------------------------------------------------- #
-# 1 · Silicon & IP  (accelerator design + HBM memory)
+# 1 · Equipment & Materials  (toolmakers, materials, raw-material chokepoints)
+# --------------------------------------------------------------------------- #
+with tab_equip:
+    st.markdown("### 1 · Equipment & Materials")
+    _eq = equip.pivot(index="year", columns="company", values="revenue_b")
+    _eq_full = _eq.dropna()                      # years with all four makers
+    _eq_last = int(_eq_full.index.max())
+    _eq_rl = roce_layer.set_index("layer").loc["Chip equipment"]
+    _fy26 = {c: (_eq.loc[2026, c] / _eq.loc[2025, c] - 1) * 100
+             for c in ("Applied Materials", "Lam Research", "KLA")}
+    st.markdown(
+        "- **Every chip starts with a handful of toolmakers.** ASML, Applied "
+        "Materials, Lam Research, KLA and Japan's Tokyo Electron supply the "
+        "lithography, deposition, etch and inspection tools in every fab. "
+        "ASML is the only maker of the EUV (extreme ultraviolet) lithography "
+        "machines that leading-edge chips require.\n"
+        "- **One layer's capex is the next layer's revenue.** Hyperscaler "
+        "capex becomes NVIDIA revenue, NVIDIA's orders drive foundry and "
+        "memory capex, and that capex lands here: the four listed toolmakers "
+        f"sold \\${_eq_full.loc[_eq_last].sum():.0f}B in their {_eq_last} "
+        "fiscal years.\n"
+        "- **Toolmakers earn among the highest returns in the chain.** Their "
+        f"aggregate ROCE is {_eq_rl['roce_pct']:.0f}%, level with the chip "
+        "designers, because a few firms each dominate a process step.\n"
+        "- **The AI wave reached the toolmakers in 2026.** Revenue grew only "
+        f"about {_eq_rl['growth_pct']:.0f}% a year from 2022 to 2025 as memory "
+        "and China spending swung, then fiscal 2026 brought "
+        f"+{_fy26['Applied Materials']:.0f}% at Applied Materials (a record "
+        f"\\${_eq.loc[2026, 'Applied Materials']:.1f}B), "
+        f"+{_fy26['Lam Research']:.0f}% at Lam and +{_fy26['KLA']:.0f}% at KLA.\n"
+        "- **Materials bottlenecks sit one step further up.** Ajinomoto makes "
+        "about 95% of the ABF film used in AI-chip substrates, raised prices "
+        "about 30% from the second half of 2026 and expects the shortage to "
+        "last through 2027.\n"
+        "- **Raw materials are a geopolitical chokepoint more than a value "
+        "pool.** China produces up to 98% of the world's gallium and refines "
+        "84% of the rare earths used in magnets, and has restricted exports "
+        "since late 2024. AI's share of their demand cannot be measured, so "
+        "they are tracked here as a risk.")
+
+    st.markdown("---")
+    st.markdown("#### Revenue by toolmaker (\\$B)")
+    figeq = px.bar(
+        equip, x="year", y="revenue_b", color="company", barmode="group",
+        color_discrete_map={"ASML": BLUE, "Applied Materials": GREEN,
+                            "Lam Research": YELLOW, "KLA": PURPLE},
+        labels={"year": "Fiscal year", "revenue_b": "Revenue ($B)",
+                "company": ""})
+    figeq.update_layout(height=380, hovermode="x unified", legend_title="")
+    st.plotly_chart(figeq, width="stretch")
+    st.caption(
+        "**Sources:** 10-K and 20-F filings (EDGAR XBRL); Applied Materials "
+        "FY2026 from its Nov-2026 results release.  \n**Notes:** fiscal years "
+        "end in October (Applied Materials), June (Lam, KLA) and December "
+        "(ASML, converted from euros at ECB annual average rates, so its "
+        "dollar growth includes currency moves). ASML has not yet reported "
+        "2026. Tokyo Electron is excluded because it does not file with the "
+        "SEC.")
+
+    st.markdown("#### Chipmaker capex vs toolmaker revenue (\\$B)")
+    _cm = capex_layer[capex_layer["layer"] == "Chipmakers"].set_index("year")
+    figcas = go.Figure()
+    figcas.add_trace(go.Bar(
+        x=_eq_full.index, y=_eq_full.sum(axis=1), name="Toolmaker revenue "
+        "(ASML, Applied, Lam, KLA)", marker_color=GREEN))
+    figcas.add_trace(go.Scatter(
+        x=_cm.index, y=_cm["capex_b"], name="TSMC + Micron capex",
+        mode="lines+markers", line=dict(color=BLUE, width=3)))
+    figcas.update_layout(height=340, hovermode="x unified", legend_title="",
+                         yaxis_title="$B", xaxis_title="")
+    st.plotly_chart(figcas, width="stretch")
+    st.caption(
+        "**Sources:** as above; chipmaker capex from the Overview capex chart "
+        "(2026 guidance).  \n**Notes:** the toolmakers also sell to Samsung, "
+        "SK Hynix, Intel and Chinese fabs, so their revenue exceeds the two "
+        "chipmakers' capex shown here; the line shows the direction of the "
+        "orders that reach them.")
+
+    st.markdown("#### Materials with AI bottlenecks")
+    st.dataframe(pd.DataFrame([
+        {"Material": "ABF build-up film", "Role": "Insulating layers in the "
+         "substrate under every AI chip package", "Key suppliers":
+         "Ajinomoto (about 95%), Sekisui; substrates: Ibiden, Unimicron, "
+         "Kinsus, Nan Ya PCB", "AI pressure point": "Film prices up about "
+         "30% from H2 2026; shortage expected through 2027; next Ajinomoto "
+         "plant due 2032"},
+        {"Material": "Silicon wafers", "Role": "Base disc every chip is "
+         "built on", "Key suppliers": "Shin-Etsu, SUMCO, GlobalWafers, "
+         "Siltronic, SK Siltron", "AI pressure point": "Five suppliers; "
+         "volumes track fab utilization"},
+        {"Material": "Photoresists", "Role": "Light-sensitive coatings that "
+         "carry the circuit pattern", "Key suppliers": "JSR, Tokyo Ohka "
+         "Kogyo, Shin-Etsu, Sumitomo Chemical", "AI pressure point":
+         "Leading-edge (EUV) resists come mainly from Japan"},
+        {"Material": "Glass core substrates", "Role": "Stiffer, flatter "
+         "replacement for organic substrates in large packages",
+         "Key suppliers": "Corning, SKC (Absolics), Intel",
+         "AI pressure point": "Pilot stage; relevant as AI packages outgrow "
+         "organic substrates"},
+    ]), width="stretch", hide_index=True)
+    st.caption(
+        "**Sources:** company disclosures; TrendForce, Tom's Hardware and "
+        "trade press (ABF share and pricing).  \n**Notes:** supplier lists "
+        "are the main names, not complete; shares are trade-press estimates.")
+
+    st.markdown("#### Raw-material chokepoints: China's share (%)")
+    _ck = pd.DataFrame([
+        ("Gallium production", 98, "GaN power chips in AI server power "
+         "supplies; RF chips"),
+        ("Rare-earth refining (magnet elements)", 84, "Magnets in cooling "
+         "fans, drives and generators"),
+        ("Refining, average of 19 strategic minerals", 70, "Copper, lithium, "
+         "graphite and others used across power and electronics")],
+        columns=["item", "share", "use"]).iloc[::-1]
+    figck = go.Figure(go.Bar(
+        x=_ck["share"], y=_ck["item"], orientation="h", marker_color=RED,
+        text=_ck["share"], texttemplate="%{text:.0f}%", textposition="outside",
+        customdata=_ck["use"],
+        hovertemplate="%{y}: %{x}%<br>%{customdata}<extra></extra>"))
+    figck.update_layout(height=260, xaxis_range=[0, 110],
+                        xaxis_title="China's share (%)")
+    st.plotly_chart(figck, width="stretch")
+    st.caption(
+        "**Sources:** USGS (gallium, 2026); IEA Global Critical Minerals "
+        "Outlook 2025 (refining average, China leads 19 of 20 minerals) and "
+        "2026 (rare-earth magnet refining).  \n**Notes:** China restricted "
+        "gallium, germanium and antimony exports to the US in December 2024 "
+        "and seven heavy rare earths in April 2025; gallium and heavy "
+        "rare-earth prices outside China run about five times domestic "
+        "levels. Germanium (used in fiber-optic cable) is also exposed, but "
+        "no comparable share was available.")
+
+# --------------------------------------------------------------------------- #
+# 2 · Silicon & IP  (accelerator design + HBM memory)
 # --------------------------------------------------------------------------- #
 with tab_silicon:
-    st.markdown("### 1 · Silicon & IP")
+    st.markdown("### 2 · Silicon & IP")
     _m25 = SEMI_SEG[(SEMI_REP_YR, "Memory (storage)")]
     _m26 = SEMI_SEG[(SEMI_REP_YR + 1, "Memory (storage)")]
     st.markdown(
@@ -569,10 +713,10 @@ with tab_silicon:
         "HBM leader (about 57% share).")
 
 # --------------------------------------------------------------------------- #
-# 2 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
+# 3 · Foundry & Packaging  (TSMC CoWoS + the supply ceiling)
 # --------------------------------------------------------------------------- #
 with tab_foundry:
-    st.markdown("### 2 · Foundry & Packaging")
+    st.markdown("### 3 · Foundry & Packaging")
     st.markdown(
         "- **TSMC is effectively the only leading-edge foundry.** It holds about "
         "70% of foundry revenue and makes nearly every AI accelerator.\n"
@@ -649,10 +793,10 @@ with tab_foundry:
         "revenue.")
 
 # --------------------------------------------------------------------------- #
-# 3 · Systems
+# 4 · Systems
 # --------------------------------------------------------------------------- #
 with tab_systems:
-    st.markdown("### 3 · Servers")
+    st.markdown("### 4 · Servers")
     st.markdown(
         "- **Server makers were among the first to profit from the AI "
         "buildout.** They turn GPUs into deployable racks, and their revenue "
@@ -751,10 +895,12 @@ with tab_systems:
         "and the XTX case is ongoing.")
 
 # --------------------------------------------------------------------------- #
-# 4 · Networking
+# 5 · Networking
 # --------------------------------------------------------------------------- #
 with tab_network:
-    st.markdown("### 4 · Networking")
+    st.markdown("### 5 · Networking")
+    _oc = networking[networking["company"] == "Corning Optical"].set_index(
+        "year")["revenue_b"]
     st.markdown(
         "- **As clusters pass 100,000 GPUs, the network sets training "
         "efficiency.** Value shifts to back-end fabrics and optics: NVIDIA "
@@ -766,6 +912,12 @@ with tab_network:
         "- **Vendors are buying their way into data-center optics.** Nokia's "
         "\\$2.3B Infinera acquisition (completed February 2025) moved a "
         "mobile-era vendor into optical interconnect for AI data centers.\n"
+        "- **Fiber inside the data center is a second growth engine.** "
+        "Corning's Optical Communications sales rose "
+        f"{(_oc[2025] / _oc[2024] - 1) * 100:.0f}% to \\${_oc[2025]:.1f}B in "
+        "2025 and 44% to \\$2.38B in the September 2026 quarter, with "
+        "enterprise (data-center) sales up 84%, and Meta signed a multi-year "
+        "deal worth up to \\$6B.\n"
         "- **Vendors selling to carriers face a flat market.** US carrier capex "
         "guidance for 2026 sits near \\$50B with no 6G cycle ahead, while the "
         "hyperscaler budget grew about 2.5x in two years; Arista's growth and "
@@ -803,16 +955,19 @@ with tab_network:
     st.markdown("#### Network infrastructure and data-center networking (\\$B)")
     fign4 = px.bar(
         networking, x="year", y="revenue_b", color="company", barmode="group",
-        color_discrete_map={"Arista": GREEN, "Ciena": BLUE, "Nokia NI": YELLOW},
+        color_discrete_map={"Arista": GREEN, "Ciena": BLUE, "Nokia NI": YELLOW,
+                            "Corning Optical": PURPLE},
         labels={"year": "Year", "revenue_b": "Revenue ($B)", "company": ""})
     fign4.update_layout(height=340, hovermode="x unified", legend_title="")
     st.plotly_chart(fign4, width="stretch")
     st.caption(
-        "**Sources:** company filings.  \n**Notes:** the AI-exposed side. Arista and Ciena "
-        "are pure-plays (total revenue); Nokia is Network Infrastructure only "
-        "(fixed, IP and optical, excludes mobile; +9% in 2025, now includes "
-        "Infinera). Cisco's Networking segment (about \\$28-30B) sits in a "
-        "diversified firm and is left out.")
+        "**Sources:** company filings (Corning from its 10-K segment tables).  \n"
+        "**Notes:** the AI-exposed side. Arista and Ciena are pure-plays (total "
+        "revenue); Nokia is Network Infrastructure only (fixed, IP and optical, "
+        "excludes mobile; +9% in 2025, now includes Infinera); Corning is its "
+        "Optical Communications segment (fiber, cable and connectivity), whose "
+        "net income rose 71% to about \\$1.0B in 2025. Cisco's Networking "
+        "segment (about \\$28-30B) sits in a diversified firm and is left out.")
 
     st.markdown("#### Mobile networks (\\$B)")
     figmn = px.bar(
@@ -831,16 +986,18 @@ with tab_network:
         f"over time). Samsung and ZTE not charted. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
-# 4 · Power & Data Centers
+# 5 · Power & Data Centers
 # --------------------------------------------------------------------------- #
 with tab_dc:
-    st.markdown("### 5 · Data Centers")
+    st.markdown("### 6 · Data Centers")
     _con = dc_con[dc_con["source_type"] == "reported"].set_index("year")
     _rr = dc_con[dc_con["source_type"] == "run-rate"].iloc[0]
     _cy = int(_con.index.max())
     _rr_label = _rr["note"].split(", ")[-1]
     _pw = dc_power.set_index("region")
     _pw["y2030"] = _pw["installed_2025_gw"] + _pw["added_to_2030_gw"]
+    _vt = power_sup[power_sup["company"] == "Vertiv"].set_index("year")[
+        "revenue_b"]
     st.markdown(
         "- **US data-center construction now outpaces offices, warehouses and "
         f"retail.** In {_cy} it drew \\${_con.loc[_cy, 'datacenter_b']:.0f}B, "
@@ -862,6 +1019,13 @@ with tab_dc:
         "substations take 3 to 5 years, 7 of 13 US grid regions are projected "
         "below safety margins by 2030, and Goldman estimates about \\$720B of "
         "grid investment is needed this decade.\n"
+        "- **Power-equipment makers are the scarcity winners in this layer.** "
+        "GE Vernova's backlog reached \\$197B in the September 2026 quarter "
+        "(orders +96% organically), with 64 GW of gas turbines on order and "
+        "58 GW more reserved, and its grid-equipment backlog rose 60% to "
+        "\\$42.2B. Vertiv, a pure play on data-center power and cooling, grew "
+        "sales 61% in the quarter and guides 2026 revenue up "
+        f"{(_vt[2026] / _vt[2025] - 1) * 100:.0f}% to \\${_vt[2026]:.1f}B.\n"
         "- **Power access decides where capacity gets built**, making on-site "
         "generation and nuclear deals a competitive edge.")
 
@@ -930,6 +1094,27 @@ with tab_dc:
         f"({_pw.loc['United States', 'y2030']:.0f} GW) is close to Goldman "
         "Sachs's 152 GW. Europe is the region as each source defines it.")
 
+    st.markdown("#### Power and cooling suppliers: revenue (\\$B)")
+    figps = go.Figure()
+    for co, color in (("GE Vernova", BLUE), ("Eaton", YELLOW),
+                      ("Vertiv", GREEN)):
+        s = power_sup[power_sup["company"] == co]
+        figps.add_trace(go.Bar(
+            x=s["year"], y=s["revenue_b"], name=co, marker_color=color,
+            marker_pattern_shape=["/" if t == "guidance" else ""
+                                  for t in s["source_type"]]))
+    figps.update_layout(barmode="group", height=340, hovermode="x unified",
+                        legend_title="", yaxis_title="Revenue ($B)")
+    st.plotly_chart(figps, width="stretch")
+    st.caption(
+        "**Sources:** 10-K filings (EDGAR XBRL); GE Vernova and Vertiv Q3 2026 "
+        "results (Oct-2026).  \n**Notes:** total-company revenue. GE Vernova "
+        "spans gas power, wind and grid equipment (spun off from GE in 2024, "
+        "so it starts in 2022); Eaton is a diversified electrical group; "
+        "Vertiv sells data-center power and cooling, and its hatched 2026 bar "
+        "is guidance (it stopped disclosing backlog after 2025). Siemens "
+        "Energy and Schneider Electric report in euros and are not charted.")
+
     st.markdown("---")
     st.markdown("#### Gigawatt-scale buildout")
     gw_named = gw["capacity_gw"].sum()
@@ -975,10 +1160,10 @@ with tab_dc:
         "is the likely gate on the 2027+ buildout.")
 
 # --------------------------------------------------------------------------- #
-# 5 · Hyperscalers — capex deep-dive
+# 6 · Hyperscalers — capex deep-dive
 # --------------------------------------------------------------------------- #
 with tab_hyper:
-    st.markdown("### 6 · Hyperscalers")
+    st.markdown("### 7 · Hyperscalers")
     st.markdown(
         "- **Big-5 capex roughly doubles in 2026 and reaches about "
         f"\\${CAPEX_CONSENSUS_B/1000:.1f}T in 2027.** It "
@@ -1313,10 +1498,10 @@ with tab_hyper:
         f"five buyers, so the series are not a closed loop. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
-# 6 · NeoClouds
+# 7 · NeoClouds
 # --------------------------------------------------------------------------- #
 with tab_neo:
-    st.markdown("### 7 · NeoClouds")
+    st.markdown("### 8 · NeoClouds")
     st.markdown(
         "- **NeoClouds sell access to scarce GPUs, financed against the GPUs "
         "themselves.** They buy accelerators (the specialized chips, mostly "
@@ -1389,10 +1574,10 @@ with tab_neo:
         f"secured against them. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
-# 8 · AI Labs (demand)
+# 9 · AI Labs (demand)
 # --------------------------------------------------------------------------- #
 with tab_labs:
-    st.markdown("### 8 · AI Labs")
+    st.markdown("### 9 · AI Labs")
     st.markdown(
         f"- **Revenue is concentrating in two labs.** Anthropic "
         f"(\\${LAB_RR['Anthropic']:.0f}B) and OpenAI (\\${LAB_RR['OpenAI']:.0f}B) "
@@ -1588,10 +1773,10 @@ with tab_labs:
     st.dataframe(deals, width="stretch", hide_index=True)
 
 # --------------------------------------------------------------------------- #
-# 9 · System Integrators
+# 10 · System Integrators
 # --------------------------------------------------------------------------- #
 with tab_si:
-    st.markdown("### 9 · System Integrators")
+    st.markdown("### 10 · System Integrators")
     st.markdown(
         "- **Integrators are a measurable read on real AI adoption.** Deploying "
         "AI in enterprises is services-heavy work, and companies often pay "
@@ -1660,10 +1845,10 @@ with tab_si:
         f"embedded across its work. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
-# 10 · Telecoms (context)
+# 11 · Telecoms (context)
 # --------------------------------------------------------------------------- #
 with tab_telco:
-    st.markdown("### 10 · Telecoms")
+    st.markdown("### 11 · Telecoms")
     st.markdown(
         "- **Telecoms carry AI to users but capture little of its value.** "
         "Every model reaches users over a fixed or mobile network, but "
@@ -1864,10 +2049,10 @@ with tab_telco:
         f"with no 6G spike. Data as of {DATA_UPDATED}.")
 
 # --------------------------------------------------------------------------- #
-# 11 · Customer — adoption, usage depth, spend and security
+# 12 · Customer — adoption, usage depth, spend and security
 # --------------------------------------------------------------------------- #
 with tab_customer:
-    st.markdown("### 11 · Customer")
+    st.markdown("### 12 · Customer")
     _c0, _c1 = int(CLOUD.index.min()), int(CLOUD.index.max())
     _a0, _a1 = int(AI_USE.index.min()), int(AI_USE.index.max())
     _match = int((CLOUD - AI_USE[_a1]).abs().idxmin())   # cloud year at AI's level
