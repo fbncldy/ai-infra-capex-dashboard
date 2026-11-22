@@ -356,6 +356,7 @@ with tab_overview:
     rl = rl.assign(band=rl["roce_pct"].apply(_band))
     figrl = px.bar(
         rl, x="layer", y="roce_pct", color="band", text="roce_pct",
+        category_orders={"layer": list(rl["layer"])},     # value-chain order
         color_discrete_map={"Above cost of capital": GREEN,
                             "At or below cost of capital": GREY,
                             "Below zero": RED},
