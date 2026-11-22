@@ -158,6 +158,16 @@ ADOPT = adoption.pivot(index="year", columns="series", values="share_pct")
 CLOUD, CLOUD_SOPH, AI_USE = (ADOPT["Cloud: any paid service"],
                              ADOPT["Cloud: sophisticated services"],
                              ADOPT["AI: any AI technology"].dropna())
+CHATGPT_LAST = chatgpt.iloc[-1]                      # latest weekly-user point
+TEL_CAPEX = telco_capex.set_index("year")["telecom_capex_b"]
+TEL_REP_YR = int(telco_capex.loc[telco_capex["source_type"] == "reported",
+                                 "year"].max())
+# Shareholder return since the first trading day of 2015, to the latest close
+_tsr = telco_tsr.sort_values("year").groupby("company")
+TSR_TOT = _tsr["adj"].last() / _tsr["adj"].first() * 100 - 100
+TSR_YRS = float(_tsr["year"].last().iloc[0] - 2015)
+TSR_CAGR = ((1 + TSR_TOT / 100) ** (1 / TSR_YRS) - 1) * 100
+TSR_ASOF = pd.Timestamp(telco_tsr["note"].iloc[-1].split()[-1])
 CVE = cves.set_index("year")["cves"]
 CVE_LAST = int(cves["year"].max())
 CVE_FULL = int(cves.loc[cves["source_type"] == "reported", "year"].max())
@@ -264,8 +274,10 @@ with tab_overview:
         f"gross margin. Power is next: about {gw['capacity_gw'].sum():.0f} GW "
         f"of named projects wait on grid connections that take 3 to 5 years.\n"
         f"- **Hyperscalers have replaced telecoms as the largest infrastructure "
-        f"spenders.** Global telecom capex (about \\$295B, the lowest since "
-        f"2011) equals about nine months of Big-5 spending. Equipment vendors "
+        f"spenders.** Global telecom capex (about "
+        f"\\${TEL_CAPEX[TEL_REP_YR]:.0f}B in {TEL_REP_YR}, a second year below "
+        f"\\$300B) equals about "
+        f"{TEL_CAPEX[TEL_REP_YR] / total_now * 12:.0f} months of Big-5 spending. Equipment vendors "
         f"follow the money: Nokia bought Infinera for data-center optics, "
         f"Arista's revenue quadrupled and Ericsson's shrank.\n"
         f"- **Infrastructure margins compress as inference becomes the main "
@@ -278,8 +290,10 @@ with tab_overview:
         f"contracts back NeoCloud backlogs, which secure over \\$20B of "
         f"GPU-backed debt tied to one chip vendor, so trouble at the labs would "
         f"travel back through credit.\n"
-        f"- **Model makers face fast commoditization.** 900M to 1B people use "
-        f"ChatGPT weekly but only 5 to 6% pay, leading labs score within a few "
+        f"- **Model makers face fast commoditization.** About "
+        f"{CHATGPT_LAST['wau_m'] / 1000:.1f}B people reportedly use ChatGPT "
+        f"weekly but only about 5% paid at the last disclosure, leading labs "
+        f"score within a few "
         f"points of each other, Chinese open-weight models (DeepSeek, Qwen, "
         f"Kimi) trail by single digits at a fraction of the price, and API "
         f"switching costs are near zero. Labs that escape utility margins will "
@@ -410,7 +424,7 @@ with tab_overview:
         "statements via stockanalysis.com; 2026 company guidance.  \n"
         "**Notes:** hatched bars are 2026E: actuals where the fiscal year has "
         "closed (Microsoft, Oracle, Micron), guidance midpoints otherwise (TSMC "
-        "\\$60-64B, CoreWeave \\$37-39B, Nebius \\$20-25B). Hyperscalers carry "
+        "\\$60-64B, CoreWeave \\$37-39B, Nebius about \\$27B). Hyperscalers carry "
         f"about {hyp_share[2025]:.0f}% of the spend, and NeoClouds are the "
         f"fastest-growing layer, from {money(_cl['NeoClouds'][2024])} in 2024 to "
         f"about {money(_cl['NeoClouds'][FC_YEAR])} in 2026. Chipmakers are "
@@ -448,8 +462,10 @@ with tab_silicon:
         f"{SEMI_REP_YR + 1} on WSTS's forecast; analog, microcontrollers and "
         "discrete chips grow with the wider economy.\n"
         "- **NVIDIA dominates accelerators.** Data-center revenue was \\$194B "
-        "in FY2026 and \\$89B in the July 2026 quarter alone, about 92% of "
-        "company revenue; AMD is a distant second.\n"
+        "in FY2026 and \\$107.6B in the October 2026 quarter alone (+110%), "
+        "about 93% of company revenue. NVIDIA guides \\$130B of total revenue "
+        "for the January quarter and about 75% growth in fiscal 2028; AMD is a "
+        "distant second.\n"
         "- **Hyperscaler custom chips are becoming a real check on NVIDIA.** "
         "Broadcom, which builds Google's TPU and other in-house accelerators, "
         "reported \\$16.7B of AI chip revenue in its July 2026 quarter (+221%), "
@@ -645,8 +661,11 @@ with tab_systems:
         "designs, a lower-margin and less disclosed channel than the listed "
         "Dell (ISG), Supermicro and HPE.\n"
         "- **Access to NVIDIA supply drives growth.** Supermicro, an early "
-        "allocation winner, grew from \\$3B of revenue toward \\$40B guidance in "
-        "six years, and Dell's ISG grew 40% in its latest fiscal year.\n"
+        "allocation winner, grew from \\$3B of revenue to \\$39B in six years "
+        "(year to June 2026), reported \\$20B of revenue in its September "
+        "quarter alone and "
+        "guides \\$65-72B for FY2027. Dell's ISG grew 40% in its latest fiscal "
+        "year.\n"
         "- **Margins stay thin because NVIDIA prices the scarce input.** System "
         "builders earn single digits to low teens while NVIDIA earns about 60% "
         "on the same box.\n"
@@ -682,8 +701,8 @@ with tab_systems:
         "contract manufacturers that carry most AI-server "
         "volume; Foxconn's Cloud & Networking segment alone (about \\$90B in "
         "2025) tops any branded OEM. Dell fiscal years are plotted on the "
-        "calendar year they mostly cover; 2026 Supermicro and HPE bars are "
-        "guidance.")
+        "calendar year they mostly cover; Supermicro's fiscal year ends in "
+        "June. The 2026 HPE and 2027 Supermicro bars are guidance.")
 
     st.markdown("#### Operating margin: assembly vs the chip it ships (%)")
     sm = server_margins.sort_values("op_margin_pct")
@@ -916,7 +935,8 @@ with tab_dc:
     p1, p2, p3, p4 = st.columns(4)
     p1.metric("Named GW-scale pipeline", f"{gw_named:.0f} GW",
               f"{len(gw)} flagship projects")
-    p2.metric("Global DC capacity", "103 to 200 GW", "by 2030 (~2x)")
+    p2.metric("Global DC capacity 2030E", "202 to 316 GW",
+              "from ~107 GW in 2025")
     p3.metric("DC power demand", "+165%", "by 2030 (Goldman, vs '23)")
     p4.metric("HV substation lead time", "3-5 yrs")
 
@@ -946,8 +966,9 @@ with tab_dc:
         "pipeline.")
 
     st.caption(
-        "**Sources:** Goldman Sachs, IEA, NextBigFuture, Introl, Sherwood, Data "
-        "Center Knowledge.  \n**Notes:** high-voltage substations take 3-5 years, 7 of "
+        "**Sources:** Goldman Sachs, IEA, DC Market Insights and Morgan Stanley "
+        "(global capacity, 202 GW and 316 GW by 2030), NextBigFuture, Introl, "
+        "Sherwood, Data Center Knowledge.  \n**Notes:** high-voltage substations take 3-5 years, 7 of "
         "13 US grid regions are projected below safety margins by 2030, and "
         "about \\$720B of grid spend is needed through 2030. Power, not capital, "
         "is the likely gate on the 2027+ buildout.")
@@ -1151,7 +1172,7 @@ with tab_hyper:
         "**Sources:** company 10-K and 10-Q filings (EDGAR XBRL); 2026 capex as "
         "in the annual chart, with 2026 cash flow grown at its nine-month pace; "
         "2027 capex from consensus (Goldman citing the Street); NVIDIA FY2028 "
-        "from its 70% growth guidance; Broadcom 2027 from its own line of "
+        "from its 75% growth guidance; Broadcom 2027 from its own line of "
         "sight; framing after BofA Global Research.  \n"
         "**Notes:** free cash flow is operating cash flow minus capex; solid is "
         "reported, dotted is 2026-27E. Hyperscaler FCF falls from "
@@ -1340,7 +1361,8 @@ with tab_neo:
 
     c1, c2, c3 = st.columns(3)
     c1.metric("CoreWeave backlog (Q3 2026)", f"${cw_backlog:,.1f}B", "from $104.2B in Q2")
-    c2.metric("Nebius 2026E capex", "$20-25B")
+    c2.metric("Nebius 2026E capex", "~$27B", "raised from $20-25B (Nov-2026)",
+              delta_color="off")
     c3.metric("Sector GPU-backed debt", ">$20B")
 
     st.markdown("**Contracted backlog vs 2025 revenue (\\$B)**")
@@ -1648,14 +1670,19 @@ with tab_telco:
         "traffic carried.\n"
         "- **A decade of 30x traffic growth produced bond-like returns.** Mobile "
         "traffic grew about 30x since 2015 while sector capex held near "
-        "\\$300B. Shareholder returns since 2015 ran about 5% a year at Verizon "
-        "and 7% at AT&T against about 12% for the MSCI World; BT shareholders "
-        "lost about half, and only Deutsche Telekom came close to the market.\n"
+        "\\$300B. Shareholder returns since 2015 ran about "
+        f"{TSR_CAGR['Verizon']:.0f}% a year at Verizon and "
+        f"{TSR_CAGR['AT&T']:.0f}% at AT&T against about "
+        f"{TSR_CAGR['MSCI World (URTH)']:.0f}% for the MSCI World; BT "
+        f"shareholders lost {-TSR_TOT['BT Group']:.0f}%, and only Deutsche "
+        f"Telekom ({TSR_CAGR['Deutsche Telekom']:.0f}% a year) kept pace with "
+        "the market.\n"
         "- **Network capex earned about its cost of capital at best.** ROCE for "
         "major developed-market telcos averaged 4 to 9% over 2020-25, against a "
         "6 to 8% cost of capital.\n"
         "- **Carrier capex has flattened with no 6G cycle ahead.** Global "
-        "telecom capex in 2024 was the lowest since 2011, and US carrier "
+        f"telecom capex was about \\${TEL_CAPEX[TEL_REP_YR]:.0f}B in "
+        f"{TEL_REP_YR}, a second year below \\$300B, and US carrier "
         "guidance for 2026 (AT&T \\$23-24B, Verizon \\$16-16.5B, T-Mobile "
         "\\$10B) points to about \\$50B. That lifts carrier free cash flow and "
         "dividends and caps growth for their equipment vendors.\n"
@@ -1690,8 +1717,9 @@ with tab_telco:
         st.caption(
             "**Sources:** Ericsson Mobility Reports (mobile); Cisco VNI, ITU / "
             "TeleGeography (fixed, estimated).  \n**Notes:** mobile traffic rose from "
-            "about 4.4 EB/month (2015) to about 126 EB (2024), with about 145 "
-            "(2025) and 162 (2026) on Ericsson's path; fixed carries roughly 3x "
+            "about 4.4 EB/month (2015) to 146 EB at end-2025 (excluding fixed "
+            "wireless access), with about 162 in 2026 on Ericsson's path; fixed "
+            "carries roughly 3x "
             "mobile. Hatched bars are forecasts; AI load lands mainly on the "
             "fixed and data-center side.")
     with tt2:
@@ -1714,11 +1742,16 @@ with tab_telco:
         st.plotly_chart(figts2, width="stretch")
         st.caption(
             "**Sources:** Yahoo Finance adjusted closes (dividends reinvested, "
-            "indexed to 100 at start-2015).  \n**Notes:** through early 2026, about "
-            "+72% Verizon (about 5%/yr), +107% AT&T (about 7%), +175% Deutsche "
-            "Telekom (about 10%) and -53% BT, versus +235% (about 12%/yr) for "
-            "the MSCI World ETF. Price-only comparisons understate telco "
-            "returns given 4-7% dividend yields.")
+            "indexed to 100 on the first trading day of 2015).  \n**Notes:** "
+            f"to {TSR_ASOF:%d %b %Y}: "
+            + ", ".join(f"{TSR_TOT[c]:+.0f}% {c} ({TSR_CAGR[c]:.0f}%/yr)"
+                        for c in ("Verizon", "AT&T", "Deutsche Telekom",
+                                  "BT Group"))
+            + f", versus {TSR_TOT['MSCI World (URTH)']:+.0f}% "
+            f"({TSR_CAGR['MSCI World (URTH)']:.0f}%/yr) for the MSCI World ETF. "
+            "Yearly points are the first trading day; the last is the latest "
+            "close. Price-only comparisons understate telco returns given 4-7% "
+            "dividend yields.")
 
     st.markdown("#### Return on capital employed vs cost of capital")
     figroce = go.Figure()
@@ -1760,11 +1793,13 @@ with tab_telco:
     hyp_year = capex.groupby("fiscal_year")["capex_usd_b"].sum()
 
     k1, k2, k3 = st.columns(3)
-    k1.metric("Global telecom capex 2024", "~$295B", "lowest since 2011")
+    k1.metric(f"Global telecom capex {TEL_REP_YR}",
+              f"~${TEL_CAPEX[TEL_REP_YR]:.0f}B", "second year below $300B",
+              delta_color="off")
     k2.metric("Big-5 hyperscaler capex 2025", f"${hyp_year.loc[2025]:.0f}B",
               "overtook telecom")
     k3.metric("Big-5 FY2026E", f"${CAPEX_FC:.0f}B",
-              f"~{CAPEX_FC/295:.1f}x global telecom")
+              f"~{CAPEX_FC / TEL_CAPEX[FC_YEAR]:.1f}x global telecom")
 
     st.markdown("#### Capex: hyperscalers vs telecoms (\\$B)")
     tc = telco_capex.copy()
@@ -1792,12 +1827,12 @@ with tab_telco:
                        yaxis_title="Capex ($B)", xaxis_title="Year")
     st.plotly_chart(figt, width="stretch")
     st.caption(
-        "**Sources:** MTN Consulting (telecom); company filings (hyperscaler).  \n"
-        "**Notes:** telecom is global industry capex, 2025-26 assumes the "
-        "flat-to-declining path continues; hyperscaler is the Big-5 on the same "
-        "2026 basis as the Hyperscalers tab. Dotted segments are forecasts. The "
-        "lines crossed in 2025, and by 2026 hyperscaler capex is about "
-        f"{CAPEX_FC/295:.1f} times global telecom capex.")
+        "**Sources:** MTN Consulting (telecom, 2025 actual); Dell'Oro (2026 "
+        "outlook, about -2%); company filings (hyperscaler).  \n"
+        "**Notes:** telecom is global industry capex; hyperscaler is the Big-5 "
+        "on the same 2026 basis as the Hyperscalers tab. Dotted segments are "
+        "forecasts. The lines crossed in 2025, and by 2026 hyperscaler capex is "
+        f"about {CAPEX_FC / TEL_CAPEX[FC_YEAR]:.1f} times global telecom capex.")
 
     st.markdown("#### US carriers: capex and revenue, with 2026 guidance (\\$B)")
     tc1, tc2 = st.columns(2)
@@ -1846,9 +1881,11 @@ with tab_customer:
         f"{_a1}, up from {AI_USE[_a0]:.0f}% in {_a0}: about where cloud stood "
         f"in {_match}. In the US, 17 to 20% of firms reported using AI in the "
         "Census Bureau's survey (Dec 2025 to May 2026).\n"
-        "- **Consumer usage is broad but shallow.** 900M to 1B people use "
-        "ChatGPT weekly but only 5 to 6% pay, and 55% of US adults have tried "
-        "generative AI but only about 12% use it every workday.\n"
+        "- **Consumer usage is broad but shallow.** About "
+        f"{CHATGPT_LAST['wau_m'] / 1000:.1f}B people reportedly use ChatGPT "
+        "weekly, but only about 5% paid at the last disclosure (50M of 900M in "
+        "February 2026), and 55% of US adults have tried generative AI but only "
+        "about 12% use it every workday.\n"
         "- **Enterprise spend is shifting to applications.** Enterprise AI "
         "application spend reached \\$19B in 2025, led by "
         + listing([f"{c.lower()} (\\${v:.1f}B)" for c, v in
@@ -1898,7 +1935,10 @@ with tab_customer:
     st.caption(
         "**Sources:** OpenAI disclosures (May-2026 figure a third-party estimate, "
         "flagged in data).  \n**Notes:** weekly active users went from 100M (Aug-23) "
-        "to 900M (Feb-26), with estimates past 1B by May 2026.")
+        "to 900M (Feb-26, the last formal disclosure). About 1B by July 2026 "
+        "rests on internal figures reported by The Information, and 1.2B in "
+        "November on an OpenAI executive's remarks reported in the press; both "
+        "are flagged as estimates.")
 
     ud1, ud2 = st.columns(2)
     with ud1:
@@ -1936,7 +1976,8 @@ with tab_customer:
             "**Sources:** Menlo Ventures, State of Generative AI in the Enterprise "
             "2025.  \n**Notes:** enterprise genAI application spend reached \\$19B in "
             "2025 (of \\$37B total, up from \\$11.5B in 2024); coding tools are "
-            "the largest single use case at \\$4.2B.")
+            "the largest departmental use case at \\$4.2B, behind general "
+            "assistants and copilots overall.")
 
     st.markdown("#### Software vulnerabilities published per year (CVEs)")
     figcve = go.Figure()

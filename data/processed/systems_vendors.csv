@@ -11,7 +11,7 @@ Supermicro,2022,5.2,reported,
 Supermicro,2023,7.1,reported,
 Supermicro,2024,14.9,reported,
 Supermicro,2025,22.0,reported,
-Supermicro,2026,39.7,guidance,FY2026 guidance $38.9-40.4B; >$13B Blackwell Ultra backlog
+Supermicro,2026,39.1,reported,FY2026 10-K $39.06B; Q1 FY27 (Sep-2026) $20.0B
 HPE Server,2020,13.0,estimate,HPE fiscal year ends ~Oct; server segment approx
 HPE Server,2021,13.6,estimate,
 HPE Server,2022,13.9,estimate,
@@ -19,12 +19,13 @@ HPE Server,2023,14.4,estimate,
 HPE Server,2024,15.3,reported,
 HPE Server,2025,19.0,estimate,AI systems ramping
 HPE Server,2026,25.0,guidance,Estimate from FY26 group growth guidance of 29-33%; segment now reported as Cloud & AI
-Foxconn (Cloud & Networking),2023,50,estimate,Hon Hai Cloud & Networking segment; server+networking; TWD converted approx
-Foxconn (Cloud & Networking),2024,64,estimate,~30% of group revenue
-Foxconn (Cloud & Networking),2025,90,estimate,~41% of group revenue on AI-server surge
-Quanta (servers),2023,14,estimate,Server share of Quanta revenue; AI servers ~34% of total by 2024
-Quanta (servers),2024,20,estimate,
-Quanta (servers),2025,28,estimate,
-Wistron (servers),2023,9,estimate,Server share of Wistron revenue; profit tripled on AI servers in 2025
-Wistron (servers),2024,14,estimate,
-Wistron (servers),2025,19,estimate,
+Foxconn (Cloud & Networking),2023,50.0,estimate,Hon Hai Cloud & Networking segment; server+networking; TWD converted approx
+Foxconn (Cloud & Networking),2024,64.0,estimate,~30% of group revenue
+Foxconn (Cloud & Networking),2025,90.0,estimate,~41% of group revenue on AI-server surge
+Quanta (servers),2023,14.0,estimate,Server share of Quanta revenue; AI servers ~34% of total by 2024
+Quanta (servers),2024,20.0,estimate,
+Quanta (servers),2025,28.0,estimate,
+Wistron (servers),2023,9.0,estimate,Server share of Wistron revenue; profit tripled on AI servers in 2025
+Wistron (servers),2024,14.0,estimate,
+Wistron (servers),2025,19.0,estimate,
+Supermicro,2027,68.5,guidance,FY2027 guidance $65-72B (Aug-2026)

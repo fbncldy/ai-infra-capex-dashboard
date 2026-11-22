@@ -9,5 +9,5 @@ year,traffic_eb_month,source_type,note
 2022,79.0,estimate,
 2023,100.0,estimate,
 2024,126.0,reported,Ericsson Nov-2025 report: 126 EB/month excl FWA at end-2024
-2025,145.0,estimate,Extrapolated from Ericsson growth trajectory toward 310 EB/month by 2031
+2025,146.0,reported,Ericsson Jun-2026 report: 146 EB/month excl FWA at end-2025 (203 incl FWA)
 2026,162.0,forecast,Ericsson trajectory toward 310 EB/month by 2031

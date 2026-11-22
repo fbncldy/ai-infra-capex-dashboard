@@ -1,61 +1,66 @@
 company,year,adj,source_type,note
-AT&T,2015,11.85,reported,Yahoo Finance dividend- and split-adjusted close at start of year (TSR proxy)
-AT&T,2016,14.46,reported,
-AT&T,2017,15.15,reported,
-AT&T,2018,13.59,reported,
-AT&T,2019,13.93,reported,
-AT&T,2020,15.19,reported,
-AT&T,2021,15.90,reported,
-AT&T,2022,16.81,reported,
-AT&T,2023,13.18,reported,
-AT&T,2024,16.33,reported,
-AT&T,2025,26.36,reported,
-AT&T,2026,24.54,reported,
-Verizon,2015,27.41,reported,
-Verizon,2016,29.61,reported,
-Verizon,2017,28.31,reported,
-Verizon,2018,30.36,reported,
-Verizon,2019,36.23,reported,
-Verizon,2020,39.87,reported,
-Verizon,2021,40.98,reported,
-Verizon,2022,38.94,reported,
-Verizon,2023,28.64,reported,
-Verizon,2024,35.54,reported,
-Verizon,2025,40.53,reported,
-Verizon,2026,47.10,reported,
-Deutsche Telekom,2015,10.17,reported,EUR
-Deutsche Telekom,2016,10.62,reported,
-Deutsche Telekom,2017,12.28,reported,
-Deutsche Telekom,2018,9.49,reported,
-Deutsche Telekom,2019,11.37,reported,
-Deutsche Telekom,2020,11.16,reported,
-Deutsche Telekom,2021,13.93,reported,
-Deutsche Telekom,2022,16.24,reported,
-Deutsche Telekom,2023,18.28,reported,
-Deutsche Telekom,2024,20.26,reported,
-Deutsche Telekom,2025,31.32,reported,
-Deutsche Telekom,2026,27.95,reported,
-BT Group,2015,444.5,reported,GBp; London listing (BT-A.L)
-BT Group,2016,440.8,reported,
-BT Group,2017,308.2,reported,
-BT Group,2018,204.1,reported,
-BT Group,2019,193.2,reported,
-BT Group,2020,116.0,reported,
-BT Group,2021,174.4,reported,
-BT Group,2022,186.8,reported,
-BT Group,2023,146.6,reported,
-BT Group,2024,130.5,reported,
-BT Group,2025,179.4,reported,
-BT Group,2026,208.8,reported,
-MSCI World (URTH),2015,61.14,reported,iShares MSCI World ETF as benchmark
-MSCI World (URTH),2016,58.87,reported,
-MSCI World (URTH),2017,68.81,reported,
-MSCI World (URTH),2018,76.70,reported,
-MSCI World (URTH),2019,76.93,reported,
-MSCI World (URTH),2020,82.29,reported,
-MSCI World (URTH),2021,115.94,reported,
-MSCI World (URTH),2022,110.58,reported,
-MSCI World (URTH),2023,112.98,reported,
-MSCI World (URTH),2024,141.31,reported,
-MSCI World (URTH),2025,160.76,reported,
-MSCI World (URTH),2026,204.93,reported,
+AT&T,2015.0,11.13,reported,first trading day 2015-01-02
+AT&T,2016.0,12.15,reported,first trading day 2016-01-04
+AT&T,2017.0,16.25,reported,first trading day 2017-01-03
+AT&T,2018.0,15.54,reported,first trading day 2018-01-02
+AT&T,2019.0,12.85,reported,first trading day 2019-01-02
+AT&T,2020.0,18.33,reported,first trading day 2020-01-02
+AT&T,2021.0,15.16,reported,first trading day 2021-01-04
+AT&T,2022.0,14.41,reported,first trading day 2022-01-03
+AT&T,2023.0,15.11,reported,first trading day 2023-01-03
+AT&T,2024.0,14.84,reported,first trading day 2024-01-02
+AT&T,2025.0,20.86,reported,first trading day 2025-01-02
+AT&T,2026.0,23.44,reported,first trading day 2026-01-02
+AT&T,2026.88,22.31,reported,latest 2026-11-20
+Verizon,2015.0,24.92,reported,first trading day 2015-01-02
+Verizon,2016.0,25.52,reported,first trading day 2016-01-04
+Verizon,2017.0,31.74,reported,first trading day 2017-01-03
+Verizon,2018.0,32.64,reported,first trading day 2018-01-02
+Verizon,2019.0,35.78,reported,first trading day 2019-01-02
+Verizon,2020.0,40.64,reported,first trading day 2020-01-02
+Verizon,2021.0,40.89,reported,first trading day 2021-01-04
+Verizon,2022.0,38.09,reported,first trading day 2022-01-03
+Verizon,2023.0,30.74,reported,first trading day 2023-01-03
+Verizon,2024.0,31.98,reported,first trading day 2024-01-02
+Verizon,2025.0,35.27,reported,first trading day 2025-01-02
+Verizon,2026.0,37.99,reported,first trading day 2026-01-02
+Verizon,2026.88,46.48,reported,latest 2026-11-20
+Deutsche Telekom,2015.0,8.57,reported,first trading day 2015-01-02
+Deutsche Telekom,2016.0,10.74,reported,first trading day 2016-01-04
+Deutsche Telekom,2017.0,11.38,reported,first trading day 2017-01-02
+Deutsche Telekom,2018.0,10.64,reported,first trading day 2018-01-02
+Deutsche Telekom,2019.0,11.15,reported,first trading day 2019-01-02
+Deutsche Telekom,2020.0,11.51,reported,first trading day 2020-01-02
+Deutsche Telekom,2021.0,12.43,reported,first trading day 2021-01-04
+Deutsche Telekom,2022.0,14.05,reported,first trading day 2022-01-03
+Deutsche Telekom,2023.0,16.69,reported,first trading day 2023-01-02
+Deutsche Telekom,2024.0,19.96,reported,first trading day 2024-01-02
+Deutsche Telekom,2025.0,27.45,reported,first trading day 2025-01-02
+Deutsche Telekom,2026.0,26.95,reported,first trading day 2026-01-02
+Deutsche Telekom,2026.88,26.34,reported,latest 2026-11-20
+BT Group,2015.0,398.92,reported,first trading day 2015-01-02
+BT Group,2016.0,457.65,reported,first trading day 2016-01-04
+BT Group,2017.0,369.77,reported,first trading day 2017-01-03
+BT Group,2018.0,273.89,reported,first trading day 2018-01-02
+BT Group,2019.0,239.19,reported,first trading day 2019-01-02
+BT Group,2020.0,195.55,reported,first trading day 2020-01-02
+BT Group,2021.0,135.45,reported,first trading day 2021-01-04
+BT Group,2022.0,172.23,reported,first trading day 2022-01-04
+BT Group,2023.0,114.58,reported,first trading day 2023-01-03
+BT Group,2024.0,124.94,reported,first trading day 2024-01-02
+BT Group,2025.0,147.1,reported,first trading day 2025-01-02
+BT Group,2026.0,183.7,reported,first trading day 2026-01-02
+BT Group,2026.88,212.3,reported,latest 2026-11-20
+MSCI World (URTH),2015.0,57.95,reported,first trading day 2015-01-02
+MSCI World (URTH),2016.0,56.76,reported,first trading day 2016-01-04
+MSCI World (URTH),2017.0,62.37,reported,first trading day 2017-01-03
+MSCI World (URTH),2018.0,76.55,reported,first trading day 2018-01-02
+MSCI World (URTH),2019.0,69.48,reported,first trading day 2019-01-02
+MSCI World (URTH),2020.0,89.7,reported,first trading day 2020-01-02
+MSCI World (URTH),2021.0,102.36,reported,first trading day 2021-01-04
+MSCI World (URTH),2022.0,126.71,reported,first trading day 2022-01-03
+MSCI World (URTH),2023.0,103.24,reported,first trading day 2023-01-03
+MSCI World (URTH),2024.0,127.08,reported,first trading day 2024-01-02
+MSCI World (URTH),2025.0,151.76,reported,first trading day 2025-01-02
+MSCI World (URTH),2026.0,185.27,reported,first trading day 2026-01-02
+MSCI World (URTH),2026.88,187.43,reported,latest 2026-11-20

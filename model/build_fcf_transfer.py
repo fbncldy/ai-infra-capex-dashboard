@@ -32,8 +32,8 @@ OUT_CO = PROC / "fcf_2026e_by_company.csv"     # per-company hyperscaler 2026E
 # NVIDIA FY2027 (Feb-26..Jan-27): H1 from the Q2 FY27 10-Q (ended 2026-07-26).
 NV_H1_FCF = 74.4 - 4.4                 # OCF minus capex, $B
 NV_H1_REV = 81.6 + 96.2                # Q1 + Q2 revenue, $B
-NV_FY27_REV = 404.0                    # consensus range $396-412B
-NV_FY28_GROWTH = 0.70                  # company guidance, Aug-2026
+NV_FY27_REV = 177.84 + 115.8 + 130.0  # H1 + Q3 actual + Q4 guidance (Nov-2026)
+NV_FY28_GROWTH = 0.75                  # raised from 70% (Q3 FY27, Nov-2026)
 NV_CONV = NV_H1_FCF / NV_H1_REV        # H1 FY27 FCF conversion, ~39%
 # Micron FY2027 at twice its H2 FY2026 FCF (Q3 17.57 + Q4 32.86).
 MU_FY27 = 2 * (17.57 + 32.86)

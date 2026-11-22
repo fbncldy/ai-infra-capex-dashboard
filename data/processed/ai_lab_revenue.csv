@@ -1,5 +1,5 @@
 company,revenue_b,as_of,source_url,note
-Anthropic,81,2026-10,https://finance.yahoo.com/technology/ai/articles/anthropic-says-revenue-run-rate-200343777.html,Run-rate per amended S-1 (28 days x 13; Q3 revenue $17.0B annualizes to about $68B); reported gross of cloud-reseller spend
-OpenAI,50,2026-09,https://valueaddvc.com/blog/openai-revenue-2026-20b-arr-4b-month-path-to-profitability,Run-rate near $50B for September per Reuters/FT; measured closer to net
-xAI,0.50,2025-12,https://sacra.com/c/xai/,Standalone run-rate exiting 2025; excludes X advertising
-Mistral,0.40,2026-01,https://sacra.com/c/mistral/,ARR; targeting above $1B by end-2026
+Anthropic,81.0,2026-10,https://finance.yahoo.com/technology/ai/articles/anthropic-says-revenue-run-rate-200343777.html,Run-rate per amended S-1 (28 days x 13; Q3 revenue $17.0B annualizes to about $68B); reported gross of cloud-reseller spend
+OpenAI,50.0,2026-09,https://valueaddvc.com/blog/openai-revenue-2026-20b-arr-4b-month-path-to-profitability,Run-rate near $50B for September per Reuters/FT; measured closer to net
+xAI,0.5,2025-12,https://sacra.com/c/xai/,"Standalone AI revenue exiting 2025, excludes X advertising; SpaceX S-1 (May-2026): AI solutions and infrastructure revenue $465M in 2025"
+Mistral,0.4,2026-01,https://sacra.com/c/mistral/,ARR; targeting above $1B by end-2026

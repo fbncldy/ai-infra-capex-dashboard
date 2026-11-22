@@ -1,7 +1,7 @@
 company,op_margin_pct,period,source_type,note
-NVIDIA,62,FY2025,reported,Chip designer shown for contrast
-Dell ISG,11,FY2025,reported,Infrastructure Solutions Group segment operating margin
-HPE servers,11,FY2026,estimate,Server / Cloud & AI segment; about 12% in recent quarter
-Quanta,8,2024,reported,Group operating margin lifted by AI-server mix
-Supermicro,6,FY2025,reported,Compressed from about 8% on pricing and mix
+NVIDIA,60.0,FY2026,reported,Chip designer shown for contrast; 10-K $130.4B on $215.9B
+Dell ISG,11.7,FY2026,reported,ISG $7.1B on $60.8B (FY2025 12.8%); AI servers at a mid-single-digit target
+HPE servers,11.0,FY2026,estimate,Server / Cloud & AI segment; about 12% in recent quarter
+Quanta,8.0,2024,reported,Group operating margin lifted by AI-server mix
+Supermicro,7.0,FY2026,reported,"10-K $2.77B on $39.06B, up from 5.7% in FY2025; 10% in Q1 FY27"
 Foxconn,3.5,2025,estimate,Group operating margin; contract assembly runs very thin

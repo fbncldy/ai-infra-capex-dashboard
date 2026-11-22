@@ -1,8 +1,8 @@
 year,telecom_capex_b,source_type,note
 2020,296.8,reported,MTN Consulting global telco capex
-2021,300,estimate,Roughly flat ~$300B
-2022,298,estimate,
-2023,300,estimate,
-2024,295.4,reported,Lowest since 2011 (MTN Consulting)
-2025,293,forecast,Flat-to-declining trajectory; no 6G investment cycle in operator guidance
-2026,291,forecast,
+2021,300.0,estimate,Roughly flat ~$300B
+2022,298.0,estimate,
+2023,300.0,estimate,
+2024,295.4,reported,MTN Consulting (annualized 4Q24)
+2025,295.7,reported,MTN Consulting: -0.9%; second straight year below $300B
+2026,289.8,forecast,Dell'Oro outlook: about -2% in 2026
